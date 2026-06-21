@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>IIT Resume Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+
+/* ───────────────────────────────────────────
+   RESET
+─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+
+/* ───────────────────────────────────────────
+   DESIGN TOKENS
+─────────────────────────────────────────── */
+:root {
+  /* App chrome */
+  --bg: #F4F5F7;
+  --canvas: #E5E7EA;
+  --surface: #FFFFFF;
+  --border: #DBDCDE;
+  --border-focus: #2563EB;
+  --text-primary: #1A1A1A;
+  --text-secondary: #5F6368;
+  --text-tertiary: #9AA0A6;
+  --accent: #2563EB;
+  --accent-hover: #1D4ED8;
+  --danger: #DC2626;
+  --sidebar-w: 320px;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+
+  --resume-accent: #003366;       
+  --resume-accent-soft: #CEDFEF;
+  --resume-bg-shade: #EAF1F8;
+  --resume-border: #BFD0E0;
+  --resume-border-soft: #DCE7F1;
+  --resume-text: #1A1A1A;
+  --resume-text-mute: #4A5A6A;
+  --resume-link: #003366;
+}
+
+body {
+  font-family: var(--font);
+  font-size: 11px;
+  color: var(--text-primary);
+  background: var(--canvas);
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ══════════════════════════════════════════
+   SIDEBAR
+══════════════════════════════════════════ */
+#sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+body.sidebar-hidden #sidebar { display: none; }
+
+/* ───────────────────────────────────────────
+   DRAGGABLE SIDEBAR DIVIDER
+─────────────────────────────────────────── */
+#sidebar-divider {
+  width: 6px;
+  min-width: 6px;
+  background: var(--border);
+  cursor: col-resize;
+  position: relative;
+  flex-shrink: 0;
+  height: 100vh;
+  transition: background 0.15s;
+  z-index: 5;
+}
+#sidebar-divider:hover,
+#sidebar-divider.dragging {
+  background: var(--accent);
+}
+
+/* Round toggle button — sits in the vertical center of the divider */
+.sidebar-toggle-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  z-index: 2;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s;
+}
+.sidebar-toggle-btn::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+}
+.sidebar-toggle-btn:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #FFFFFF;
+  transform: translate(-50%, -50%) scale(1.1);
+}
+.sidebar-toggle-btn:active {
+  transform: translate(-50%, -50%) scale(0.95);
+}
+
+body.sidebar-hidden #sidebar-toggle-btn svg {
+  transform: rotate(180deg);
+}
+body.sidebar-hidden #sidebar-divider {
+  display: block;
+  background: var(--border);
+  width: 6px;
+  min-width: 6px;
+}
+body.sidebar-hidden #sidebar-divider:hover {
+  background: var(--accent);
+}
+
+#sidebar-top { padding: 16px 18px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+#sidebar-top h1 { font-size: 14px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.01em; }
+#sidebar-top p { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+
+/* Tab bar */
+#tab-bar { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--surface); }
+.tab-btn { flex: 1; padding: 9px 6px; font-size: 11.5px; font-weight: 500; font-family: var(--font); color: var(--text-secondary); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: color 0.12s, border-color 0.12s; letter-spacing: 0.01em; }
+.tab-btn:hover { color: var(--text-primary); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* Scroll area */
+#sidebar-body { flex: 1; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+#sidebar-body::-webkit-scrollbar { width: 4px; }
+#sidebar-body::-webkit-scrollbar-track { background: transparent; }
+#sidebar-body::-webkit-scrollbar-thumb { background: var(--border); }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* Field groups */
+.field-group { padding: 10px 18px 0; }
+.field-label { display: block; font-size: 10.5px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 5px; }
+.field-input, .field-textarea { width: 100%; padding: 7px 9px; font-size: 12.5px; font-family: var(--font); color: var(--text-primary); background: var(--surface); border: 1px solid var(--border); border-radius: 3px; outline: none; transition: border-color 0.12s; line-height: 1.4; }
+.field-input:focus, .field-textarea:focus { border-color: var(--border-focus); }
+.field-textarea { resize: vertical; min-height: 72px; line-height: 1.5; }
+.field-hint { font-size: 10px; color: var(--text-tertiary); margin-top: 4px; line-height: 1.4; }
+.field-row { display: flex; gap: 8px; }
+.field-row .field-group { flex: 1; padding-left: 0; padding-right: 0; }
+.field-row .field-group:first-child { padding-left: 18px; }
+.field-row .field-group:last-child { padding-right: 18px; }
+.section-divider { border: none; border-top: 1px solid var(--border); margin: 14px 0 0; }
+
+/* Education rows */
+.edu-card { margin: 10px 18px 0; border: 1px solid var(--border); border-radius: 3px; overflow: hidden; }
+.edu-card-header { padding: 7px 10px; background: var(--bg); font-size: 11px; font-weight: 600; color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center; }
+.edu-card-body { padding: 0 10px 10px; }
+.edu-card-body .field-group { padding: 8px 0 0; }
+
+/* Section accordion */
+.sec-accordion { border-bottom: 1px solid var(--border); }
+.sec-accordion-head { display: flex; align-items: center; gap: 6px; padding: 10px 12px 10px 18px; cursor: pointer; user-select: none; background: var(--surface); }
+.sec-accordion-head:hover { background: var(--bg); }
+.sec-acc-title { flex: 1; font-size: 11.5px; font-weight: 600; color: var(--text-primary); letter-spacing: 0.02em; }
+.sec-acc-chevron { font-size: 10px; color: var(--text-tertiary); transition: transform 0.15s; line-height: 1; }
+.sec-acc-chevron.open { transform: rotate(180deg); }
+.sec-acc-body { display: none; padding-bottom: 8px; background: var(--surface); }
+.sec-acc-body.open { display: block; }
+
+/* Entry cards */
+.entry-card { margin: 8px 18px 0; border: 1px solid var(--border); border-radius: 3px; }
+.entry-card-head { padding: 6px 10px; background: var(--bg); font-size: 10.5px; font-weight: 600; color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center; letter-spacing: 0.02em; }
+.entry-card-body { padding: 0 10px 8px; }
+.entry-card-body .field-group { padding: 7px 0 0; }
+
+/* Buttons */
+.btn { font-family: var(--font); font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--text-primary); border-radius: 3px; padding: 6px 12px; transition: background 0.1s, border-color 0.1s, color 0.1s; line-height: 1; display: inline-flex; align-items: center; justify-content: center; }
+.btn:hover { background: var(--bg); border-color: #C0C0BE; }
+.btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.btn-danger-text { font-family: var(--font); font-size: 11px; font-weight: 500; color: var(--danger); background: none; border: none; cursor: pointer; padding: 2px 0; }
+.btn-danger-text:hover { text-decoration: underline; }
+.btn-reorder { font-family: var(--font); font-size: 12px; font-weight: 600; color: var(--text-secondary); background: none; border: 1px solid var(--border); border-radius: 3px; cursor: pointer; padding: 1px 6px; line-height: 1.2; transition: background 0.1s, color 0.1s, border-color 0.1s; }
+.btn-reorder:hover:not(:disabled) { background: var(--bg); color: var(--accent); border-color: var(--accent); }
+.btn-reorder:disabled { opacity: 0.3; cursor: not-allowed; }
+.btn-add-entry { display: block; width: calc(100% - 36px); margin: 8px 18px 0; padding: 7px; font-family: var(--font); font-size: 11.5px; font-weight: 500; color: var(--text-secondary); background: none; border: 1px dashed var(--border); border-radius: 3px; cursor: pointer; text-align: center; transition: color 0.1s, border-color 0.1s; }
+.btn-add-entry:hover { color: var(--accent); border-color: var(--accent); }
+.type-select { font-family: var(--font); font-size: 10px; font-weight: 500; color: var(--text-secondary); background: var(--bg); border: 1px solid var(--border); border-radius: 3px; padding: 2px 5px; cursor: pointer; outline: none; }
+.type-select:focus { border-color: var(--border-focus); }
+.skill-row-wrap { display: flex; gap: 6px; align-items: flex-start; margin: 7px 18px 0; }
+.skill-row-wrap .field-input { flex: 1; }
+.skill-row-wrap .field-input:first-child { max-width: 120px; }
+
+#sidebar-footer { border-top: 1px solid var(--border); padding: 12px 18px; flex-shrink: 0; display: flex; gap: 8px; align-items: center; }
+.btn-add-section { display: block; width: 100%; padding: 10px 18px; font-family: var(--font); font-size: 12px; font-weight: 500; color: var(--text-secondary); background: none; border: none; border-top: 1px solid var(--border); cursor: pointer; text-align: left; transition: background 0.1s, color 0.1s; }
+.btn-add-section:hover { background: var(--bg); color: var(--text-primary); }
+
+/* ══════════════════════════════════════════
+   PREVIEW AREA
+══════════════════════════════════════════ */
+#preview-area { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; background: var(--canvas); }
+#preview-bar { height: 42px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0; }
+#preview-bar-left { display: flex; align-items: center; gap: 12px; }
+#preview-bar-left span { font-size: 11.5px; color: var(--text-secondary); font-weight: 500; }
+#preview-bar-actions { display: flex; gap: 8px; align-items: center; }
+#preview-scroll { flex: 1; overflow-y: auto; display: flex; justify-content: center; align-items: flex-start; padding: 32px 24px; scrollbar-width: thin; scrollbar-color: #C4C4C2 transparent; position: relative; }
+.zoom-controls { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text-secondary); }
+.zoom-controls button { width: 22px; height: 22px; border: 1px solid var(--border); background: var(--surface); cursor: pointer; border-radius: 3px; font-size: 14px; line-height: 1; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); }
+.zoom-controls button:hover { background: var(--bg); }
+
+/* ───────────────────────────────────────────
+   THE RESUME PAPER (SCREEN PREVIEW)
+   Strict A4: 210mm × 297mm
+─────────────────────────────────────────── */
+#preview-scroll {
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 24px;
+}
+
+#resume-paper {
+  width: 210mm;
+  min-height: 297mm;
+  height: max-content;
+  background: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.08);
+  padding: 10mm 12mm 12mm 12mm;
+  flex-shrink: 0;
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 8.5pt;
+  line-height: 1.28;
+  color: var(--resume-text);
+  position: relative;
+  transform-origin: top center;
+  transition: transform 0.15s ease;
+}
+
+#preview-scroll.paginated #resume-paper { display: none; }
+
+.resume-page {
+  width: 210mm;
+  min-height: 297mm;
+  height: max-content;
+  background: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.08);
+  padding: 10mm 12mm 12mm 12mm;
+  flex-shrink: 0;
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 8.5pt;
+  line-height: 1.28;
+  color: var(--resume-text);
+  position: relative;
+  transform-origin: top center;
+  transition: transform 0.15s ease;
+}
+
+.print-footer { display: none; }
+
+/* ───────────────────────────────────────────
+   RESUME — HEADER
+─────────────────────────────────────────── */
+.r-header {
+  margin-bottom: 3px;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+.r-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 2px solid var(--resume-accent);
+  padding-bottom: 4px;
+}
+.r-header-left { flex: 1; }
+.r-logo-box { width: 42px; height: 42px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.r-logo-box img { width: 42px; height: 42px; object-fit: contain; }
+.r-logo-placeholder {
+  width: 42px; height: 42px;
+  border: 1px dashed #C8C8C8;
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 6pt; color: #999; font-weight: 500;
+}
+.r-name {
+  font-size: 18pt;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--resume-accent);
+  line-height: 1.05;
+  display: inline;
+}
+.r-rollno {
+  font-size: 9pt;
+  font-weight: 600;
+  color: var(--resume-text);
+  margin-left: 8px;
+  border-left: 2px solid var(--resume-border);
+  padding-left: 8px;
+}
+.r-degree-line {
+  font-size: 9pt;
+  margin-top: 2px;
+  font-weight: 500;
+  color: var(--resume-text-mute);
+}
+.r-links {
+  font-size: 8pt;
+  color: var(--resume-text-mute);
+  margin-top: 3px;
+  page-break-inside: avoid;
+}
+.r-links a {
+  color: var(--resume-link);
+  text-decoration: none;
+  font-weight: 500;
+}
+.r-links a:hover { text-decoration: underline; }
+.r-links .sep { margin: 0 5px; color: var(--resume-border); }
+
+/* ───────────────────────────────────────────
+   SECTION HEADER
+─────────────────────────────────────────── */
+.r-sec-head {
+  background-color: var(--resume-accent);
+  color: #FFFFFF;
+  padding: 2px 8px;
+  margin: 6px 0 3px;
+  page-break-after: avoid;
+  break-after: avoid;
+  page-break-inside: avoid;
+  break-inside: avoid;
+  border-radius: 2px;
+}
+.r-sec-head-text {
+  font-size: 8.5pt;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ───────────────────────────────────────────
+   TABLES
+─────────────────────────────────────────── */
+.r-edu-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--resume-border);
+  margin-bottom: 2px;
+}
+.r-edu-table th {
+  background-color: var(--resume-accent-soft);
+  border-bottom: 1px solid var(--resume-border);
+  padding: 3px 6px;
+  font-weight: 700;
+  font-size: 8pt;
+  color: var(--resume-accent);
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.r-edu-table th:last-child { text-align: right; }
+.r-edu-table td {
+  border-bottom: 1px solid var(--resume-border-soft);
+  padding: 2px 6px;
+  font-size: 8.5pt;
+}
+.r-edu-table tr:last-child td { border-bottom: none; }
+.r-edu-table td:last-child { text-align: right; font-weight: 600; color: var(--resume-accent); }
+.r-edu-table tr { page-break-inside: avoid; break-inside: avoid; }
+
+.r-entries-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1px;
+}
+.r-entries-table tr { page-break-inside: avoid; break-inside: avoid; }
+.r-et-title-row td { padding: 2px 0 0; vertical-align: baseline; }
+.r-et-title {
+  font-size: 9pt;
+  font-weight: 700;
+  color: var(--resume-text);
+  line-height: 1.25;
+}
+.r-et-sep { color: var(--resume-border); margin: 0 3px; font-weight: 400; }
+.r-et-org { font-weight: 500; color: var(--resume-text-mute); font-size: 8.5pt; }
+.r-et-date {
+  font-size: 8pt;
+  font-weight: 600;
+  color: var(--resume-accent);
+  text-align: right;
+  white-space: nowrap;
+  width: 28%;
+  vertical-align: bottom;
+}
+.r-et-sup-row td {
+  font-style: italic;
+  font-size: 7.5pt;
+  color: var(--resume-text-mute);
+  padding: 0 0 1px;
+}
+.r-et-bullets-row td { padding: 0 0 1px; }
+.r-et-gap td { height: 3px; }
+
+.r-bullets {
+  margin: 1px 0 0 12px;
+  padding: 0;
+  list-style: square;
+  color: var(--resume-text);
+}
+.r-bullets li {
+  font-size: 8.5pt;
+  margin-bottom: 0;
+  padding-left: 2px;
+  page-break-inside: avoid;
+  break-inside: avoid;
+  line-height: 1.28;
+}
+.r-bullets strong { color: var(--resume-accent); font-weight: 700; }
+
+.r-skills-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--resume-border);
+  margin-bottom: 1px;
+}
+.r-skills-table tr {
+  page-break-inside: avoid;
+  break-inside: avoid;
+  border-bottom: 1px solid var(--resume-border-soft);
+}
+.r-skills-table tr:last-child { border-bottom: none; }
+.r-skills-table td { padding: 2px 6px; vertical-align: top; font-size: 8.5pt; }
+.r-sk-cat {
+  background-color: var(--resume-accent-soft);
+  border-right: 1px solid var(--resume-border);
+  width: 30%;
+  font-weight: 700;
+  color: var(--resume-accent);
+}
+
+.r-inline {
+  font-size: 8.5pt;
+  margin: 1px 0 1px 0;
+  line-height: 1.35;
+  page-break-inside: avoid;
+  color: var(--resume-text);
+}
+
+.r-footer-preview {
+  margin-top: 8px;
+  border-top: 1px dashed var(--resume-border);
+  padding-top: 3px;
+  font-size: 7pt;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  text-align: center;
+  font-style: italic;
+}
+
+/* ══════════════════════════════════════════
+   TOAST & GUIDELINES
+══════════════════════════════════════════ */
+#toast { position: fixed; bottom: 20px; right: 20px; background: #1A1A1A; color: #fff; padding: 9px 16px; border-radius: 4px; font-size: 12px; font-weight: 500; opacity: 0; transform: translateY(6px); transition: opacity 0.2s, transform 0.2s; pointer-events: none; z-index: 9999; }
+#toast.show { opacity: 1; transform: translateY(0); }
+.guideline-block { padding: 10px 18px; border-bottom: 1px solid var(--border); }
+.guideline-block:last-child { border-bottom: none; }
+.guideline-category { font-size: 10.5px; font-weight: 600; color: var(--text-primary); letter-spacing: 0.04em; margin-bottom: 5px; text-transform: uppercase; }
+.guideline-block ul { list-style: none; padding: 0; }
+.guideline-block ul li { font-size: 11px; color: var(--text-secondary); padding: 2px 0 2px 12px; position: relative; line-height: 1.45; }
+.guideline-block ul li::before { content: '·'; position: absolute; left: 2px; color: var(--text-tertiary); }
+.guideline-warn { background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 3px; padding: 6px 9px; font-size: 11px; color: #92400E; margin-top: 6px; line-height: 1.4; }
+
+/* ══════════════════════════════════════════
+   PRINT CSS
+══════════════════════════════════════════ */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 10mm 12mm 12mm 12mm;
+  }
+  html, body {
+    width: 100%;
+    height: auto;
+    background: #fff !important;
+    margin: 0;
+    padding: 0;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  #sidebar, #preview-bar, #toast, .r-footer-preview,
+  #sidebar-footer, .zoom-controls, .resume-page { display: none !important; }
+
+  #preview-area, #preview-scroll {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    position: static !important;
+    overflow: visible !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  #resume-paper {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    position: static !important;
+    transform: none !important;
+    font-size: 10pt;
+    line-height: 1.4;
+    display: block !important;
+  }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .print-footer {
+    display: block !important;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 7.5pt;
+    font-weight: 500;
+    color: #9AA0A6;
+    border-top: 1px dashed #D9DEE4;
+    padding-top: 4px;
+    background: #fff;
+    z-index: 9999;
+    font-style: italic;
+  }
+  .r-sec-head, .r-header, .r-edu-table tr, .r-entries-table tr,
+  .r-skills-table tr, .r-bullets li { page-break-inside: avoid; break-inside: avoid; }
+  .r-sec-head { page-break-after: avoid; break-after: avoid; }
+}
+
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <div id="sidebar-top">
+    <h1>IIT Resume Builder</h1>
+  </div>
+
+  <div id="tab-bar">
+    <button class="tab-btn active" data-tab="guidelines">Rules</button>
+    <button class="tab-btn" data-tab="identity">Identity</button>
+    <button class="tab-btn" data-tab="education">Education</button>
+    <button class="tab-btn" data-tab="sections">Sections</button>
+  </div>
+
+  <div id="sidebar-body">
+    <div class="tab-panel" id="tab-identity">
+      <div style="padding-top: 12px;"></div>
+      <div class="field-group">
+        <label class="field-label">Full Name</label>
+        <input class="field-input" id="f-name" value="Meet Rana" />
+      </div>
+      <div class="field-group">
+        <label class="field-label">Roll Number</label>
+        <input class="field-input" id="f-roll" value="EE23B070" />
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Degree</label>
+          <input class="field-input" id="f-degree" value="B.Tech." />
+        </div>
+        <div class="field-group" style="padding-right: 18px;">
+          <label class="field-label">Grad Year</label>
+          <input class="field-input" id="f-gradyear" value="2027" style="width:100%" />
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Department / Branch</label>
+        <input class="field-input" id="f-branch" value="ELECTRICAL ENGINEERING" />
+        <p class="field-hint">Write in ALL CAPS as it should appear on the resume.</p>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Institute</label>
+        <input class="field-input" id="f-institute" value="Indian Institute of Technology, Tirupati" />
+      </div>
+      <hr class="section-divider" />
+      <div class="field-row" style="padding-top: 12px;">
+        <div class="field-group">
+          <label class="field-label">Email</label>
+          <input class="field-input" id="f-email" value="ee23b070@iittp.ac.in" placeholder="Leave empty to hide" />
+        </div>
+        <div class="field-group" style="padding-right: 18px;">
+          <label class="field-label">Phone</label>
+          <input class="field-input" id="f-phone" value="7060317045" placeholder="Leave empty to hide" style="width:100%" />
+        </div>
+      </div>
+      <hr class="section-divider" />
+      <div class="field-group" style="padding-top: 12px;">
+        <label class="field-label">LinkedIn URL</label>
+        <input class="field-input" id="f-linkedin-url" value="" placeholder="Leave empty to hide" />
+      </div>
+      <div class="field-group">
+        <label class="field-label">LinkedIn Display Text</label>
+        <input class="field-input" id="f-linkedin-label" value="" placeholder="e.g. linkedin.com/in/..." />
+      </div>
+      <div class="field-group">
+        <label class="field-label">GitHub URL</label>
+        <input class="field-input" id="f-github-url" value="" placeholder="Leave empty to hide" />
+      </div>
+      <div class="field-group">
+        <label class="field-label">GitHub Display Text</label>
+        <input class="field-input" id="f-github-label" value="" placeholder="e.g. github.com/..." />
+      </div>
+      <div class="field-group">
+        <label class="field-label">Scholar / Research URL <span style="font-weight:400;color:var(--text-tertiary)">(optional)</span></label>
+        <input class="field-input" id="f-scholar-url" value="" placeholder="Leave empty to hide" />
+      </div>
+      <div class="field-group" style="padding-bottom: 12px;">
+        <label class="field-label">Scholar Display Text</label>
+        <input class="field-input" id="f-scholar-label" value="" placeholder="e.g. scholar.google.com/..." />
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-education">
+      <div style="padding: 12px 18px 4px;">
+        <p class="field-hint" style="color: var(--text-secondary);">Do not round CGPA. Use the exact value from your official grade card.</p>
+      </div>
+      <div id="edu-list"></div>
+      <div style="padding: 10px 18px 14px;">
+        <button class="btn-add-entry" style="width:100%;margin:0;" onclick="addEduRow()">+ Add education row</button>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-sections">
+      <div style="padding: 10px 18px 8px;">
+        <p class="field-hint" style="color: var(--text-secondary);">Add, rename, reorder, or remove sections. Each section can hold entries with bullets, plain bullet lists, skill rows, or inline text.</p>
+      </div>
+      <div id="sections-list"></div>
+      <button class="btn-add-section" onclick="addSection()">+ Add section</button>
+    </div>
+
+    <div class="tab-panel active" id="tab-guidelines">
+      <div class="guideline-block">
+        <div class="guideline-category">Header</div>
+        <ul>
+          <li>Name and Roll Number must appear on the resume.</li>
+          <li>LinkedIn, GitHub, Google Scholar links are allowed.</li>
+          <li>No photos. Only the IIT logo is permitted.</li>
+        </ul>
+      </div>
+      <div class="guideline-block">
+        <div class="guideline-category">Education</div>
+        <ul>
+          <li>Do <strong>not</strong> round CGPA. Use exact value from grade card.</li>
+          <li>Mention CGPA as it appears on grade card.</li>
+          <li>Do not report intermediate % (11th+12th) as 12th %.</li>
+        </ul>
+        <div class="guideline-warn">7.99 ≠ 8.0 &nbsp;·&nbsp; 8.56 ≠ 8.6 &nbsp;·&nbsp; Use the exact figure.</div>
+      </div>
+      <div class="guideline-block">
+        <div class="guideline-category">Projects</div>
+        <ul>
+          <li>Course projects must mention the course name/code.</li>
+          <li>Label course projects as [Course Project] in resume.</li>
+          <li>Personal projects can include a link to code or report.</li>
+        </ul>
+      </div>
+      <div class="guideline-block">
+        <div class="guideline-category">Internships</div>
+        <ul>
+          <li>Proof: Completion Certificate or Offer + Ack. mail.</li>
+          <li>Research internships: letter from professor with title & dates.</li>
+          <li>Conference participation: participation certificate required.</li>
+        </ul>
+      </div>
+      <div class="guideline-block">
+        <div class="guideline-category">Ongoing courses</div>
+        <ul>
+          <li>Mark ongoing courses with * in coursework section.</li>
+          <li>Courses registered but not started: mark with **.</li>
+        </ul>
+      </div>
+      <div class="guideline-block">
+        <div class="guideline-category">Skills & Hobbies</div>
+        <ul>
+          <li>No proof required for skills or hobbies.</li>
+        </ul>
+      </div>
+      <div class="guideline-block">
+        <div class="guideline-category">ATS Best Practices</div>
+        <ul>
+          <li>Use standard section names: Education, Experience, Projects, Skills.</li>
+          <li>Use real text — not images — for any meaningful content.</li>
+          <li>Date formats must be consistent (e.g. Mon 'YY or YYYY).</li>
+        </ul>
+      </div>
+    </div>
+
+  </div><div id="sidebar-footer">
+    <button class="btn btn-primary" onclick="downloadPDF()">Download PDF</button>
+    <button class="btn" onclick="copyJSON()">Export data</button>
+    <button class="btn" onclick="document.getElementById('import-input').click()">Import</button>
+    <input type="file" id="import-input" accept=".json" style="display:none" onchange="importJSON(event)" />
+  </div>
+</div>
+
+<div id="sidebar-divider" title="Drag to resize · Double-click to reset">
+  <button id="sidebar-toggle-btn" class="sidebar-toggle-btn" onclick="toggleSidebar()" title="Collapse sidebar" aria-label="Toggle sidebar">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="15 18 9 12 15 6"></polyline>
+    </svg>
+  </button>
+</div>
+
+<div id="preview-area">
+  <div id="preview-bar">
+    <div id="preview-bar-left">
+      <span>Live preview</span>
+    </div>
+    <div id="preview-bar-actions">
+      <div class="zoom-controls">
+        <button onclick="setZoom(-0.1)" title="Zoom out">−</button>
+        <span id="zoom-label">100%</span>
+        <button onclick="setZoom(0.1)" title="Zoom in">+</button>
+        <button onclick="setZoomReset()" title="Reset zoom">⤺</button>
+      </div>
+      <span id="char-count" style="font-size:11px;color:var(--text-tertiary);margin-right:4px;"></span>
+      <button class="btn" onclick="printResume()" title="Open browser print dialog">Print</button>
+      <button class="btn btn-primary" onclick="downloadPDF()">Download PDF</button>
+    </div>
+  </div>
+  <div id="preview-scroll">
+    <div id="resume-paper"></div>
+    <div id="print-footer-node" class="print-footer"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const LOGO_URL = 'https://www.uxdt.nic.in/wp-content/uploads/2024/06/iit-tirupati-eps-iit-tirupati-01.jpg?x29347';
+const AUTOSAVE_KEY = 'iit_resume_local_draft';
+
+let state = {
+  name: 'Meet Rana',
+  roll: 'EE23B070',
+  degree: 'B.Tech.',
+  gradYear: '2027',
+  branch: 'ELECTRICAL ENGINEERING',
+  institute: 'Indian Institute of Technology, Tirupati',
+  email: 'ee23b070@iittp.ac.in',
+  phone: '7060317045',
+  linkedinUrl: '',
+  linkedinLabel: '',
+  githubUrl: '',
+  githubLabel: '',
+  scholarUrl: '',
+  scholarLabel: '',
+  footer: 'Self declared by the student. Placement & Internship Cell, IIT could not verify the relevant documents.',
+  edu: [
+    { year: '2023-2027', exam: 'B.Tech. (EE)', inst: 'Indian Institute of Technology, Tirupati', score: '8.31' },
+    { year: '2023', exam: 'Senior Secondary', inst: 'CBSE Board', score: '94.4%' },
+    { year: '2021', exam: 'Secondary', inst: 'CISCE Board', score: '97.3%' },
+  ],
+  sections: [
+    {
+      id: 's1', title: 'PROJECTS', open: true, type: 'entries',
+      entries: [
+        { id: 'e1', title: 'On-Device Speech-to-Speech Translator (Bharat-AI SoC Challenge by arm)', org: '', date: "Jan '26 - Feb '26", supervisor: '', tools: 'Android (Kotlin), C++ (JNI), llama.cpp, whisper.cpp, sherpa-onnx, CMake, GGML, KleidiAI', bullets: "Engineered a 3-stage on-device pipeline (STT - LLM - TTS) across 7 languages with zero cloud dependency, achieving ~2.5s end-to-end latency on a Dimensity 9400 smartphone\nAccelerated LLM inference using ARM SME2 via KleidiAI micro-kernels with -march=armv9.2-a+sme2+i8mm+bf16, enabling 2-3 tok/s on-device generation of Gemma 2B-IT (Q4_K_M, ~1.5 GB)\nImplemented real-time token streaming with a word-count flush TTS pipeline (6-word chunks) to eliminate audio delay, and a 2-slot LRU model cache for zero-reload-penalty language switching" },
+        { id: 'e2', title: 'Fault Tolerant Control System for a Quadcopter (IdeaForge | InterIIT 13.0)', org: '', date: "Oct '24 - Dec '24", supervisor: '', tools: 'PX4, C++, PlotJuggler, QGroundControl, Gazebo', bullets: "Built a birotor model by detecting malfunctioning motors using a digital signal filter with 97.5% accuracy and shutting down the other motor to ensure stability\nDesigned a PID control loop to stabilize the drone and facilitate safe landing after motor failure\nDesigned a scalable solution that is compatible across multiple quadcopter models, supported with distinct weights and parameters" },
+        { id: 'e3', title: 'ISRO Robotics Challenge - URSC 2025', org: '', date: "Dec '24 - Jul '25", supervisor: '', tools: 'PX4, Python, OpenCV, ROS2, QGroundControl, OpticalFlow', bullets: "Applied OpticalFlow to calculate local frame motion on a Raspberry Pi with 90% accuracy, translating data into GPS coordinates and publishing through ROS2 to internal PX4 modules\nUsed camera data with an EKF filter to estimate drone yaw without the use of a compass" },
+        { id: 'e4', title: 'Vision-Language Modeling for Satellite Earth Observation (ISRO | Inter IIT 14.0)', org: '', date: "Nov '25 - Dec '25", supervisor: '', tools: 'Earthdial, Docker, Conda, Python, PyTorch, TensorFlow', bullets: "Fine-tuned the EarthDial framework to perform image captioning, object grounding with oriented bounding boxes, and Visual Question Answering (VQA)\nImplemented post-processing and fine-tuning techniques to improve accuracy on ISRO's optical data sensors, evaluated using BLEU-Score and Intersection-over-Union (IoU @ 0.7)" }
+      ]
+    },
+    {
+      id: 's2', title: 'TECHNICAL SKILLS', open: false, type: 'skills',
+      skills: [
+        { cat: 'Programming', items: 'C | Python | Embedded C' },
+        { cat: 'Tools & OS', items: 'Git | Linux | Docker | Conda | Gazebo | ROS2 | PX4 | Google Colab' },
+        { cat: 'Libraries/Frameworks', items: 'Pandas | NumPy | OpenCV2 | SQL | MongoDB | RTOS | Communication Protocol (UART, SPI, I2C)' },
+        { cat: 'Hardware and General Skills', items: 'Arduino | Raspberry Pi | Jetson Nano | Pixhawk | Soldering | Wiring | Robotics | Sensor Integration' }
+      ]
+    },
+    {
+      id: 's3', title: 'KEY COURSES TAKEN', open: false, type: 'inline',
+      content: 'Machine Learning | Pattern Recognition and Machine Learning | Signal and Systems | Digital Systems | Electrical Circuits and Networks | Electronic Instrumentation and Measurement'
+    },
+    {
+      id: 's4', title: 'POSITIONS OF RESPONSIBILITY', open: false, type: 'entries',
+      entries: [
+        { id: 'e5', title: 'Club Head', org: 'TechManiacs, IIT Tirupati', date: "Present", supervisor: '', bullets: '' },
+        { id: 'e6', title: 'Coordinator', org: 'TechManiacs, IIT Tirupati', date: "Jul '24 - Jul '25", supervisor: '', bullets: '' },
+        { id: 'e7', title: 'Core Member', org: 'Photography and Films Club, IIT Tirupati', date: "Jul '24 - Present", supervisor: '', bullets: '' },
+        { id: 'e8', title: 'Coordinator and Project Member', org: 'Automobile Club, IIT Tirupati', date: "Jul '24 - Jul '25", supervisor: '', bullets: '' },
+        { id: 'e9', title: 'Co-Coordinator', org: 'NSS Unit, IIT Tirupati', date: "Jul '24 - Jul '25", supervisor: '', bullets: '' }
+      ]
+    },
+    {
+      id: 's5', title: 'ACHIEVEMENTS', open: false, type: 'bullets',
+      content: "Achieved 3rd place in the ideaForge Problem Statement at InterIIT 13.0, IIT Bombay 2024\nRanked in the top 24 out of over 1000+ institutes in the ISRO Robotics Challenge-URSC 2025\nAchieved 9th place in the ISRO VLM Problem Statement at Inter IIT 14.0, IIT Patna\nParticipated in Drone Aviation Challenge in Inter IIT 14.0 and ranked top 10 without penalty\nAchieved 6th place in the Bharat-AI SoC Challenge by arm 2024"
+    },
+    {
+      id: 's6', title: 'CERTIFICATIONS', open: false, type: 'bullets',
+      content: "NPTEL Certification on Introduction to Aerodynamics"
+    }
+  ]
+};
+
+let currentZoom = 1;
+let pdfMode = false; 
+
+// --- SAFETY MECHANISMS ---
+let isDirty = false;
+let isBooting = true; // Prevents the initial page load from accidentally marking the document as "Dirty"
+
+window.addEventListener('beforeunload', function (e) {
+  if (isDirty) {
+    e.preventDefault();
+    e.returnValue = ''; // Required by modern browsers to trigger the native "Leave Site?" dialog
+  }
+});
+
+function saveGhostDraft() {
+  try { localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(state)); } catch(e) {}
+}
+
+function restoreGhostDraft() {
+  try {
+    const raw = localStorage.getItem(AUTOSAVE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (JSON.stringify(parsed) !== JSON.stringify(state)) {
+        state = parsed;
+        ['name','roll','degree','gradYear','branch','institute','email','phone','linkedinUrl','linkedinLabel','githubUrl','githubLabel','scholarUrl','scholarLabel','footer'].forEach(k => {
+          const el = document.getElementById('f-' + k.replace(/([A-Z])/g, c => '-' + c.toLowerCase()));
+          if (el) el.value = state[k] || '';
+        });
+        showToast('Restored your previous unsaved draft');
+      }
+    }
+  } catch(e) {}
+}
+
+
+function toggleSidebar() { document.body.classList.toggle('sidebar-hidden'); }
+
+(function setupSidebarDivider() {
+  const divider = document.getElementById('sidebar-divider');
+  if (!divider) return;
+
+  let dragging = false;
+  let startX = 0;
+  let startWidth = 0;
+
+  function currentSidebarWidth() {
+    const v = getComputedStyle(document.documentElement).getPropertyValue('--sidebar-w').trim();
+    return parseInt(v, 10) || 320;
+  }
+
+  divider.addEventListener('mousedown', (e) => {
+    if (e.target.closest('.sidebar-toggle-btn')) return;
+    dragging = true; startX = e.clientX; startWidth = currentSidebarWidth();
+    divider.classList.add('dragging');
+    document.body.style.cursor = 'col-resize'; document.body.style.userSelect = 'none';
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!dragging) return;
+    let newWidth = startWidth + (e.clientX - startX);
+    if (newWidth < 240) newWidth = 240;
+    if (newWidth > Math.min(window.innerWidth - 400, 600)) newWidth = Math.min(window.innerWidth - 400, 600);
+    document.documentElement.style.setProperty('--sidebar-w', newWidth + 'px');
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (!dragging) return;
+    dragging = false; divider.classList.remove('dragging');
+    document.body.style.cursor = ''; document.body.style.userSelect = '';
+    render(false); // UI resize shouldn't trigger "Dirty" flag
+  });
+
+  divider.addEventListener('dblclick', (e) => {
+    if (e.target.closest('.sidebar-toggle-btn')) return;
+    document.documentElement.style.setProperty('--sidebar-w', '320px');
+    render(false);
+  });
+})();
+
+function esc(s) { return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function uid() { return 's' + Math.random().toString(36).slice(2,8); }
+
+function setZoom(delta) { currentZoom = Math.max(0.4, Math.min(1.5, +(currentZoom + delta).toFixed(2))); applyZoom(); }
+function setZoomReset() { currentZoom = 1; applyZoom(); }
+function applyZoom() {
+  document.getElementById('zoom-label').textContent = Math.round(currentZoom * 100) + '%';
+  render(false); // Crucial: Zooming does NOT flag the resume as "Dirty"
+}
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+function bindField(id, key) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener('input', () => { state[key] = el.value; render(); });
+}
+bindField('f-name','name'); bindField('f-roll','roll'); bindField('f-degree','degree');
+bindField('f-gradyear','gradYear'); bindField('f-branch','branch'); bindField('f-institute','institute');
+bindField('f-email','email'); bindField('f-phone','phone');
+bindField('f-linkedin-url','linkedinUrl'); bindField('f-linkedin-label','linkedinLabel');
+bindField('f-github-url','githubUrl'); bindField('f-github-label','githubLabel');
+bindField('f-scholar-url','scholarUrl'); bindField('f-scholar-label','scholarLabel');
+bindField('f-footer','footer');
+
+function renderEduEditor() {
+  const el = document.getElementById('edu-list');
+  el.innerHTML = '';
+  state.edu.forEach((row, i) => {
+    const card = document.createElement('div');
+    card.className = 'edu-card';
+    card.innerHTML = `
+      <div class="edu-card-header">
+        <span>Row ${i + 1}</span>
+        <div style="display:flex;gap:4px;align-items:center;">
+          <button class="btn-reorder" onclick="moveEdu(${i}, -1)" ${i === 0 ? 'disabled' : ''} title="Move up">↑</button>
+          <button class="btn-reorder" onclick="moveEdu(${i}, 1)" ${i === state.edu.length - 1 ? 'disabled' : ''} title="Move down">↓</button>
+          <button class="btn-danger-text" onclick="removeEdu(${i})">Remove</button>
+        </div>
+      </div>
+      <div class="edu-card-body">
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label">Year</label>
+            <input class="field-input" value="${esc(row.year)}" data-i="${i}" data-f="year" />
+          </div>
+          <div class="field-group" style="flex:2;">
+            <label class="field-label">CGPA / Marks</label>
+            <input class="field-input" value="${esc(row.score)}" data-i="${i}" data-f="score" />
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Degree / Exam</label>
+          <input class="field-input" value="${esc(row.exam)}" data-i="${i}" data-f="exam" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">Institute</label>
+          <input class="field-input" value="${esc(row.inst)}" data-i="${i}" data-f="inst" />
+        </div>
+      </div>`;
+    card.querySelectorAll('[data-i]').forEach(inp => {
+      inp.addEventListener('input', e => {
+        state.edu[+e.target.dataset.i][e.target.dataset.f] = e.target.value;
+        render();
+      });
+    });
+    el.appendChild(card);
+  });
+}
+
+function addEduRow() { state.edu.push({ year: '', exam: '', inst: '', score: '' }); renderEduEditor(); render(); }
+function removeEdu(i) { state.edu.splice(i, 1); renderEduEditor(); render(); }
+function moveEdu(i, dir) {
+  const j = i + dir; if (j < 0 || j >= state.edu.length) return;
+  [state.edu[i], state.edu[j]] = [state.edu[j], state.edu[i]];
+  renderEduEditor(); render();
+}
+
+function renderSectionsEditor() {
+  const el = document.getElementById('sections-list');
+  el.innerHTML = '';
+  state.sections.forEach((sec, si) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'sec-accordion';
+    let bodyHtml = '';
+
+    if (sec.type === 'entries') {
+      const entriesHtml = (sec.entries || []).map((en, ei) => `
+        <div class="entry-card" id="ec-${sec.id}-${ei}">
+          <div class="entry-card-head">
+            <span>Entry ${ei + 1}</span>
+            <div style="display:flex;gap:4px;align-items:center;">
+              <button class="btn-reorder" onclick="moveEntry(${si}, ${ei}, -1)" ${ei === 0 ? 'disabled' : ''} title="Move up">↑</button>
+              <button class="btn-reorder" onclick="moveEntry(${si}, ${ei}, 1)" ${ei === (sec.entries || []).length - 1 ? 'disabled' : ''} title="Move down">↓</button>
+              <button class="btn-danger-text" onclick="removeEntry(${si}, ${ei})">Remove</button>
+            </div>
+          </div>
+          <div class="entry-card-body">
+            <div class="field-group">
+              <label class="field-label">Title</label>
+              <input class="field-input" placeholder="Project / Role / Event title" value="${esc(en.title)}" data-si="${si}" data-ei="${ei}" data-f="title" />
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <label class="field-label">Organisation</label>
+                <input class="field-input" placeholder="Org name (or leave blank)" value="${esc(en.org)}" data-si="${si}" data-ei="${ei}" data-f="org" />
+              </div>
+              <div class="field-group" style="max-width:110px;">
+                <label class="field-label">Date</label>
+                <input class="field-input" placeholder="Mon 'YY" value="${esc(en.date)}" data-si="${si}" data-ei="${ei}" data-f="date" />
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Supervisor <span style="font-weight:400;color:var(--text-tertiary)">(optional)</span></label>
+              <input class="field-input" placeholder="Name, Designation, Institute" value="${esc(en.supervisor || '')}" data-si="${si}" data-ei="${ei}" data-f="supervisor" />
+            </div>
+            <div class="field-group">
+              <label class="field-label">Tools &amp; Technologies <span style="font-weight:400;color:var(--text-tertiary)">(optional)</span></label>
+              <input class="field-input" placeholder="e.g. Python, PyTorch, ROS2, Docker" value="${esc(en.tools || '')}" data-si="${si}" data-ei="${ei}" data-f="tools" />
+            </div>
+            <div class="field-group">
+              <label class="field-label">Bullet points</label>
+              <textarea class="field-textarea" placeholder="One bullet per line. Start with an action verb." data-si="${si}" data-ei="${ei}" data-f="bullets">${esc(en.bullets)}</textarea>
+            </div>
+          </div>
+        </div>`).join('');
+      bodyHtml = `${entriesHtml}<button class="btn-add-entry" onclick="addEntry(${si})">+ Add entry</button>`;
+    } else if (sec.type === 'bullets') {
+      bodyHtml = `
+        <div class="field-group">
+          <label class="field-label">Bullet points</label>
+          <textarea class="field-textarea" style="min-height:100px;" placeholder="One bullet per line." data-si="${si}" data-f="content">${esc(sec.content || '')}</textarea>
+        </div>`;
+    } else if (sec.type === 'inline') {
+      bodyHtml = `
+        <div class="field-group">
+          <label class="field-label">Content</label>
+          <textarea class="field-textarea" style="min-height:80px;" placeholder="Use | as separator between items." data-si="${si}" data-f="content">${esc(sec.content || '')}</textarea>
+        </div>`;
+    } else if (sec.type === 'skills') {
+      const skillsHtml = (sec.skills || []).map((sk, ki) => `
+        <div class="skill-row-wrap">
+          <input class="field-input" placeholder="Category" value="${esc(sk.cat)}" data-si="${si}" data-ki="${ki}" data-f="cat" />
+          <input class="field-input" placeholder="Items (use | as separator)" value="${esc(sk.items)}" data-si="${si}" data-ki="${ki}" data-f="items" />
+          <button class="btn-reorder" onclick="moveSkillRow(${si}, ${ki}, -1)" ${ki === 0 ? 'disabled' : ''} title="Move up">↑</button>
+          <button class="btn-reorder" onclick="moveSkillRow(${si}, ${ki}, 1)" ${ki === (sec.skills || []).length - 1 ? 'disabled' : ''} title="Move down">↓</button>
+          <button class="btn-danger-text" onclick="removeSkillRow(${si}, ${ki})" style="font-size:13px;padding:0 2px;">×</button>
+        </div>`).join('');
+      bodyHtml = `${skillsHtml}<button class="btn-add-entry" style="margin-top:6px;" onclick="addSkillRow(${si})">+ Add skill row</button>`;
+    }
+
+    wrap.innerHTML = `
+      <div class="sec-accordion-head" onclick="toggleSection('${sec.id}')">
+        <span class="sec-acc-title">${esc(sec.title)}</span>
+        <button class="btn-reorder" onclick="event.stopPropagation();moveSection(${si}, -1)" ${si === 0 ? 'disabled' : ''} title="Move section up">↑</button>
+        <button class="btn-reorder" onclick="event.stopPropagation();moveSection(${si}, 1)" ${si === state.sections.length - 1 ? 'disabled' : ''} title="Move section down">↓</button>
+        <select class="type-select" data-si="${si}" onclick="event.stopPropagation()" title="Section type">
+          <option value="entries" ${sec.type==='entries'?'selected':''}>Entries</option>
+          <option value="bullets" ${sec.type==='bullets'?'selected':''}>Bullets</option>
+          <option value="inline"  ${sec.type==='inline' ?'selected':''}>Inline</option>
+          <option value="skills"  ${sec.type==='skills' ?'selected':''}>Skills</option>
+        </select>
+        <button class="btn-danger-text" onclick="event.stopPropagation();removeSection(${si})" style="font-size:13px;padding:0 4px;margin-left:2px;" title="Delete section">×</button>
+        <span class="sec-acc-chevron ${sec.open?'open':''}">▾</span>
+      </div>
+      <div class="sec-acc-body ${sec.open?'open':''}">
+        <div class="field-group" style="padding-top:10px;">
+          <label class="field-label">Section title</label>
+          <input class="field-input sec-title-input" value="${esc(sec.title)}" data-si="${si}" placeholder="Section heading" />
+        </div>
+        <div class="sec-body-content">${bodyHtml}</div>
+      </div>`;
+
+    wrap.querySelector('.sec-title-input').addEventListener('input', e => {
+      state.sections[si].title = e.target.value;
+      wrap.querySelector('.sec-acc-title').textContent = e.target.value;
+      render();
+    });
+
+    wrap.querySelector('.type-select').addEventListener('change', e => {
+      const t = e.target.value; state.sections[si].type = t;
+      if (t === 'entries' && !state.sections[si].entries) state.sections[si].entries = [];
+      if (t === 'skills'  && !state.sections[si].skills)  state.sections[si].skills = [];
+      renderSectionsEditor(); render();
+    });
+
+    wrap.querySelectorAll('[data-si][data-ei]').forEach(inp => {
+      inp.addEventListener('input', e => {
+        const s = +e.target.dataset.si, en = +e.target.dataset.ei, f = e.target.dataset.f;
+        state.sections[s].entries[en][f] = e.target.value;
+        render();
+      });
+    });
+
+    wrap.querySelectorAll('[data-si][data-f="content"]').forEach(inp => {
+      inp.addEventListener('input', e => {
+        state.sections[+e.target.dataset.si].content = e.target.value;
+        render();
+      });
+    });
+
+    wrap.querySelectorAll('[data-ki]').forEach(inp => {
+      inp.addEventListener('input', e => {
+        const s = +e.target.dataset.si, k = +e.target.dataset.ki, f = e.target.dataset.f;
+        if (!state.sections[s].skills) state.sections[s].skills = [];
+        state.sections[s].skills[k][f] = e.target.value;
+        render();
+      });
+    });
+
+    el.appendChild(wrap);
+  });
+}
+
+function toggleSection(id) { const sec = state.sections.find(s => s.id === id); if (sec) { sec.open = !sec.open; renderSectionsEditor(); } }
+function addSection() {
+  state.sections.push({ id: uid(), title: 'NEW SECTION', open: true, type: 'entries', entries: [] });
+  renderSectionsEditor(); render();
+  document.querySelector('[data-tab="sections"]').click();
+  setTimeout(() => { const sb = document.getElementById('sidebar-body'); sb.scrollTop = sb.scrollHeight; }, 50);
+}
+function removeSection(si) { state.sections.splice(si, 1); renderSectionsEditor(); render(); }
+function moveSection(si, dir) {
+  const j = si + dir; if (j < 0 || j >= state.sections.length) return;
+  [state.sections[si], state.sections[j]] = [state.sections[j], state.sections[si]];
+  renderSectionsEditor(); render();
+}
+
+function addEntry(si) {
+  if (!state.sections[si].entries) state.sections[si].entries = [];
+  state.sections[si].entries.push({ id: uid(), title: '', org: '', date: '', supervisor: '', tools: '', bullets: '' });
+  renderSectionsEditor(); render();
+}
+function removeEntry(si, ei) { state.sections[si].entries.splice(ei, 1); renderSectionsEditor(); render(); }
+function moveEntry(si, ei, dir) {
+  const entries = state.sections[si].entries; const j = ei + dir; if (j < 0 || j >= entries.length) return;
+  [entries[ei], entries[j]] = [entries[j], entries[ei]];
+  renderSectionsEditor(); render();
+}
+
+function addSkillRow(si) {
+  if (!state.sections[si].skills) state.sections[si].skills = [];
+  state.sections[si].skills.push({ cat: '', items: '' });
+  renderSectionsEditor(); render();
+}
+function removeSkillRow(si, ki) { state.sections[si].skills.splice(ki, 1); renderSectionsEditor(); render(); }
+function moveSkillRow(si, ki, dir) {
+  const skills = state.sections[si].skills; const j = ki + dir; if (j < 0 || j >= skills.length) return;
+  [skills[ki], skills[j]] = [skills[j], skills[ki]];
+  renderSectionsEditor(); render();
+}
+
+
+function renderBullets(text) {
+  const lines = (text || '').split('\n').filter(l => l.trim());
+  if (!lines.length) return '';
+  const items = lines.map(line => {
+    const t = line.trim(); const sp = t.indexOf(' ');
+    if (sp > 0) return `<li><strong>${esc(t.slice(0,sp))}</strong>${esc(t.slice(sp))}</li>`;
+    return `<li>${esc(t)}</li>`;
+  }).join('');
+  return `<ul class="r-bullets">${items}</ul>`;
+}
+
+function renderEntriesTable(entries) {
+  if (!entries || !entries.length) return '';
+  const rows = entries.map((en, idx) => {
+    const titlePart = en.org && en.org.trim()
+      ? `<span class="r-et-title">${esc(en.title)}</span><span class="r-et-sep">|</span><span class="r-et-org">${esc(en.org)}</span>`
+      : `<span class="r-et-title">${esc(en.title)}</span>`;
+
+    const dateCell = (en.date || '').trim() ? `<td class="r-et-date">${esc(en.date)}</td>` : `<td></td>`;
+
+    const subParts = [];
+    if ((en.supervisor || '').trim()) subParts.push('Supervisor: ' + esc(en.supervisor.trim()));
+    if ((en.tools || '').trim()) subParts.push('Tools &amp; Technologies: ' + esc(en.tools.trim()));
+    const subRow = subParts.length ? `<tr class="r-et-sup-row"><td colspan="2">${subParts.join(' &nbsp;·&nbsp; ')}</td></tr>` : '';
+
+    const bullets = renderBullets(en.bullets);
+    const bulletsRow = bullets ? `<tr class="r-et-bullets-row"><td colspan="2">${bullets}</td></tr>` : '';
+    const gap = idx < entries.length - 1 ? `<tr class="r-et-gap"><td colspan="2"></td></tr>` : '';
+
+    return `
+      <tr class="r-et-title-row">
+        <td>${titlePart}</td>
+        ${dateCell}
+      </tr>
+      ${subRow}
+      ${bulletsRow}
+      ${gap}`;
+  }).join('');
+  return `<table class="r-entries-table"><tbody>${rows}</tbody></table>`;
+}
+
+function renderSection(sec) {
+  let content = '';
+
+  if (sec.type === 'entries') content = renderEntriesTable(sec.entries);
+  else if (sec.type === 'bullets') content = renderBullets(sec.content);
+  else if (sec.type === 'inline') content = `<div class="r-inline">${esc(sec.content || '')}</div>`;
+  else if (sec.type === 'skills') {
+    const rows = (sec.skills || []).filter(sk => sk.cat || sk.items).map(sk =>
+      `<tr><td class="r-sk-cat">${esc(sk.cat)}</td><td>${esc(sk.items)}</td></tr>`
+    ).join('');
+    content = rows ? `<table class="r-skills-table"><tbody>${rows}</tbody></table>` : '';
+  }
+
+  if (!content.trim()) return '';
+  return `<div class="r-sec-head"><div class="r-sec-head-text">${esc(sec.title)}</div></div>${content}`;
+}
+
+function applyVisualPageBreaks() {
+  if (pdfMode) return;
+  const scroll = document.getElementById('preview-scroll');
+  const source = document.getElementById('resume-paper');
+
+  scroll.querySelectorAll('.resume-page').forEach(el => el.remove());
+  scroll.classList.remove('paginated');
+
+  const MM_TO_PX = 3.7795275591;
+  const a4HeightPx = 297 * MM_TO_PX;
+  const padPx = (10 + 12) * MM_TO_PX;
+  const availPx = a4HeightPx - padPx; 
+
+  void source.offsetHeight;
+  const sourceHeight = source.offsetHeight;
+  const pageCount = Math.max(1, Math.ceil((sourceHeight - padPx) / availPx));
+
+  source.style.transform = `scale(${currentZoom})`;
+  if (pageCount <= 1) return;
+
+  scroll.classList.add('paginated');
+  const children = Array.from(source.childNodes);
+
+  let currentPage = createResumePage();
+  let currentContent = currentPage.querySelector('.resume-page-content');
+  scroll.insertBefore(currentPage, source);
+
+  function isSectionHead(node) { return node && node.nodeType === 1 && node.classList.contains('r-sec-head'); }
+
+  for (let i = 0; i < children.length; i++) {
+    const child = children[i]; const nextChild = children[i + 1];
+    const isHeadWithContent = isSectionHead(child) && nextChild && !isSectionHead(nextChild);
+
+    currentContent.appendChild(child); 
+
+    if (isHeadWithContent) {
+      currentContent.appendChild(nextChild);
+      i++; 
+    }
+
+    if (currentContent.offsetHeight > availPx && currentContent.childNodes.length > 1) {
+      currentContent.removeChild(child);
+      if (isHeadWithContent && nextChild.parentNode === currentContent) currentContent.removeChild(nextChild);
+
+      currentPage = createResumePage();
+      currentContent = currentPage.querySelector('.resume-page-content');
+      scroll.insertBefore(currentPage, source);
+
+      currentContent.appendChild(child);
+      if (isHeadWithContent) currentContent.appendChild(nextChild);
+    }
+  }
+}
+
+function createResumePage() {
+  const page = document.createElement('div'); page.className = 'resume-page';
+  page.style.transform = `scale(${currentZoom})`;
+  const content = document.createElement('div'); content.className = 'resume-page-content';
+  page.appendChild(content);
+  return page;
+}
+
+// render(true) means "The student changed text". render(false) means "We just resized the window".
+function render(isDataMutation = true) {
+  const s = state;
+
+  if (isDataMutation && !isBooting) {
+    isDirty = true;
+    saveGhostDraft();
+  }
+
+  const logoHtml = LOGO_URL ? `<img src="${LOGO_URL}" alt="IIT Logo" />` : `<div class="r-logo-placeholder">LOGO</div>`;
+
+  const links = [];
+  if (s.email) links.push(`Email: <a href="mailto:${esc(s.email)}">${esc(s.email)}</a>`);
+  if (s.phone) links.push(`Phone: ${esc(s.phone)}`);
+  if (s.linkedinUrl && s.linkedinLabel) links.push(`LinkedIn: <a href="${esc(s.linkedinUrl)}">${esc(s.linkedinLabel)}</a>`);
+  if (s.githubUrl && s.githubLabel) links.push(`GitHub: <a href="${esc(s.githubUrl)}">${esc(s.githubLabel)}</a>`);
+  if (s.scholarUrl && s.scholarLabel) links.push(`Scholar: <a href="${esc(s.scholarUrl)}">${esc(s.scholarLabel)}</a>`);
+  const linksHtml = links.length ? `<div class="r-links">${links.join('<span class="sep">|</span>')}</div>` : '';
+
+  const eduHtml = s.edu.map(r => `<tr><td>${esc(r.year)}</td><td>${esc(r.exam)}</td><td>${esc(r.inst)}</td><td>${esc(r.score)}</td></tr>`).join('');
+  const sectionsHtml = s.sections.map(renderSection).join('');
+
+  const degreeParts = [];
+  if (s.degree) degreeParts.push(s.degree);
+  if (s.branch) degreeParts.push(s.branch);
+  let degreeLine = degreeParts.join(' in ');
+  if (s.institute) degreeLine += (degreeLine ? ' · ' : '') + s.institute;
+
+  document.getElementById('resume-paper').innerHTML = `
+    <div class="r-header">
+      <div class="r-header-row">
+        <div class="r-header-left">
+          <div><span class="r-name">${esc(s.name)}</span><span class="r-rollno">${esc(s.roll)}</span></div>
+          <div class="r-degree-line">${esc(degreeLine)}</div>
+          ${linksHtml}
+        </div>
+        <div class="r-logo-box">${logoHtml}</div>
+      </div>
+    </div>
+
+    <div class="r-sec-head"><div class="r-sec-head-text">EDUCATION</div></div>
+    <table class="r-edu-table">
+      <thead>
+        <tr><th style="width:10%">Year</th><th style="width:33%">Degree / Exam</th><th style="width:42%">Institute</th><th style="width:15%;text-align:right">CGPA / Marks</th></tr>
+      </thead>
+      <tbody>${eduHtml}</tbody>
+    </table>
+
+    ${sectionsHtml}
+    ${s.footer ? `<div class="r-footer-preview">${esc(s.footer)}</div>` : ''}`;
+
+  document.getElementById('print-footer-node').innerHTML = esc(s.footer);
+  document.getElementById('char-count').textContent = document.getElementById('resume-paper').innerText.length + ' chars';
+
+  setTimeout(applyVisualPageBreaks, 50);
+}
+
+function printResume() {
+  document.body.classList.add('sidebar-hidden');
+  window.print();
+  setTimeout(() => document.body.classList.remove('sidebar-hidden'), 1000);
+}
+
+const PDF_COLORS = {
+  accent:     [0, 51, 102],     
+  accentSoft: [206, 223, 239],  
+  text:       [26, 26, 26],     
+  textMute:   [74, 90, 106],    
+  border:     [191, 208, 224],  
+  white:      [255, 255, 255]
+};
+
+function downloadPDF() {
+  if (typeof window.jspdf === 'undefined' || !window.jspdf.jsPDF) {
+    showToast('PDF library failed to load. Check internet connection and reload.');
+    return;
+  }
+
+  const btns = document.querySelectorAll('button.btn-primary');
+  btns.forEach(b => { b.disabled = true; b.dataset.origText = b.textContent; b.textContent = 'Generating…'; });
+  showToast('Generating PDF…');
+
+  let doc = null; let y = 0; let pageNum = 0;
+  const PAGE_W = 210; const PAGE_H = 297; const MARGIN_TOP = 10; const MARGIN_BOTTOM = 12; const MARGIN_LEFT = 12; const MARGIN_RIGHT = 12;
+  const CONTENT_W = PAGE_W - MARGIN_LEFT - MARGIN_RIGHT; 
+
+  function ensureSpace(neededH) {
+    if (y + neededH > PAGE_H - MARGIN_BOTTOM) {
+      addFooterToPage(); doc.addPage(); pageNum++; y = MARGIN_TOP; return true;
+    }
+    return false;
+  }
+
+  function addFooterToPage() {
+    if (!state.footer) return;
+    const footerY = PAGE_H - MARGIN_BOTTOM + 4;
+    doc.setDrawColor(...PDF_COLORS.border); doc.setLineWidth(0.2); doc.setLineDashPattern([1, 1], 0);
+    doc.line(MARGIN_LEFT, footerY - 2, PAGE_W - MARGIN_RIGHT, footerY - 2);
+    doc.setLineDashPattern([], 0);
+    doc.setFont('helvetica', 'italic'); doc.setFontSize(7); doc.setTextColor(...PDF_COLORS.textMute);
+    doc.text(doc.splitTextToSize(state.footer, CONTENT_W), PAGE_W / 2, footerY + 1, { align: 'center' });
+  }
+
+  function text(textStr, x, fontSize, opts) {
+    opts = opts || {};
+    const font = opts.font || 'helvetica'; const style = opts.style || 'normal'; const color = opts.color || PDF_COLORS.text;
+    const maxWidth = opts.maxWidth || CONTENT_W; const lineHeight = opts.lineHeight || (fontSize * 0.4); const align = opts.align || 'left';
+
+    doc.setFont(font, style); doc.setFontSize(fontSize); doc.setTextColor(...color);
+    const lines = doc.splitTextToSize(String(textStr), maxWidth);
+    for (const line of lines) { ensureSpace(lineHeight + 0.5); doc.text(line, x, y + lineHeight, { align: align }); y += lineHeight + 0.5; }
+    return y;
+  }
+
+  function sectionHeader(title) {
+    ensureSpace(8); y += 2.5; ensureSpace(8); const barH = 5;
+    doc.setFillColor(...PDF_COLORS.accent); doc.rect(MARGIN_LEFT, y, CONTENT_W, barH, 'F');
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(...PDF_COLORS.white);
+    doc.text(title.toUpperCase(), MARGIN_LEFT + 2, y + 3.5); y += barH + 2;
+  }
+
+  function cell(x, cellY, w, h, textStr, opts) {
+    opts = opts || {};
+    const fontSize = opts.fontSize || 8.5; const style = opts.style || 'normal'; const color = opts.color || PDF_COLORS.text;
+    const align = opts.align || 'left'; const valign = opts.valign || 'middle'; const fill = opts.fill || null;
+
+    if (fill) { doc.setFillColor(...fill); doc.rect(x, cellY, w, h, 'F'); }
+    doc.setFont('helvetica', style); doc.setFontSize(fontSize); doc.setTextColor(...color);
+    const padX = 2; const textX = align === 'right' ? x + w - padX : (align === 'center' ? x + w / 2 : x + padX);
+    const textY = valign === 'middle' ? cellY + h / 2 + fontSize * 0.13 : cellY + fontSize * 0.35;
+    doc.text(doc.splitTextToSize(String(textStr), w - 2 * padX)[0] || '', textX, textY, { align: align, maxWidth: w - 2 * padX });
+  }
+
+  try {
+    const { jsPDF } = window.jspdf;
+    doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+    y = MARGIN_TOP; pageNum = 1;
+
+    {
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(18); doc.setTextColor(...PDF_COLORS.accent);
+      doc.text(state.name || '', MARGIN_LEFT, y + 6); const nameWidth = doc.getTextWidth(state.name || '');
+
+      if (state.roll) {
+        const rollX = MARGIN_LEFT + nameWidth + 4;
+        doc.setDrawColor(...PDF_COLORS.border); doc.setLineWidth(0.3); doc.line(rollX, y + 1, rollX, y + 6);
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(...PDF_COLORS.text);
+        doc.text(state.roll, rollX + 2, y + 6);
+      }
+      y += 8;
+
+      if (state.degree || state.branch || state.institute) {
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(...PDF_COLORS.textMute);
+        const degreeParts = []; if (state.degree) degreeParts.push(state.degree); if (state.branch) degreeParts.push(state.branch);
+        let degreeText = degreeParts.join(' in '); if (state.institute) degreeText += (degreeText ? ' · ' : '') + state.institute;
+        doc.text(degreeText, MARGIN_LEFT, y + 3); y += 5;
+      }
+
+      const links = [];
+      if (state.email) links.push('Email: ' + state.email); if (state.phone) links.push('Phone: ' + state.phone);
+      if (state.linkedinUrl && state.linkedinLabel) links.push('LinkedIn: ' + state.linkedinLabel);
+      if (state.githubUrl && state.githubLabel)   links.push('GitHub: ' + state.githubLabel);
+      if (state.scholarUrl && state.scholarLabel) links.push('Scholar: ' + state.scholarLabel);
+      if (links.length) {
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(...PDF_COLORS.textMute);
+        doc.text(links.join('   |   '), MARGIN_LEFT, y + 3); y += 5;
+      }
+
+      doc.setDrawColor(...PDF_COLORS.accent); doc.setLineWidth(0.6); doc.line(MARGIN_LEFT, y, PAGE_W - MARGIN_RIGHT, y); y += 2;
+    }
+
+    if (state.edu && state.edu.length) {
+      sectionHeader('EDUCATION');
+      const colWidths = [CONTENT_W * 0.10, CONTENT_W * 0.33, CONTENT_W * 0.42, CONTENT_W * 0.15];
+      const colX = [MARGIN_LEFT]; for (let i = 1; i < colWidths.length; i++) colX.push(colX[i - 1] + colWidths[i - 1]);
+
+      ensureSpace(6); const headerH = 5;
+      doc.setFillColor(...PDF_COLORS.accentSoft); doc.rect(MARGIN_LEFT, y, CONTENT_W, headerH, 'F');
+      doc.setDrawColor(...PDF_COLORS.border); doc.setLineWidth(0.2); doc.rect(MARGIN_LEFT, y, CONTENT_W, headerH, 'S');
+      ['Year', 'Degree / Exam', 'Institute', 'CGPA / Marks'].forEach((h, i) => {
+        cell(colX[i], y, colWidths[i], headerH, h, { fontSize: 8, style: 'bold', color: PDF_COLORS.accent, align: i === 3 ? 'right' : 'left' });
+      });
+      y += headerH;
+
+      const rowH = 5;
+      state.edu.forEach((r, idx) => {
+        ensureSpace(6);
+        if (idx < state.edu.length - 1) {
+          doc.setDrawColor(...PDF_COLORS.border); doc.setLineWidth(0.15);
+          doc.line(MARGIN_LEFT, y + rowH, PAGE_W - MARGIN_RIGHT, y + rowH);
+        }
+        [r.year, r.exam, r.inst, r.score].forEach((v, i) => {
+          cell(colX[i], y, colWidths[i], rowH, v || '', { fontSize: 8.5, color: i === 3 ? PDF_COLORS.accent : PDF_COLORS.text, style: i === 3 ? 'bold' : 'normal', align: i === 3 ? 'right' : 'left' });
+        });
+        y += rowH;
+      });
+      y += 1;
+      doc.setDrawColor(...PDF_COLORS.border); doc.setLineWidth(0.2);
+      doc.rect(MARGIN_LEFT, y - 1 - rowH * state.edu.length - headerH, CONTENT_W, rowH * state.edu.length + headerH, 'S');
+    }
+
+    state.sections.forEach(sec => {
+      if (sec.type === 'entries') renderEntriesSectionPDF(sec);
+      else if (sec.type === 'bullets') renderBulletsSectionPDF(sec);
+      else if (sec.type === 'inline') renderInlineSectionPDF(sec);
+      else if (sec.type === 'skills') renderSkillsSectionPDF(sec);
+    });
+
+    addFooterToPage();
+
+    const filename = (state.roll || 'resume') + '.pdf';
+    let pdfBlob;
+    try { pdfBlob = new Blob([doc.output('arraybuffer')], { type: 'application/pdf' }); } 
+    catch (e1) { pdfBlob = doc.output('blob'); }
+
+    if (pdfBlob) {
+      const url = URL.createObjectURL(pdfBlob);
+      const a = document.createElement('a'); a.href = url; a.download = filename; a.style.display = 'none';
+      document.body.appendChild(a); a.click();
+      setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
+    }
+    showToast('PDF downloaded');
+  } catch (err) { showToast('PDF failed: ' + String(err).slice(0, 100)); } 
+  finally { btns.forEach(b => { b.disabled = false; b.textContent = b.dataset.origText || 'Download PDF'; }); }
+
+  function renderEntriesSectionPDF(sec) {
+    if (!sec.entries || !sec.entries.length) return;
+    sectionHeader(sec.title);
+    sec.entries.forEach((en) => {
+      let neededH = 4;
+      if ((en.supervisor || '').trim() || (en.tools || '').trim()) neededH += 3;
+      if (en.bullets) neededH += (en.bullets.split('\n').filter(l => l.trim())).length * 3.5;
+      ensureSpace(neededH + 2);
+
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(...PDF_COLORS.text);
+      const titleLines = doc.splitTextToSize(en.org ? `${en.title}  |  ${en.org}` : en.title, CONTENT_W * 0.70);
+      doc.text(titleLines, MARGIN_LEFT, y + 3);
+
+      if (en.date) {
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(...PDF_COLORS.accent);
+        doc.text(en.date, PAGE_W - MARGIN_RIGHT, y + 3, { align: 'right' });
+      }
+      y += 4 * titleLines.length;
+
+      const subParts = [];
+      if ((en.supervisor || '').trim()) subParts.push('Supervisor: ' + en.supervisor.trim());
+      if ((en.tools || '').trim()) subParts.push('Tools & Technologies: ' + en.tools.trim());
+      if (subParts.length) {
+        ensureSpace(4); doc.setFont('helvetica', 'italic'); doc.setFontSize(7.5); doc.setTextColor(...PDF_COLORS.textMute);
+        const subLines = doc.splitTextToSize(subParts.join('   ·   '), CONTENT_W);
+        doc.text(subLines, MARGIN_LEFT, y + 2); y += Math.max(3, subLines.length * 3);
+      }
+
+      if (en.bullets) {
+        (en.bullets.split('\n').filter(l => l.trim())).forEach(line => {
+          ensureSpace(4);
+          doc.setFillColor(...PDF_COLORS.text); doc.rect(MARGIN_LEFT + 1, y + 1.3, 0.8, 0.8, 'F');
+          const sp = line.trim().indexOf(' ');
+          let firstWord = '', rest = '';
+          if (sp > 0) { firstWord = line.trim().slice(0, sp); rest = line.trim().slice(sp); } else { firstWord = line.trim(); }
+
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(...PDF_COLORS.accent);
+          doc.text(firstWord, MARGIN_LEFT + 3, y + 2); const firstW = doc.getTextWidth(firstWord);
+
+          doc.setFont('helvetica', 'normal'); doc.setTextColor(...PDF_COLORS.text);
+          const restLines = doc.splitTextToSize(rest, CONTENT_W - 5 - firstW);
+          doc.text(restLines, MARGIN_LEFT + 3 + firstW, y + 2); y += Math.max(3.5, restLines.length * 3.5);
+        });
+      }
+      y += 2;
+    });
+  }
+
+  function renderBulletsSectionPDF(sec) {
+    if (!sec.content || !sec.content.trim()) return;
+    sectionHeader(sec.title);
+    (sec.content.split('\n').filter(l => l.trim())).forEach(line => {
+      ensureSpace(4);
+      doc.setFillColor(...PDF_COLORS.text); doc.rect(MARGIN_LEFT + 1, y + 1.3, 0.8, 0.8, 'F');
+      const sp = line.trim().indexOf(' '); let firstWord = '', rest = '';
+      if (sp > 0) { firstWord = line.trim().slice(0, sp); rest = line.trim().slice(sp); } else { firstWord = line.trim(); }
+
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(...PDF_COLORS.accent);
+      doc.text(firstWord, MARGIN_LEFT + 3, y + 2); const firstW = doc.getTextWidth(firstWord);
+
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(...PDF_COLORS.text);
+      const restLines = doc.splitTextToSize(rest, CONTENT_W - 5 - firstW);
+      doc.text(restLines, MARGIN_LEFT + 3 + firstW, y + 2); y += Math.max(3.5, restLines.length * 3.5);
+    });
+    y += 2;
+  }
+
+  function renderInlineSectionPDF(sec) {
+    if (!sec.content || !sec.content.trim()) return;
+    sectionHeader(sec.title);
+    text((sec.content.split('|').map(s => s.trim()).filter(Boolean)).join('   |   '), MARGIN_LEFT, 8.5, { color: PDF_COLORS.text, lineHeight: 4 }); y += 1;
+  }
+
+  function renderSkillsSectionPDF(sec) {
+    if (!sec.skills || !sec.skills.length) return;
+    sectionHeader(sec.title);
+    const catW = CONTENT_W * 0.30; const itemsW = CONTENT_W * 0.70;
+
+    sec.skills.forEach((sk, idx) => {
+      ensureSpace(5);
+      doc.setFillColor(...PDF_COLORS.accentSoft); doc.rect(MARGIN_LEFT, y, catW, 5, 'F');
+      cell(MARGIN_LEFT, y, catW, 5, sk.cat, { fontSize: 8.5, style: 'bold', color: PDF_COLORS.accent });
+      cell(MARGIN_LEFT + catW, y, itemsW, 5, sk.items, { fontSize: 8.5, color: PDF_COLORS.text });
+      doc.setDrawColor(...PDF_COLORS.border); doc.setLineWidth(0.15); doc.line(MARGIN_LEFT + catW, y, MARGIN_LEFT + catW, y + 5);
+      if (idx < sec.skills.length - 1) doc.line(MARGIN_LEFT, y + 5, PAGE_W - MARGIN_RIGHT, y + 5);
+      y += 5;
+    });
+    doc.setDrawColor(...PDF_COLORS.border); doc.setLineWidth(0.2);
+    doc.rect(MARGIN_LEFT, y - sec.skills.length * 5, CONTENT_W, sec.skills.length * 5, 'S'); y += 2;
+  }
+}
+
+function copyJSON() {
+  const json = JSON.stringify(state, null, 2);
+  const blob = new Blob([json], { type: 'application/json' }); const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = (state.roll || 'resume') + '-data.json';
+  a.click(); URL.revokeObjectURL(url);
+  
+  isDirty = false; // Successfully exported -> remove the refresh lock
+  showToast('Data exported as JSON');
+}
+
+function importJSON(event) {
+  const file = event.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      state = JSON.parse(e.target.result);
+      ['name','roll','degree','gradYear','branch','institute','email','phone','linkedinUrl','linkedinLabel','githubUrl','githubLabel','scholarUrl','scholarLabel','footer'].forEach(k => {
+        const el = document.getElementById('f-' + k.replace(/([A-Z])/g, c => '-' + c.toLowerCase())); if (el) el.value = state[k] || '';
+      });
+      isDirty = false; // Freshly imported file is not "dirty" yet
+      renderEduEditor(); renderSectionsEditor(); render(false);
+      showToast('Data imported successfully');
+    } catch { showToast('Error: could not read file'); }
+  };
+  reader.readAsText(file); event.target.value = '';
+}
+
+// INIT
+restoreGhostDraft();
+renderEduEditor();
+renderSectionsEditor();
+render(false);
+isBooting = false; // The boot sequence has finished. Future edits will now lock the browser.
+</script>
+</body>
+</html>
