@@ -20,7 +20,6 @@ html, body { height: 100%; }
    DESIGN TOKENS
 ─────────────────────────────────────────── */
 :root {
-  /* App chrome */
   --bg: #F4F5F7;
   --canvas: #E5E7EA;
   --surface: #FFFFFF;
@@ -32,9 +31,10 @@ html, body { height: 100%; }
   --accent: #2563EB;
   --accent-hover: #1D4ED8;
   --danger: #DC2626;
+  --success: #16A34A;
+  --warn: #D97706;
   --sidebar-w: 320px;
   --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-
 
   --resume-accent: #003366;       
   --resume-accent-soft: #CEDFEF;
@@ -73,9 +73,6 @@ body {
 
 body.sidebar-hidden #sidebar { display: none; }
 
-/* ───────────────────────────────────────────
-   DRAGGABLE SIDEBAR DIVIDER
-─────────────────────────────────────────── */
 #sidebar-divider {
   width: 6px;
   min-width: 6px;
@@ -88,11 +85,8 @@ body.sidebar-hidden #sidebar { display: none; }
   z-index: 5;
 }
 #sidebar-divider:hover,
-#sidebar-divider.dragging {
-  background: var(--accent);
-}
+#sidebar-divider.dragging { background: var(--accent); }
 
-/* Round toggle button — sits in the vertical center of the divider */
 .sidebar-toggle-btn {
   position: absolute;
   top: 50%;
@@ -112,45 +106,22 @@ body.sidebar-hidden #sidebar { display: none; }
   z-index: 2;
   transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s;
 }
-.sidebar-toggle-btn::before {
-  content: '';
-  position: absolute;
-  inset: -8px;
-}
-.sidebar-toggle-btn:hover {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #FFFFFF;
-  transform: translate(-50%, -50%) scale(1.1);
-}
-.sidebar-toggle-btn:active {
-  transform: translate(-50%, -50%) scale(0.95);
-}
-
-body.sidebar-hidden #sidebar-toggle-btn svg {
-  transform: rotate(180deg);
-}
-body.sidebar-hidden #sidebar-divider {
-  display: block;
-  background: var(--border);
-  width: 6px;
-  min-width: 6px;
-}
-body.sidebar-hidden #sidebar-divider:hover {
-  background: var(--accent);
-}
+.sidebar-toggle-btn::before { content: ''; position: absolute; inset: -8px; }
+.sidebar-toggle-btn:hover { background: var(--accent); border-color: var(--accent); color: #FFFFFF; transform: translate(-50%, -50%) scale(1.1); }
+.sidebar-toggle-btn:active { transform: translate(-50%, -50%) scale(0.95); }
+body.sidebar-hidden #sidebar-toggle-btn svg { transform: rotate(180deg); }
+body.sidebar-hidden #sidebar-divider { display: block; background: var(--border); width: 6px; min-width: 6px; }
+body.sidebar-hidden #sidebar-divider:hover { background: var(--accent); }
 
 #sidebar-top { padding: 16px 18px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
 #sidebar-top h1 { font-size: 14px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.01em; }
 #sidebar-top p { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
 
-/* Tab bar */
 #tab-bar { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--surface); }
 .tab-btn { flex: 1; padding: 9px 6px; font-size: 11.5px; font-weight: 500; font-family: var(--font); color: var(--text-secondary); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: color 0.12s, border-color 0.12s; letter-spacing: 0.01em; }
 .tab-btn:hover { color: var(--text-primary); }
 .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-/* Scroll area */
 #sidebar-body { flex: 1; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
 #sidebar-body::-webkit-scrollbar { width: 4px; }
 #sidebar-body::-webkit-scrollbar-track { background: transparent; }
@@ -159,7 +130,6 @@ body.sidebar-hidden #sidebar-divider:hover {
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
 
-/* Field groups */
 .field-group { padding: 10px 18px 0; }
 .field-label { display: block; font-size: 10.5px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 5px; }
 .field-input, .field-textarea { width: 100%; padding: 7px 9px; font-size: 12.5px; font-family: var(--font); color: var(--text-primary); background: var(--surface); border: 1px solid var(--border); border-radius: 3px; outline: none; transition: border-color 0.12s; line-height: 1.4; }
@@ -172,13 +142,11 @@ body.sidebar-hidden #sidebar-divider:hover {
 .field-row .field-group:last-child { padding-right: 18px; }
 .section-divider { border: none; border-top: 1px solid var(--border); margin: 14px 0 0; }
 
-/* Education rows */
 .edu-card { margin: 10px 18px 0; border: 1px solid var(--border); border-radius: 3px; overflow: hidden; }
 .edu-card-header { padding: 7px 10px; background: var(--bg); font-size: 11px; font-weight: 600; color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center; }
 .edu-card-body { padding: 0 10px 10px; }
 .edu-card-body .field-group { padding: 8px 0 0; }
 
-/* Section accordion */
 .sec-accordion { border-bottom: 1px solid var(--border); }
 .sec-accordion-head { display: flex; align-items: center; gap: 6px; padding: 10px 12px 10px 18px; cursor: pointer; user-select: none; background: var(--surface); }
 .sec-accordion-head:hover { background: var(--bg); }
@@ -188,17 +156,17 @@ body.sidebar-hidden #sidebar-divider:hover {
 .sec-acc-body { display: none; padding-bottom: 8px; background: var(--surface); }
 .sec-acc-body.open { display: block; }
 
-/* Entry cards */
 .entry-card { margin: 8px 18px 0; border: 1px solid var(--border); border-radius: 3px; }
 .entry-card-head { padding: 6px 10px; background: var(--bg); font-size: 10.5px; font-weight: 600; color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center; letter-spacing: 0.02em; }
 .entry-card-body { padding: 0 10px 8px; }
 .entry-card-body .field-group { padding: 7px 0 0; }
 
-/* Buttons */
 .btn { font-family: var(--font); font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--surface); color: var(--text-primary); border-radius: 3px; padding: 6px 12px; transition: background 0.1s, border-color 0.1s, color 0.1s; line-height: 1; display: inline-flex; align-items: center; justify-content: center; }
 .btn:hover { background: var(--bg); border-color: #C0C0BE; }
 .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
 .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.btn-danger { background: var(--danger); color: #fff; border-color: var(--danger); }
+.btn-danger:hover { background: #b91c1c; border-color: #b91c1c; }
 .btn-danger-text { font-family: var(--font); font-size: 11px; font-weight: 500; color: var(--danger); background: none; border: none; cursor: pointer; padding: 2px 0; }
 .btn-danger-text:hover { text-decoration: underline; }
 .btn-reorder { font-family: var(--font); font-size: 12px; font-weight: 600; color: var(--text-secondary); background: none; border: 1px solid var(--border); border-radius: 3px; cursor: pointer; padding: 1px 6px; line-height: 1.2; transition: background 0.1s, color 0.1s, border-color 0.1s; }
@@ -212,34 +180,64 @@ body.sidebar-hidden #sidebar-divider:hover {
 .skill-row-wrap .field-input { flex: 1; }
 .skill-row-wrap .field-input:first-child { max-width: 120px; }
 
-#sidebar-footer { border-top: 1px solid var(--border); padding: 12px 18px; flex-shrink: 0; display: flex; gap: 8px; align-items: center; }
+#sidebar-footer { border-top: 1px solid var(--border); padding: 12px 18px; flex-shrink: 0; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .btn-add-section { display: block; width: 100%; padding: 10px 18px; font-family: var(--font); font-size: 12px; font-weight: 500; color: var(--text-secondary); background: none; border: none; border-top: 1px solid var(--border); cursor: pointer; text-align: left; transition: background 0.1s, color 0.1s; }
 .btn-add-section:hover { background: var(--bg); color: var(--text-primary); }
 
 /* ══════════════════════════════════════════
-   PREVIEW AREA
+   PREVIEW AREA & UNDO/REDO CHROME
 ══════════════════════════════════════════ */
 #preview-area { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; background: var(--canvas); }
 #preview-bar { height: 42px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0; }
 #preview-bar-left { display: flex; align-items: center; gap: 12px; }
 #preview-bar-left span { font-size: 11.5px; color: var(--text-secondary); font-weight: 500; }
 #preview-bar-actions { display: flex; gap: 8px; align-items: center; }
-#preview-scroll { flex: 1; overflow-y: auto; display: flex; justify-content: center; align-items: flex-start; padding: 32px 24px; scrollbar-width: thin; scrollbar-color: #C4C4C2 transparent; position: relative; }
+#preview-scroll { flex: 1; overflow-y: auto; display: flex; justify-content: flex-start; align-items: center; padding: 32px 24px; scrollbar-width: thin; scrollbar-color: #C4C4C2 transparent; position: relative; flex-direction: column; gap: 24px; }
+
 .zoom-controls { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--text-secondary); }
 .zoom-controls button { width: 22px; height: 22px; border: 1px solid var(--border); background: var(--surface); cursor: pointer; border-radius: 3px; font-size: 14px; line-height: 1; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); }
 .zoom-controls button:hover { background: var(--bg); }
 
+/* Undo/Redo & Save Indicator */
+.undo-redo-group { display: flex; align-items: center; gap: 2px; }
+.btn-icon { width: 28px; height: 28px; padding: 0; font-size: 14px; border: 1px solid var(--border); background: var(--surface); border-radius: 3px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); font-family: var(--font); transition: background 0.1s, color 0.1s, border-color 0.1s; }
+.btn-icon:hover:not(:disabled) { background: var(--bg); color: var(--accent); border-color: var(--accent); }
+.btn-icon:disabled { opacity: 0.35; cursor: not-allowed; }
+
+#save-indicator { font-size: 10.5px; font-weight: 500; display: flex; align-items: center; gap: 4px; white-space: nowrap; padding: 3px 8px; border-radius: 3px; transition: all 0.3s; }
+#save-indicator.saved { color: var(--success); }
+#save-indicator.saving { color: var(--warn); }
+#save-indicator.unsaved { color: var(--text-tertiary); }
+#save-indicator .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+#save-indicator.saved .dot { background: var(--success); }
+#save-indicator.saving .dot { background: var(--warn); animation: pulse 1s infinite; }
+#save-indicator.unsaved .dot { background: var(--text-tertiary); }
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+/* ══════════════════════════════════════════
+   RESTORE BANNER & CONFIRM MODAL
+══════════════════════════════════════════ */
+#restore-banner { position: fixed; top: 0; left: 0; right: 0; background: #1E293B; color: #F1F5F9; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; z-index: 9998; font-size: 12px; font-family: var(--font); font-weight: 500; box-shadow: 0 2px 12px rgba(0,0,0,0.25); transform: translateY(-100%); transition: transform 0.3s ease; }
+#restore-banner.visible { transform: translateY(0); }
+#restore-banner span { flex: 1; }
+.restore-banner-actions { display: flex; gap: 8px; }
+.restore-btn { font-family: var(--font); font-size: 11.5px; font-weight: 600; padding: 5px 12px; border-radius: 3px; cursor: pointer; border: none; transition: all 0.15s; }
+.restore-btn.primary { background: #3B82F6; color: #fff; }
+.restore-btn.primary:hover { background: #2563EB; }
+.restore-btn.secondary { background: rgba(255,255,255,0.12); color: #CBD5E1; }
+.restore-btn.secondary:hover { background: rgba(255,255,255,0.2); color: #fff; }
+
+#confirm-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center; z-index: 10000; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+#confirm-modal.visible { opacity: 1; pointer-events: all; }
+.confirm-box { background: var(--surface); border-radius: 6px; padding: 24px 28px; max-width: 380px; width: 90%; box-shadow: 0 8px 32px rgba(0,0,0,0.18); transform: translateY(-8px); transition: transform 0.2s; }
+#confirm-modal.visible .confirm-box { transform: translateY(0); }
+.confirm-box h3 { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+.confirm-box p { font-size: 12.5px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 20px; }
+.confirm-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
 /* ───────────────────────────────────────────
    THE RESUME PAPER (SCREEN PREVIEW)
-   Strict A4: 210mm × 297mm
 ─────────────────────────────────────────── */
-#preview-scroll {
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 24px;
-}
-
 #resume-paper {
   width: 210mm;
   min-height: 297mm;
@@ -278,211 +276,55 @@ body.sidebar-hidden #sidebar-divider:hover {
 
 .print-footer { display: none; }
 
-/* ───────────────────────────────────────────
-   RESUME — HEADER
-─────────────────────────────────────────── */
-.r-header {
-  margin-bottom: 3px;
-  page-break-inside: avoid;
-  break-inside: avoid;
-}
-.r-header-row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  border-bottom: 2px solid var(--resume-accent);
-  padding-bottom: 4px;
-}
+.r-header { margin-bottom: 3px; page-break-inside: avoid; break-inside: avoid; }
+.r-header-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; border-bottom: 2px solid var(--resume-accent); padding-bottom: 4px; }
 .r-header-left { flex: 1; }
 .r-logo-box { width: 42px; height: 42px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 .r-logo-box img { width: 42px; height: 42px; object-fit: contain; }
-.r-logo-placeholder {
-  width: 42px; height: 42px;
-  border: 1px dashed #C8C8C8;
-  border-radius: 4px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 6pt; color: #999; font-weight: 500;
-}
-.r-name {
-  font-size: 18pt;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--resume-accent);
-  line-height: 1.05;
-  display: inline;
-}
-.r-rollno {
-  font-size: 9pt;
-  font-weight: 600;
-  color: var(--resume-text);
-  margin-left: 8px;
-  border-left: 2px solid var(--resume-border);
-  padding-left: 8px;
-}
-.r-degree-line {
-  font-size: 9pt;
-  margin-top: 2px;
-  font-weight: 500;
-  color: var(--resume-text-mute);
-}
-.r-links {
-  font-size: 8pt;
-  color: var(--resume-text-mute);
-  margin-top: 3px;
-  page-break-inside: avoid;
-}
-.r-links a {
-  color: var(--resume-link);
-  text-decoration: none;
-  font-weight: 500;
-}
+.r-logo-placeholder { width: 42px; height: 42px; border: 1px dashed #C8C8C8; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 6pt; color: #999; font-weight: 500; }
+.r-name { font-size: 18pt; font-weight: 700; letter-spacing: -0.02em; color: var(--resume-accent); line-height: 1.05; display: inline; }
+.r-rollno { font-size: 9pt; font-weight: 600; color: var(--resume-text); margin-left: 8px; border-left: 2px solid var(--resume-border); padding-left: 8px; }
+.r-degree-line { font-size: 9pt; margin-top: 2px; font-weight: 500; color: var(--resume-text-mute); }
+.r-links { font-size: 8pt; color: var(--resume-text-mute); margin-top: 3px; page-break-inside: avoid; }
+.r-links a { color: var(--resume-link); text-decoration: none; font-weight: 500; }
 .r-links a:hover { text-decoration: underline; }
 .r-links .sep { margin: 0 5px; color: var(--resume-border); }
 
-/* ───────────────────────────────────────────
-   SECTION HEADER
-─────────────────────────────────────────── */
-.r-sec-head {
-  background-color: var(--resume-accent);
-  color: #FFFFFF;
-  padding: 2px 8px;
-  margin: 6px 0 3px;
-  page-break-after: avoid;
-  break-after: avoid;
-  page-break-inside: avoid;
-  break-inside: avoid;
-  border-radius: 2px;
-}
-.r-sec-head-text {
-  font-size: 8.5pt;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
+.r-sec-head { background-color: var(--resume-accent); color: #FFFFFF; padding: 2px 8px; margin: 6px 0 3px; page-break-after: avoid; break-after: avoid; page-break-inside: avoid; break-inside: avoid; border-radius: 2px; }
+.r-sec-head-text { font-size: 8.5pt; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
 
-/* ───────────────────────────────────────────
-   TABLES
-─────────────────────────────────────────── */
-.r-edu-table {
-  width: 100%;
-  border-collapse: collapse;
-  border: 1px solid var(--resume-border);
-  margin-bottom: 2px;
-}
-.r-edu-table th {
-  background-color: var(--resume-accent-soft);
-  border-bottom: 1px solid var(--resume-border);
-  padding: 3px 6px;
-  font-weight: 700;
-  font-size: 8pt;
-  color: var(--resume-accent);
-  text-align: left;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
+.r-edu-table { width: 100%; border-collapse: collapse; border: 1px solid var(--resume-border); margin-bottom: 2px; }
+.r-edu-table th { background-color: var(--resume-accent-soft); border-bottom: 1px solid var(--resume-border); padding: 3px 6px; font-weight: 700; font-size: 8pt; color: var(--resume-accent); text-align: left; text-transform: uppercase; letter-spacing: 0.04em; }
 .r-edu-table th:last-child { text-align: right; }
-.r-edu-table td {
-  border-bottom: 1px solid var(--resume-border-soft);
-  padding: 2px 6px;
-  font-size: 8.5pt;
-}
+.r-edu-table td { border-bottom: 1px solid var(--resume-border-soft); padding: 2px 6px; font-size: 8.5pt; }
 .r-edu-table tr:last-child td { border-bottom: none; }
 .r-edu-table td:last-child { text-align: right; font-weight: 600; color: var(--resume-accent); }
 .r-edu-table tr { page-break-inside: avoid; break-inside: avoid; }
 
-.r-entries-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 1px;
-}
+.r-entries-table { width: 100%; border-collapse: collapse; margin-bottom: 1px; }
 .r-entries-table tr { page-break-inside: avoid; break-inside: avoid; }
 .r-et-title-row td { padding: 2px 0 0; vertical-align: baseline; }
-.r-et-title {
-  font-size: 9pt;
-  font-weight: 700;
-  color: var(--resume-text);
-  line-height: 1.25;
-}
+.r-et-title { font-size: 9pt; font-weight: 700; color: var(--resume-text); line-height: 1.25; }
 .r-et-sep { color: var(--resume-border); margin: 0 3px; font-weight: 400; }
 .r-et-org { font-weight: 500; color: var(--resume-text-mute); font-size: 8.5pt; }
-.r-et-date {
-  font-size: 8pt;
-  font-weight: 600;
-  color: var(--resume-accent);
-  text-align: right;
-  white-space: nowrap;
-  width: 28%;
-  vertical-align: bottom;
-}
-.r-et-sup-row td {
-  font-style: italic;
-  font-size: 7.5pt;
-  color: var(--resume-text-mute);
-  padding: 0 0 1px;
-}
+.r-et-date { font-size: 8pt; font-weight: 600; color: var(--resume-accent); text-align: right; white-space: nowrap; width: 28%; vertical-align: bottom; }
+.r-et-sup-row td { font-style: italic; font-size: 7.5pt; color: var(--resume-text-mute); padding: 0 0 1px; }
 .r-et-bullets-row td { padding: 0 0 1px; }
 .r-et-gap td { height: 3px; }
 
-.r-bullets {
-  margin: 1px 0 0 12px;
-  padding: 0;
-  list-style: square;
-  color: var(--resume-text);
-}
-.r-bullets li {
-  font-size: 8.5pt;
-  margin-bottom: 0;
-  padding-left: 2px;
-  page-break-inside: avoid;
-  break-inside: avoid;
-  line-height: 1.28;
-}
+.r-bullets { margin: 1px 0 0 12px; padding: 0; list-style: square; color: var(--resume-text); }
+.r-bullets li { font-size: 8.5pt; margin-bottom: 0; padding-left: 2px; page-break-inside: avoid; break-inside: avoid; line-height: 1.28; }
 .r-bullets strong { color: var(--resume-accent); font-weight: 700; }
 
-.r-skills-table {
-  width: 100%;
-  border-collapse: collapse;
-  border: 1px solid var(--resume-border);
-  margin-bottom: 1px;
-}
-.r-skills-table tr {
-  page-break-inside: avoid;
-  break-inside: avoid;
-  border-bottom: 1px solid var(--resume-border-soft);
-}
+.r-skills-table { width: 100%; border-collapse: collapse; border: 1px solid var(--resume-border); margin-bottom: 1px; }
+.r-skills-table tr { page-break-inside: avoid; break-inside: avoid; border-bottom: 1px solid var(--resume-border-soft); }
 .r-skills-table tr:last-child { border-bottom: none; }
 .r-skills-table td { padding: 2px 6px; vertical-align: top; font-size: 8.5pt; }
-.r-sk-cat {
-  background-color: var(--resume-accent-soft);
-  border-right: 1px solid var(--resume-border);
-  width: 30%;
-  font-weight: 700;
-  color: var(--resume-accent);
-}
+.r-sk-cat { background-color: var(--resume-accent-soft); border-right: 1px solid var(--resume-border); width: 30%; font-weight: 700; color: var(--resume-accent); }
 
-.r-inline {
-  font-size: 8.5pt;
-  margin: 1px 0 1px 0;
-  line-height: 1.35;
-  page-break-inside: avoid;
-  color: var(--resume-text);
-}
+.r-inline { font-size: 8.5pt; margin: 1px 0 1px 0; line-height: 1.35; page-break-inside: avoid; color: var(--resume-text); }
+.r-footer-preview { margin-top: 8px; border-top: 1px dashed var(--resume-border); padding-top: 3px; font-size: 7pt; font-weight: 500; color: var(--text-tertiary); text-align: center; font-style: italic; }
 
-.r-footer-preview {
-  margin-top: 8px;
-  border-top: 1px dashed var(--resume-border);
-  padding-top: 3px;
-  font-size: 7pt;
-  font-weight: 500;
-  color: var(--text-tertiary);
-  text-align: center;
-  font-style: italic;
-}
-
-/* ══════════════════════════════════════════
-   TOAST & GUIDELINES
-══════════════════════════════════════════ */
 #toast { position: fixed; bottom: 20px; right: 20px; background: #1A1A1A; color: #fff; padding: 9px 16px; border-radius: 4px; font-size: 12px; font-weight: 500; opacity: 0; transform: translateY(6px); transition: opacity 0.2s, transform 0.2s; pointer-events: none; z-index: 9999; }
 #toast.show { opacity: 1; transform: translateY(0); }
 .guideline-block { padding: 10px 18px; border-bottom: 1px solid var(--border); }
@@ -497,72 +339,38 @@ body.sidebar-hidden #sidebar-divider:hover {
    PRINT CSS
 ══════════════════════════════════════════ */
 @media print {
-  @page {
-    size: A4 portrait;
-    margin: 10mm 12mm 12mm 12mm;
-  }
-  html, body {
-    width: 100%;
-    height: auto;
-    background: #fff !important;
-    margin: 0;
-    padding: 0;
-    overflow: visible !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-  #sidebar, #preview-bar, #toast, .r-footer-preview,
-  #sidebar-footer, .zoom-controls, .resume-page { display: none !important; }
-
-  #preview-area, #preview-scroll {
-    display: block !important;
-    width: 100% !important;
-    height: auto !important;
-    position: static !important;
-    overflow: visible !important;
-    background: transparent !important;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-  #resume-paper {
-    width: 100% !important;
-    height: auto !important;
-    min-height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    box-shadow: none !important;
-    border: none !important;
-    position: static !important;
-    transform: none !important;
-    font-size: 10pt;
-    line-height: 1.4;
-    display: block !important;
-  }
+  @page { size: A4 portrait; margin: 10mm 12mm 12mm 12mm; }
+  html, body { width: 100%; height: auto; background: #fff !important; margin: 0; padding: 0; overflow: visible !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  #sidebar, #preview-bar, #toast, .r-footer-preview, #sidebar-footer, .zoom-controls, .resume-page, #restore-banner, #confirm-modal { display: none !important; }
+  #preview-area, #preview-scroll { display: block !important; width: 100% !important; height: auto !important; position: static !important; overflow: visible !important; background: transparent !important; padding: 0 !important; margin: 0 !important; }
+  #resume-paper { width: 100% !important; height: auto !important; min-height: 0 !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; border: none !important; position: static !important; transform: none !important; font-size: 10pt; line-height: 1.4; display: block !important; }
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-  .print-footer {
-    display: block !important;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    text-align: center;
-    font-size: 7.5pt;
-    font-weight: 500;
-    color: #9AA0A6;
-    border-top: 1px dashed #D9DEE4;
-    padding-top: 4px;
-    background: #fff;
-    z-index: 9999;
-    font-style: italic;
-  }
-  .r-sec-head, .r-header, .r-edu-table tr, .r-entries-table tr,
-  .r-skills-table tr, .r-bullets li { page-break-inside: avoid; break-inside: avoid; }
+  .print-footer { display: block !important; position: fixed; bottom: 0; left: 0; width: 100%; text-align: center; font-size: 7.5pt; font-weight: 500; color: #9AA0A6; border-top: 1px dashed #D9DEE4; padding-top: 4px; background: #fff; z-index: 9999; font-style: italic; }
+  .r-sec-head, .r-header, .r-edu-table tr, .r-entries-table tr, .r-skills-table tr, .r-bullets li { page-break-inside: avoid; break-inside: avoid; }
   .r-sec-head { page-break-after: avoid; break-after: avoid; }
 }
-
 </style>
 </head>
 <body>
+
+<div id="restore-banner">
+  <span>📋 You have unsaved work from a previous session. Would you like to restore it?</span>
+  <div class="restore-banner-actions">
+    <button class="restore-btn primary" onclick="restoreSavedState()">Restore my work</button>
+    <button class="restore-btn secondary" onclick="dismissRestoreBanner()">Start fresh</button>
+  </div>
+</div>
+
+<div id="confirm-modal">
+  <div class="confirm-box">
+    <h3 id="confirm-title">Are you sure?</h3>
+    <p id="confirm-body">This action cannot be undone.</p>
+    <div class="confirm-actions">
+      <button class="btn" onclick="closeConfirm()">Cancel</button>
+      <button class="btn btn-danger" id="confirm-ok-btn">Confirm</button>
+    </div>
+  </div>
+</div>
 
 <div id="sidebar">
   <div id="sidebar-top">
@@ -718,11 +526,13 @@ body.sidebar-hidden #sidebar-divider:hover {
         </ul>
       </div>
     </div>
+  </div>
 
-  </div><div id="sidebar-footer">
+  <div id="sidebar-footer">
     <button class="btn btn-primary" onclick="downloadPDF()">Download PDF</button>
     <button class="btn" onclick="copyJSON()">Export data</button>
     <button class="btn" onclick="document.getElementById('import-input').click()">Import</button>
+    <button class="btn btn-danger" onclick="confirmReset()" title="Reset to default data" style="margin-left:auto;">Reset</button>
     <input type="file" id="import-input" accept=".json" style="display:none" onchange="importJSON(event)" />
   </div>
 </div>
@@ -739,6 +549,18 @@ body.sidebar-hidden #sidebar-divider:hover {
   <div id="preview-bar">
     <div id="preview-bar-left">
       <span>Live preview</span>
+      <div class="undo-redo-group">
+        <button class="btn-icon" id="btn-undo" onclick="undo()" title="Undo (Ctrl+Z)" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+        </button>
+        <button class="btn-icon" id="btn-redo" onclick="redo()" title="Redo (Ctrl+Y)" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/></svg>
+        </button>
+      </div>
+      <div id="save-indicator" class="saved">
+        <span class="dot"></span>
+        <span id="save-label">Saved</span>
+      </div>
     </div>
     <div id="preview-bar-actions">
       <div class="zoom-controls">
@@ -762,23 +584,18 @@ body.sidebar-hidden #sidebar-divider:hover {
 
 <script>
 const LOGO_URL = 'https://www.uxdt.nic.in/wp-content/uploads/2024/06/iit-tirupati-eps-iit-tirupati-01.jpg?x29347';
-const AUTOSAVE_KEY = 'iit_resume_local_draft';
+const CACHE_KEY = 'iit_resume_builder_v1';
+const MAX_HISTORY = 50;
 
-let state = {
-  name: 'Meet Rana',
-  roll: 'EE23B070',
-  degree: 'B.Tech.',
-  gradYear: '2027',
-  branch: 'ELECTRICAL ENGINEERING',
-  institute: 'Indian Institute of Technology, Tirupati',
-  email: 'ee23b070@iittp.ac.in',
-  phone: '7060317045',
-  linkedinUrl: '',
-  linkedinLabel: '',
-  githubUrl: '',
-  githubLabel: '',
-  scholarUrl: '',
-  scholarLabel: '',
+// ═══════════════════════════════════════
+//  DEFAULT STATE
+// ═══════════════════════════════════════
+const DEFAULT_STATE = {
+  name: 'Meet Rana', roll: 'EE23B070', degree: 'B.Tech.', gradYear: '2027',
+  branch: 'ELECTRICAL ENGINEERING', institute: 'Indian Institute of Technology, Tirupati',
+  email: 'ee23b070@iittp.ac.in', phone: '7060317045',
+  linkedinUrl: '', linkedinLabel: '', githubUrl: '', githubLabel: '',
+  scholarUrl: '', scholarLabel: '',
   footer: 'Self declared by the student. Placement & Internship Cell, IIT could not verify the relevant documents.',
   edu: [
     { year: '2023-2027', exam: 'B.Tech. (EE)', inst: 'Indian Institute of Technology, Tirupati', score: '8.31' },
@@ -804,10 +621,7 @@ let state = {
         { cat: 'Hardware and General Skills', items: 'Arduino | Raspberry Pi | Jetson Nano | Pixhawk | Soldering | Wiring | Robotics | Sensor Integration' }
       ]
     },
-    {
-      id: 's3', title: 'KEY COURSES TAKEN', open: false, type: 'inline',
-      content: 'Machine Learning | Pattern Recognition and Machine Learning | Signal and Systems | Digital Systems | Electrical Circuits and Networks | Electronic Instrumentation and Measurement'
-    },
+    { id: 's3', title: 'KEY COURSES TAKEN', open: false, type: 'inline', content: 'Machine Learning | Pattern Recognition and Machine Learning | Signal and Systems | Digital Systems | Electrical Circuits and Networks | Electronic Instrumentation and Measurement' },
     {
       id: 's4', title: 'POSITIONS OF RESPONSIBILITY', open: false, type: 'bullets',
       entries: [
@@ -818,114 +632,289 @@ let state = {
         { id: 'e9', title: 'Co-Coordinator', org: 'NSS Unit, IIT Tirupati', date: "Jul '24 - Jul '25", supervisor: '', bullets: '' }
       ]
     },
-    {
-      id: 's5', title: 'ACHIEVEMENTS', open: false, type: 'bullets',
-      content: "Achieved 3rd place in the ideaForge Problem Statement at InterIIT 13.0, IIT Bombay 2024\nRanked in the top 24 out of over 1000+ institutes in the ISRO Robotics Challenge-URSC 2025\nAchieved 9th place in the ISRO VLM Problem Statement at Inter IIT 14.0, IIT Patna\nParticipated in Drone Aviation Challenge in Inter IIT 14.0 and ranked top 10 without penalty\nAchieved 6th place in the Bharat-AI SoC Challenge by arm 2024"
-    },
-    {
-      id: 's6', title: 'CERTIFICATIONS', open: false, type: 'bullets',
-      content: "NPTEL Certification on Introduction to Aerodynamics"
-    }
+    { id: 's5', title: 'ACHIEVEMENTS', open: false, type: 'bullets', content: "Achieved 3rd place in the ideaForge Problem Statement at InterIIT 13.0, IIT Bombay 2024\nRanked in the top 24 out of over 1000+ institutes in the ISRO Robotics Challenge-URSC 2025\nAchieved 9th place in the ISRO VLM Problem Statement at Inter IIT 14.0, IIT Patna\nParticipated in Drone Aviation Challenge in Inter IIT 14.0 and ranked top 10 without penalty\nAchieved 6th place in the Bharat-AI SoC Challenge by arm 2024" },
+    { id: 's6', title: 'CERTIFICATIONS', open: false, type: 'bullets', content: "NPTEL Certification on Introduction to Aerodynamics" }
   ]
 };
 
-let currentZoom = 1;
-let pdfMode = false; 
+// ═══════════════════════════════════════
+//  STATE + HISTORY STACK
+// ═══════════════════════════════════════
+let state = deepClone(DEFAULT_STATE);
+let history = [];      
+let historyIndex = -1; 
+let _skipHistory = false; 
 
-// --- SAFETY MECHANISMS ---
-let isDirty = false;
-let isBooting = true; // Prevents the initial page load from accidentally marking the document as "Dirty"
+function deepClone(obj) { return JSON.parse(JSON.stringify(obj)); }
 
-window.addEventListener('beforeunload', function (e) {
-  if (isDirty) {
+function pushHistory(snap) {
+  if (_skipHistory) return;
+  if (historyIndex < history.length - 1) history.splice(historyIndex + 1);
+  history.push(snap);
+  if (history.length > MAX_HISTORY) history.shift();
+  historyIndex = history.length - 1;
+  updateUndoRedoBtns();
+}
+
+function updateUndoRedoBtns() {
+  document.getElementById('btn-undo').disabled = historyIndex <= 0;
+  document.getElementById('btn-redo').disabled = historyIndex >= history.length - 1;
+}
+
+function undo() {
+  if (historyIndex <= 0) return;
+  historyIndex--;
+  _skipHistory = true;
+  applyStateSnapshot(deepClone(history[historyIndex]));
+  _skipHistory = false;
+  updateUndoRedoBtns();
+  showToast('Undo');
+}
+
+function redo() {
+  if (historyIndex >= history.length - 1) return;
+  historyIndex++;
+  _skipHistory = true;
+  applyStateSnapshot(deepClone(history[historyIndex]));
+  _skipHistory = false;
+  updateUndoRedoBtns();
+  showToast('Redo');
+}
+
+function applyStateSnapshot(snap) {
+  state = snap;
+  // Two-way map back into DOM inputs
+  const fieldMap = {
+    'f-name': 'name', 'f-roll': 'roll', 'f-degree': 'degree',
+    'f-gradyear': 'gradYear', 'f-branch': 'branch', 'f-institute': 'institute',
+    'f-email': 'email', 'f-phone': 'phone',
+    'f-linkedin-url': 'linkedinUrl', 'f-linkedin-label': 'linkedinLabel',
+    'f-github-url': 'githubUrl', 'f-github-label': 'githubLabel',
+    'f-scholar-url': 'scholarUrl', 'f-scholar-label': 'scholarLabel',
+  };
+  Object.entries(fieldMap).forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (el) el.value = state[key] || '';
+  });
+  renderEduEditor();
+  renderSectionsEditor();
+  render();
+}
+
+// ═══════════════════════════════════════
+//  AUTOSAVE — localStorage
+// ═══════════════════════════════════════
+let _saveTimer = null;
+let _isDirty = false;
+let _lastSaveTime = null;
+
+function scheduleSave() {
+  _isDirty = true;
+  setSaveIndicator('saving');
+  if (_saveTimer) clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(persistToCache, 1200);
+}
+
+function persistToCache() {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(state));
+    _isDirty = false;
+    _lastSaveTime = Date.now();
+    setSaveIndicator('saved');
+  } catch (e) {
+    setSaveIndicator('unsaved');
+  }
+}
+
+function setSaveIndicator(status) {
+  const el = document.getElementById('save-indicator');
+  const label = document.getElementById('save-label');
+  el.className = 'saved'; 
+  el.classList.add(status);
+  if (status === 'saved') {
+    label.textContent = 'Saved';
+    setTimeout(() => {
+      if (!_isDirty && _lastSaveTime) {
+        const sec = Math.round((Date.now() - _lastSaveTime) / 1000);
+        label.textContent = sec < 5 ? 'Saved just now' : `Saved ${sec}s ago`;
+      }
+    }, 3000);
+  } else if (status === 'saving') {
+    label.textContent = 'Saving…';
+  } else {
+    label.textContent = 'Not saved';
+  }
+}
+
+setInterval(() => {
+  if (!_isDirty && _lastSaveTime) {
+    const sec = Math.round((Date.now() - _lastSaveTime) / 1000);
+    const el = document.getElementById('save-label');
+    if (sec < 60) el.textContent = `Saved ${sec}s ago`;
+    else el.textContent = `Saved ${Math.round(sec/60)}m ago`;
+  }
+}, 30000);
+
+window.addEventListener('beforeunload', (e) => {
+  if (_isDirty) {
     e.preventDefault();
-    e.returnValue = ''; // Required by modern browsers to trigger the native "Leave Site?" dialog
+    e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+    return e.returnValue;
   }
 });
 
-function saveGhostDraft() {
-  try { localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(state)); } catch(e) {}
-}
-
-function restoreGhostDraft() {
+// ═══════════════════════════════════════
+//  RESTORE BANNER
+// ═══════════════════════════════════════
+function checkForSavedState() {
   try {
-    const raw = localStorage.getItem(AUTOSAVE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (JSON.stringify(parsed) !== JSON.stringify(state)) {
-        state = parsed;
-        ['name','roll','degree','gradYear','branch','institute','email','phone','linkedinUrl','linkedinLabel','githubUrl','githubLabel','scholarUrl','scholarLabel','footer'].forEach(k => {
-          const el = document.getElementById('f-' + k.replace(/([A-Z])/g, c => '-' + c.toLowerCase()));
-          if (el) el.value = state[k] || '';
-        });
-        showToast('Restored your previous unsaved draft');
-      }
-    }
-  } catch(e) {}
+    const saved = localStorage.getItem(CACHE_KEY);
+    if (!saved) return;
+    const parsed = JSON.parse(saved);
+    setTimeout(() => {
+      document.getElementById('restore-banner').classList.add('visible');
+      window._pendingRestore = parsed;
+    }, 400);
+  } catch (e) {}
 }
 
+function restoreSavedState() {
+  if (!window._pendingRestore) return;
+  _skipHistory = true;
+  state = window._pendingRestore;
+  window._pendingRestore = null;
+  applyStateSnapshot(state);
+  _skipHistory = false;
+  history = [deepClone(state)];
+  historyIndex = 0;
+  updateUndoRedoBtns();
+  dismissRestoreBanner();
+  _lastSaveTime = Date.now();
+  setSaveIndicator('saved');
+  showToast('Work restored ✓');
+}
+
+function dismissRestoreBanner() {
+  document.getElementById('restore-banner').classList.remove('visible');
+  window._pendingRestore = null;
+}
+
+// ═══════════════════════════════════════
+//  RESET
+// ═══════════════════════════════════════
+function confirmReset() {
+  showConfirm(
+    'Reset everything?',
+    'This will clear all your edits and restore the default sample resume. Your saved cache will also be cleared. This cannot be undone.',
+    'Reset to defaults',
+    () => {
+      localStorage.removeItem(CACHE_KEY);
+      _skipHistory = true;
+      state = deepClone(DEFAULT_STATE);
+      history = [deepClone(state)];
+      historyIndex = 0;
+      updateUndoRedoBtns();
+      applyStateSnapshot(state);
+      _skipHistory = false;
+      _isDirty = false;
+      setSaveIndicator('saved');
+      showToast('Reset to defaults');
+    }
+  );
+}
+
+// ═══════════════════════════════════════
+//  CONFIRM MODAL
+// ═══════════════════════════════════════
+let _confirmCallback = null;
+function showConfirm(title, body, okLabel, callback) {
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-body').textContent = body;
+  const okBtn = document.getElementById('confirm-ok-btn');
+  okBtn.textContent = okLabel || 'Confirm';
+  _confirmCallback = callback;
+  document.getElementById('confirm-modal').classList.add('visible');
+}
+function closeConfirm() {
+  document.getElementById('confirm-modal').classList.remove('visible');
+  _confirmCallback = null;
+}
+document.getElementById('confirm-ok-btn').addEventListener('click', () => {
+  if (_confirmCallback) _confirmCallback();
+  closeConfirm();
+});
+document.getElementById('confirm-modal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('confirm-modal')) closeConfirm();
+});
+
+// ═══════════════════════════════════════
+//  KEYBOARD SHORTCUTS
+// ═══════════════════════════════════════
+document.addEventListener('keydown', (e) => {
+  if (!e.ctrlKey && !e.metaKey) return;
+  if (e.key === 'z' && !e.shiftKey) { e.preventDefault(); undo(); }
+  else if (e.key === 'y' || (e.key === 'z' && e.shiftKey)) { e.preventDefault(); redo(); }
+}, true);
+
+// ═══════════════════════════════════════
+//  STATE MUTATION PIPELINE WRAPPER
+// ═══════════════════════════════════════
+function mutateState(fn) {
+  pushHistory(deepClone(state)); 
+  fn(); 
+  scheduleSave();
+  render();
+}
+
+let currentZoom = 1;
+let pdfMode = false;
 
 function toggleSidebar() { document.body.classList.toggle('sidebar-hidden'); }
 
 (function setupSidebarDivider() {
   const divider = document.getElementById('sidebar-divider');
   if (!divider) return;
-
-  let dragging = false;
-  let startX = 0;
-  let startWidth = 0;
-
+  let dragging = false, startX = 0, startWidth = 0;
   function currentSidebarWidth() {
     const v = getComputedStyle(document.documentElement).getPropertyValue('--sidebar-w').trim();
     return parseInt(v, 10) || 320;
   }
-
   divider.addEventListener('mousedown', (e) => {
     if (e.target.closest('.sidebar-toggle-btn')) return;
     dragging = true; startX = e.clientX; startWidth = currentSidebarWidth();
     divider.classList.add('dragging');
-    document.body.style.cursor = 'col-resize'; document.body.style.userSelect = 'none';
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
     e.preventDefault();
   });
-
   document.addEventListener('mousemove', (e) => {
     if (!dragging) return;
     let newWidth = startWidth + (e.clientX - startX);
-    if (newWidth < 240) newWidth = 240;
-    if (newWidth > Math.min(window.innerWidth - 400, 600)) newWidth = Math.min(window.innerWidth - 400, 600);
+    const minW = 240, maxW = Math.min(window.innerWidth - 400, 600);
+    if (newWidth < minW) newWidth = minW;
+    if (newWidth > maxW) newWidth = maxW;
     document.documentElement.style.setProperty('--sidebar-w', newWidth + 'px');
   });
-
   document.addEventListener('mouseup', () => {
     if (!dragging) return;
     dragging = false; divider.classList.remove('dragging');
     document.body.style.cursor = ''; document.body.style.userSelect = '';
-    render(false); // UI resize shouldn't trigger "Dirty" flag
+    render();
   });
-
   divider.addEventListener('dblclick', (e) => {
     if (e.target.closest('.sidebar-toggle-btn')) return;
     document.documentElement.style.setProperty('--sidebar-w', '320px');
-    render(false);
+    render();
   });
 })();
 
 function esc(s) { return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
-}
-
+function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200); }
 function uid() { return 's' + Math.random().toString(36).slice(2,8); }
 
 function setZoom(delta) { currentZoom = Math.max(0.4, Math.min(1.5, +(currentZoom + delta).toFixed(2))); applyZoom(); }
 function setZoomReset() { currentZoom = 1; applyZoom(); }
-function applyZoom() {
-  document.getElementById('zoom-label').textContent = Math.round(currentZoom * 100) + '%';
-  render(false); // Crucial: Zooming does NOT flag the resume as "Dirty"
-}
+function applyZoom() { document.getElementById('zoom-label').textContent = Math.round(currentZoom * 100) + '%'; render(); }
 
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -939,7 +928,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 function bindField(id, key) {
   const el = document.getElementById(id);
   if (!el) return;
-  el.addEventListener('input', () => { state[key] = el.value; render(); });
+  el.addEventListener('input', () => { mutateState(() => { state[key] = el.value; }); });
 }
 bindField('f-name','name'); bindField('f-roll','roll'); bindField('f-degree','degree');
 bindField('f-gradyear','gradYear'); bindField('f-branch','branch'); bindField('f-institute','institute');
@@ -986,20 +975,20 @@ function renderEduEditor() {
       </div>`;
     card.querySelectorAll('[data-i]').forEach(inp => {
       inp.addEventListener('input', e => {
-        state.edu[+e.target.dataset.i][e.target.dataset.f] = e.target.value;
-        render();
+        mutateState(() => { state.edu[+e.target.dataset.i][e.target.dataset.f] = e.target.value; });
       });
     });
     el.appendChild(card);
   });
 }
 
-function addEduRow() { state.edu.push({ year: '', exam: '', inst: '', score: '' }); renderEduEditor(); render(); }
-function removeEdu(i) { state.edu.splice(i, 1); renderEduEditor(); render(); }
+function addEduRow() { mutateState(() => { state.edu.push({ year: '', exam: '', inst: '', score: '' }); }); renderEduEditor(); }
+function removeEdu(i) { mutateState(() => { state.edu.splice(i, 1); }); renderEduEditor(); }
 function moveEdu(i, dir) {
-  const j = i + dir; if (j < 0 || j >= state.edu.length) return;
-  [state.edu[i], state.edu[j]] = [state.edu[j], state.edu[i]];
-  renderEduEditor(); render();
+  const j = i + dir;
+  if (j < 0 || j >= state.edu.length) return;
+  mutateState(() => { [state.edu[i], state.edu[j]] = [state.edu[j], state.edu[i]]; });
+  renderEduEditor();
 }
 
 function renderSectionsEditor() {
@@ -1047,6 +1036,7 @@ function renderSectionsEditor() {
             <div class="field-group">
               <label class="field-label">Bullet points</label>
               <textarea class="field-textarea" placeholder="One bullet per line. Start with an action verb." data-si="${si}" data-ei="${ei}" data-f="bullets">${esc(en.bullets)}</textarea>
+              <p class="field-hint">One line = one bullet. First word is bolded automatically.</p>
             </div>
           </div>
         </div>`).join('');
@@ -1056,6 +1046,7 @@ function renderSectionsEditor() {
         <div class="field-group">
           <label class="field-label">Bullet points</label>
           <textarea class="field-textarea" style="min-height:100px;" placeholder="One bullet per line." data-si="${si}" data-f="content">${esc(sec.content || '')}</textarea>
+          <p class="field-hint">One line = one bullet point.</p>
         </div>`;
     } else if (sec.type === 'inline') {
       bodyHtml = `
@@ -1098,39 +1089,40 @@ function renderSectionsEditor() {
       </div>`;
 
     wrap.querySelector('.sec-title-input').addEventListener('input', e => {
-      state.sections[si].title = e.target.value;
+      mutateState(() => { state.sections[si].title = e.target.value; });
       wrap.querySelector('.sec-acc-title').textContent = e.target.value;
-      render();
     });
 
     wrap.querySelector('.type-select').addEventListener('change', e => {
-      const t = e.target.value; state.sections[si].type = t;
-      if (t === 'entries' && !state.sections[si].entries) state.sections[si].entries = [];
-      if (t === 'skills'  && !state.sections[si].skills)  state.sections[si].skills = [];
-      renderSectionsEditor(); render();
+      const t = e.target.value;
+      mutateState(() => {
+        state.sections[si].type = t;
+        if (t === 'entries' && !state.sections[si].entries) state.sections[si].entries = [];
+        if (t === 'skills'  && !state.sections[si].skills)  state.sections[si].skills = [];
+      });
+      renderSectionsEditor();
     });
 
     wrap.querySelectorAll('[data-si][data-ei]').forEach(inp => {
       inp.addEventListener('input', e => {
         const s = +e.target.dataset.si, en = +e.target.dataset.ei, f = e.target.dataset.f;
-        state.sections[s].entries[en][f] = e.target.value;
-        render();
+        mutateState(() => { state.sections[s].entries[en][f] = e.target.value; });
       });
     });
 
     wrap.querySelectorAll('[data-si][data-f="content"]').forEach(inp => {
       inp.addEventListener('input', e => {
-        state.sections[+e.target.dataset.si].content = e.target.value;
-        render();
+        mutateState(() => { state.sections[+e.target.dataset.si].content = e.target.value; });
       });
     });
 
     wrap.querySelectorAll('[data-ki]').forEach(inp => {
       inp.addEventListener('input', e => {
         const s = +e.target.dataset.si, k = +e.target.dataset.ki, f = e.target.dataset.f;
-        if (!state.sections[s].skills) state.sections[s].skills = [];
-        state.sections[s].skills[k][f] = e.target.value;
-        render();
+        mutateState(() => {
+          if (!state.sections[s].skills) state.sections[s].skills = [];
+          state.sections[s].skills[k][f] = e.target.value;
+        });
       });
     });
 
@@ -1138,50 +1130,66 @@ function renderSectionsEditor() {
   });
 }
 
-function toggleSection(id) { const sec = state.sections.find(s => s.id === id); if (sec) { sec.open = !sec.open; renderSectionsEditor(); } }
+function toggleSection(id) {
+  const sec = state.sections.find(s => s.id === id);
+  if (sec) { sec.open = !sec.open; renderSectionsEditor(); }
+}
+
 function addSection() {
-  state.sections.push({ id: uid(), title: 'NEW SECTION', open: true, type: 'entries', entries: [] });
-  renderSectionsEditor(); render();
+  mutateState(() => { state.sections.push({ id: uid(), title: 'NEW SECTION', open: true, type: 'entries', entries: [] }); });
+  renderSectionsEditor();
   document.querySelector('[data-tab="sections"]').click();
   setTimeout(() => { const sb = document.getElementById('sidebar-body'); sb.scrollTop = sb.scrollHeight; }, 50);
 }
-function removeSection(si) { state.sections.splice(si, 1); renderSectionsEditor(); render(); }
+
+function removeSection(si) { mutateState(() => { state.sections.splice(si, 1); }); renderSectionsEditor(); }
 function moveSection(si, dir) {
-  const j = si + dir; if (j < 0 || j >= state.sections.length) return;
-  [state.sections[si], state.sections[j]] = [state.sections[j], state.sections[si]];
-  renderSectionsEditor(); render();
+  const j = si + dir;
+  if (j < 0 || j >= state.sections.length) return;
+  mutateState(() => { [state.sections[si], state.sections[j]] = [state.sections[j], state.sections[si]]; });
+  renderSectionsEditor();
 }
 
 function addEntry(si) {
-  if (!state.sections[si].entries) state.sections[si].entries = [];
-  state.sections[si].entries.push({ id: uid(), title: '', org: '', date: '', supervisor: '', tools: '', bullets: '' });
-  renderSectionsEditor(); render();
+  mutateState(() => {
+    if (!state.sections[si].entries) state.sections[si].entries = [];
+    state.sections[si].entries.push({ id: uid(), title: '', org: '', date: '', supervisor: '', tools: '', bullets: '' });
+  });
+  renderSectionsEditor();
 }
-function removeEntry(si, ei) { state.sections[si].entries.splice(ei, 1); renderSectionsEditor(); render(); }
+
+function removeEntry(si, ei) { mutateState(() => { state.sections[si].entries.splice(ei, 1); }); renderSectionsEditor(); }
 function moveEntry(si, ei, dir) {
-  const entries = state.sections[si].entries; const j = ei + dir; if (j < 0 || j >= entries.length) return;
-  [entries[ei], entries[j]] = [entries[j], entries[ei]];
-  renderSectionsEditor(); render();
+  const entries = state.sections[si].entries;
+  const j = ei + dir;
+  if (j < 0 || j >= entries.length) return;
+  mutateState(() => { [entries[ei], entries[j]] = [entries[j], entries[ei]]; });
+  renderSectionsEditor();
 }
 
 function addSkillRow(si) {
-  if (!state.sections[si].skills) state.sections[si].skills = [];
-  state.sections[si].skills.push({ cat: '', items: '' });
-  renderSectionsEditor(); render();
-}
-function removeSkillRow(si, ki) { state.sections[si].skills.splice(ki, 1); renderSectionsEditor(); render(); }
-function moveSkillRow(si, ki, dir) {
-  const skills = state.sections[si].skills; const j = ki + dir; if (j < 0 || j >= skills.length) return;
-  [skills[ki], skills[j]] = [skills[j], skills[ki]];
-  renderSectionsEditor(); render();
+  mutateState(() => {
+    if (!state.sections[si].skills) state.sections[si].skills = [];
+    state.sections[si].skills.push({ cat: '', items: '' });
+  });
+  renderSectionsEditor();
 }
 
+function removeSkillRow(si, ki) { mutateState(() => { state.sections[si].skills.splice(ki, 1); }); renderSectionsEditor(); }
+function moveSkillRow(si, ki, dir) {
+  const skills = state.sections[si].skills;
+  const j = ki + dir;
+  if (j < 0 || j >= skills.length) return;
+  mutateState(() => { [skills[ki], skills[j]] = [skills[j], skills[ki]]; });
+  renderSectionsEditor();
+}
 
 function renderBullets(text) {
   const lines = (text || '').split('\n').filter(l => l.trim());
   if (!lines.length) return '';
   const items = lines.map(line => {
-    const t = line.trim(); const sp = t.indexOf(' ');
+    const t = line.trim();
+    const sp = t.indexOf(' ');
     if (sp > 0) return `<li><strong>${esc(t.slice(0,sp))}</strong>${esc(t.slice(sp))}</li>`;
     return `<li>${esc(t)}</li>`;
   }).join('');
@@ -1194,33 +1202,21 @@ function renderEntriesTable(entries) {
     const titlePart = en.org && en.org.trim()
       ? `<span class="r-et-title">${esc(en.title)}</span><span class="r-et-sep">|</span><span class="r-et-org">${esc(en.org)}</span>`
       : `<span class="r-et-title">${esc(en.title)}</span>`;
-
     const dateCell = (en.date || '').trim() ? `<td class="r-et-date">${esc(en.date)}</td>` : `<td></td>`;
-
     const subParts = [];
     if ((en.supervisor || '').trim()) subParts.push('Supervisor: ' + esc(en.supervisor.trim()));
     if ((en.tools || '').trim()) subParts.push('Tools &amp; Technologies: ' + esc(en.tools.trim()));
     const subRow = subParts.length ? `<tr class="r-et-sup-row"><td colspan="2">${subParts.join(' &nbsp;·&nbsp; ')}</td></tr>` : '';
-
     const bullets = renderBullets(en.bullets);
     const bulletsRow = bullets ? `<tr class="r-et-bullets-row"><td colspan="2">${bullets}</td></tr>` : '';
     const gap = idx < entries.length - 1 ? `<tr class="r-et-gap"><td colspan="2"></td></tr>` : '';
-
-    return `
-      <tr class="r-et-title-row">
-        <td>${titlePart}</td>
-        ${dateCell}
-      </tr>
-      ${subRow}
-      ${bulletsRow}
-      ${gap}`;
+    return `<tr class="r-et-title-row"><td>${titlePart}</td>${dateCell}</tr>${subRow}${bulletsRow}${gap}`;
   }).join('');
   return `<table class="r-entries-table"><tbody>${rows}</tbody></table>`;
 }
 
 function renderSection(sec) {
   let content = '';
-
   if (sec.type === 'entries') content = renderEntriesTable(sec.entries);
   else if (sec.type === 'bullets') content = renderBullets(sec.content);
   else if (sec.type === 'inline') content = `<div class="r-inline">${esc(sec.content || '')}</div>`;
@@ -1230,7 +1226,6 @@ function renderSection(sec) {
     ).join('');
     content = rows ? `<table class="r-skills-table"><tbody>${rows}</tbody></table>` : '';
   }
-
   if (!content.trim()) return '';
   return `<div class="r-sec-head"><div class="r-sec-head-text">${esc(sec.title)}</div></div>${content}`;
 }
@@ -1239,50 +1234,28 @@ function applyVisualPageBreaks() {
   if (pdfMode) return;
   const scroll = document.getElementById('preview-scroll');
   const source = document.getElementById('resume-paper');
-
   scroll.querySelectorAll('.resume-page').forEach(el => el.remove());
   scroll.classList.remove('paginated');
-
-  const MM_TO_PX = 3.7795275591;
-  const a4HeightPx = 297 * MM_TO_PX;
-  const padPx = (10 + 12) * MM_TO_PX;
-  const availPx = a4HeightPx - padPx; 
-
+  const MM_TO_PX = 3.7795275591, a4HeightPx = 297 * MM_TO_PX, padPx = (10 + 12) * MM_TO_PX, availPx = a4HeightPx - padPx;
   void source.offsetHeight;
-  const sourceHeight = source.offsetHeight;
-  const pageCount = Math.max(1, Math.ceil((sourceHeight - padPx) / availPx));
-
+  const sourceHeight = source.offsetHeight, pageCount = Math.max(1, Math.ceil((sourceHeight - padPx) / availPx));
   source.style.transform = `scale(${currentZoom})`;
   if (pageCount <= 1) return;
-
   scroll.classList.add('paginated');
   const children = Array.from(source.childNodes);
-
-  let currentPage = createResumePage();
-  let currentContent = currentPage.querySelector('.resume-page-content');
+  let currentPage = createResumePage(), currentContent = currentPage.querySelector('.resume-page-content');
   scroll.insertBefore(currentPage, source);
-
   function isSectionHead(node) { return node && node.nodeType === 1 && node.classList.contains('r-sec-head'); }
-
   for (let i = 0; i < children.length; i++) {
-    const child = children[i]; const nextChild = children[i + 1];
-    const isHeadWithContent = isSectionHead(child) && nextChild && !isSectionHead(nextChild);
-
-    currentContent.appendChild(child); 
-
-    if (isHeadWithContent) {
-      currentContent.appendChild(nextChild);
-      i++; 
-    }
-
+    const child = children[i], nextChild = children[i + 1], isHeadWithContent = isSectionHead(child) && nextChild && !isSectionHead(nextChild);
+    currentContent.appendChild(child);
+    if (isHeadWithContent) { currentContent.appendChild(nextChild); i++; }
     if (currentContent.offsetHeight > availPx && currentContent.childNodes.length > 1) {
       currentContent.removeChild(child);
       if (isHeadWithContent && nextChild.parentNode === currentContent) currentContent.removeChild(nextChild);
-
       currentPage = createResumePage();
       currentContent = currentPage.querySelector('.resume-page-content');
       scroll.insertBefore(currentPage, source);
-
       currentContent.appendChild(child);
       if (isHeadWithContent) currentContent.appendChild(nextChild);
     }
@@ -1290,24 +1263,18 @@ function applyVisualPageBreaks() {
 }
 
 function createResumePage() {
-  const page = document.createElement('div'); page.className = 'resume-page';
+  const page = document.createElement('div');
+  page.className = 'resume-page';
   page.style.transform = `scale(${currentZoom})`;
-  const content = document.createElement('div'); content.className = 'resume-page-content';
+  const content = document.createElement('div');
+  content.className = 'resume-page-content';
   page.appendChild(content);
   return page;
 }
 
-// render(true) means "The student changed text". render(false) means "We just resized the window".
-function render(isDataMutation = true) {
+function render() {
   const s = state;
-
-  if (isDataMutation && !isBooting) {
-    isDirty = true;
-    saveGhostDraft();
-  }
-
   const logoHtml = LOGO_URL ? `<img src="${LOGO_URL}" alt="IIT Logo" />` : `<div class="r-logo-placeholder">LOGO</div>`;
-
   const links = [];
   if (s.email) links.push(`Email: <a href="mailto:${esc(s.email)}">${esc(s.email)}</a>`);
   if (s.phone) links.push(`Phone: ${esc(s.phone)}`);
@@ -1315,10 +1282,8 @@ function render(isDataMutation = true) {
   if (s.githubUrl && s.githubLabel) links.push(`GitHub: <a href="${esc(s.githubUrl)}">${esc(s.githubLabel)}</a>`);
   if (s.scholarUrl && s.scholarLabel) links.push(`Scholar: <a href="${esc(s.scholarUrl)}">${esc(s.scholarLabel)}</a>`);
   const linksHtml = links.length ? `<div class="r-links">${links.join('<span class="sep">|</span>')}</div>` : '';
-
   const eduHtml = s.edu.map(r => `<tr><td>${esc(r.year)}</td><td>${esc(r.exam)}</td><td>${esc(r.inst)}</td><td>${esc(r.score)}</td></tr>`).join('');
   const sectionsHtml = s.sections.map(renderSection).join('');
-
   const degreeParts = [];
   if (s.degree) degreeParts.push(s.degree);
   if (s.branch) degreeParts.push(s.branch);
@@ -1336,78 +1301,54 @@ function render(isDataMutation = true) {
         <div class="r-logo-box">${logoHtml}</div>
       </div>
     </div>
-
     <div class="r-sec-head"><div class="r-sec-head-text">EDUCATION</div></div>
     <table class="r-edu-table">
-      <thead>
-        <tr><th style="width:10%">Year</th><th style="width:33%">Degree / Exam</th><th style="width:42%">Institute</th><th style="width:15%;text-align:right">CGPA / Marks</th></tr>
-      </thead>
+      <thead><tr><th style="width:10%">Year</th><th style="width:33%">Degree / Exam</th><th style="width:42%">Institute</th><th style="width:15%;text-align:right">CGPA / Marks</th></tr></thead>
       <tbody>${eduHtml}</tbody>
     </table>
-
     ${sectionsHtml}
     ${s.footer ? `<div class="r-footer-preview">${esc(s.footer)}</div>` : ''}`;
 
   document.getElementById('print-footer-node').innerHTML = esc(s.footer);
   document.getElementById('char-count').textContent = document.getElementById('resume-paper').innerText.length + ' chars';
-
   setTimeout(applyVisualPageBreaks, 50);
 }
 
-function printResume() {
-  document.body.classList.add('sidebar-hidden');
-  window.print();
-  setTimeout(() => document.body.classList.remove('sidebar-hidden'), 1000);
-}
+function printResume() { document.body.classList.add('sidebar-hidden'); window.print(); setTimeout(() => document.body.classList.remove('sidebar-hidden'), 1000); }
 
-const PDF_COLORS = {
-  accent:     [0, 51, 102],     
-  accentSoft: [206, 223, 239],  
-  text:       [26, 26, 26],     
-  textMute:   [74, 90, 106],    
-  border:     [191, 208, 224],  
-  white:      [255, 255, 255]
-};
+// ═══════════════════════════════════════
+//  CUSTOM PDF GENERATOR (jsPDF)
+// ═══════════════════════════════════════
+const PDF_COLORS = { accent: [0, 51, 102], accentSoft: [206, 223, 239], text: [26, 26, 26], textMute: [74, 90, 106], border: [191, 208, 224], white: [255, 255, 255] };
 
 function downloadPDF() {
-  if (typeof window.jspdf === 'undefined' || !window.jspdf.jsPDF) {
-    showToast('PDF library failed to load. Check internet connection and reload.');
-    return;
-  }
-
+  if (typeof window.jspdf === 'undefined' || !window.jspdf.jsPDF) { showToast('PDF library failed to load. Check internet connection and reload.'); return; }
   const btns = document.querySelectorAll('button.btn-primary');
   btns.forEach(b => { b.disabled = true; b.dataset.origText = b.textContent; b.textContent = 'Generating…'; });
   showToast('Generating PDF…');
 
-  let doc = null; let y = 0; let pageNum = 0;
-  const PAGE_W = 210; const PAGE_H = 297; const MARGIN_TOP = 10; const MARGIN_BOTTOM = 12; const MARGIN_LEFT = 12; const MARGIN_RIGHT = 12;
-  const CONTENT_W = PAGE_W - MARGIN_LEFT - MARGIN_RIGHT; 
+  let doc = null, y = 0, pageNum = 0;
+  const PAGE_W = 210, PAGE_H = 297, MARGIN_TOP = 10, MARGIN_BOTTOM = 12, MARGIN_LEFT = 12, MARGIN_RIGHT = 12, CONTENT_W = PAGE_W - MARGIN_LEFT - MARGIN_RIGHT;
 
   function ensureSpace(neededH) {
-    if (y + neededH > PAGE_H - MARGIN_BOTTOM) {
-      addFooterToPage(); doc.addPage(); pageNum++; y = MARGIN_TOP; return true;
-    }
+    if (y + neededH > PAGE_H - MARGIN_BOTTOM) { addFooterToPage(); doc.addPage(); pageNum++; y = MARGIN_TOP; return true; }
     return false;
   }
 
   function addFooterToPage() {
     if (!state.footer) return;
-    const footerY = PAGE_H - MARGIN_BOTTOM + 4;
+    const fy = PAGE_H - MARGIN_BOTTOM + 4;
     doc.setDrawColor(...PDF_COLORS.border); doc.setLineWidth(0.2); doc.setLineDashPattern([1, 1], 0);
-    doc.line(MARGIN_LEFT, footerY - 2, PAGE_W - MARGIN_RIGHT, footerY - 2);
-    doc.setLineDashPattern([], 0);
+    doc.line(MARGIN_LEFT, fy - 2, PAGE_W - MARGIN_RIGHT, fy - 2); doc.setLineDashPattern([], 0);
     doc.setFont('helvetica', 'italic'); doc.setFontSize(7); doc.setTextColor(...PDF_COLORS.textMute);
-    doc.text(doc.splitTextToSize(state.footer, CONTENT_W), PAGE_W / 2, footerY + 1, { align: 'center' });
+    doc.text(doc.splitTextToSize(state.footer, CONTENT_W), PAGE_W / 2, fy + 1, { align: 'center' });
   }
 
   function text(textStr, x, fontSize, opts) {
-    opts = opts || {};
-    const font = opts.font || 'helvetica'; const style = opts.style || 'normal'; const color = opts.color || PDF_COLORS.text;
-    const maxWidth = opts.maxWidth || CONTENT_W; const lineHeight = opts.lineHeight || (fontSize * 0.4); const align = opts.align || 'left';
-
+    opts = opts || {}; const font = opts.font || 'helvetica', style = opts.style || 'normal', color = opts.color || PDF_COLORS.text, maxW = opts.maxWidth || CONTENT_W, lh = opts.lineHeight || (fontSize * 0.4), align = opts.align || 'left';
     doc.setFont(font, style); doc.setFontSize(fontSize); doc.setTextColor(...color);
-    const lines = doc.splitTextToSize(String(textStr), maxWidth);
-    for (const line of lines) { ensureSpace(lineHeight + 0.5); doc.text(line, x, y + lineHeight, { align: align }); y += lineHeight + 0.5; }
+    const lines = doc.splitTextToSize(String(textStr), maxW);
+    for (const line of lines) { ensureSpace(lh + 0.5); doc.text(line, x, y + lh, { align }); y += lh + 0.5; }
     return y;
   }
 
@@ -1419,15 +1360,13 @@ function downloadPDF() {
   }
 
   function cell(x, cellY, w, h, textStr, opts) {
-    opts = opts || {};
-    const fontSize = opts.fontSize || 8.5; const style = opts.style || 'normal'; const color = opts.color || PDF_COLORS.text;
-    const align = opts.align || 'left'; const valign = opts.valign || 'middle'; const fill = opts.fill || null;
-
+    opts = opts || {}; const fontSize = opts.fontSize || 8.5, style = opts.style || 'normal', color = opts.color || PDF_COLORS.text, align = opts.align || 'left', valign = opts.valign || 'middle', fill = opts.fill || null;
     if (fill) { doc.setFillColor(...fill); doc.rect(x, cellY, w, h, 'F'); }
     doc.setFont('helvetica', style); doc.setFontSize(fontSize); doc.setTextColor(...color);
-    const padX = 2; const textX = align === 'right' ? x + w - padX : (align === 'center' ? x + w / 2 : x + padX);
+    const padX = 2, textX = align === 'right' ? x + w - padX : (align === 'center' ? x + w / 2 : x + padX);
     const textY = valign === 'middle' ? cellY + h / 2 + fontSize * 0.13 : cellY + fontSize * 0.35;
-    doc.text(doc.splitTextToSize(String(textStr), w - 2 * padX)[0] || '', textX, textY, { align: align, maxWidth: w - 2 * padX });
+    const lines = doc.splitTextToSize(String(textStr), w - 2 * padX);
+    doc.text(lines[0] || '', textX, textY, { align, maxWidth: w - 2 * padX });
   }
 
   try {
@@ -1435,68 +1374,55 @@ function downloadPDF() {
     doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
     y = MARGIN_TOP; pageNum = 1;
 
-    {
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(18); doc.setTextColor(...PDF_COLORS.accent);
-      doc.text(state.name || '', MARGIN_LEFT, y + 6); const nameWidth = doc.getTextWidth(state.name || '');
+    // Header
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(18); doc.setTextColor(...PDF_COLORS.accent);
+    doc.text(state.name || '', MARGIN_LEFT, y + 6); const nameWidth = doc.getTextWidth(state.name || '');
+    if (state.roll) {
+      const rollX = MARGIN_LEFT + nameWidth + 4;
+      doc.setDrawColor(...PDF_COLORS.border); doc.setLineWidth(0.3); doc.line(rollX, y + 1, rollX, y + 6);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(...PDF_COLORS.text); doc.text(state.roll, rollX + 2, y + 6);
+    }
+    y += 8;
 
-      if (state.roll) {
-        const rollX = MARGIN_LEFT + nameWidth + 4;
-        doc.setDrawColor(...PDF_COLORS.border); doc.setLineWidth(0.3); doc.line(rollX, y + 1, rollX, y + 6);
-        doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(...PDF_COLORS.text);
-        doc.text(state.roll, rollX + 2, y + 6);
-      }
-      y += 8;
-
-      if (state.degree || state.branch || state.institute) {
-        doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(...PDF_COLORS.textMute);
-        const degreeParts = []; if (state.degree) degreeParts.push(state.degree); if (state.branch) degreeParts.push(state.branch);
-        let degreeText = degreeParts.join(' in '); if (state.institute) degreeText += (degreeText ? ' · ' : '') + state.institute;
-        doc.text(degreeText, MARGIN_LEFT, y + 3); y += 5;
-      }
-
-      const links = [];
-      if (state.email) links.push('Email: ' + state.email); if (state.phone) links.push('Phone: ' + state.phone);
-      if (state.linkedinUrl && state.linkedinLabel) links.push('LinkedIn: ' + state.linkedinLabel);
-      if (state.githubUrl && state.githubLabel)   links.push('GitHub: ' + state.githubLabel);
-      if (state.scholarUrl && state.scholarLabel) links.push('Scholar: ' + state.scholarLabel);
-      if (links.length) {
-        doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(...PDF_COLORS.textMute);
-        doc.text(links.join('   |   '), MARGIN_LEFT, y + 3); y += 5;
-      }
-
-      doc.setDrawColor(...PDF_COLORS.accent); doc.setLineWidth(0.6); doc.line(MARGIN_LEFT, y, PAGE_W - MARGIN_RIGHT, y); y += 2;
+    if (state.degree || state.branch || state.institute) {
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(...PDF_COLORS.textMute);
+      const degreeParts = []; if (state.degree) degreeParts.push(state.degree); if (state.branch) degreeParts.push(state.branch);
+      let degreeText = degreeParts.join(' in '); if (state.institute) degreeText += (degreeText ? ' · ' : '') + state.institute;
+      doc.text(degreeText, MARGIN_LEFT, y + 3); y += 5;
     }
 
+    const links = [];
+    if (state.email) links.push('Email: ' + state.email); if (state.phone) links.push('Phone: ' + state.phone);
+    if (state.linkedinUrl && state.linkedinLabel) links.push('LinkedIn: ' + state.linkedinLabel);
+    if (state.githubUrl && state.githubLabel) links.push('GitHub: ' + state.githubLabel);
+    if (state.scholarUrl && state.scholarLabel) links.push('Scholar: ' + state.scholarLabel);
+    if (links.length) { doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(...PDF_COLORS.textMute); doc.text(links.join('   |   '), MARGIN_LEFT, y + 3); y += 5; }
+
+    doc.setDrawColor(...PDF_COLORS.accent); doc.setLineWidth(0.6); doc.line(MARGIN_LEFT, y, PAGE_W - MARGIN_RIGHT, y); y += 2;
+
+    // Education
     if (state.edu && state.edu.length) {
       sectionHeader('EDUCATION');
-      const colWidths = [CONTENT_W * 0.10, CONTENT_W * 0.33, CONTENT_W * 0.42, CONTENT_W * 0.15];
-      const colX = [MARGIN_LEFT]; for (let i = 1; i < colWidths.length; i++) colX.push(colX[i - 1] + colWidths[i - 1]);
-
+      const colWidths = [CONTENT_W * 0.10, CONTENT_W * 0.33, CONTENT_W * 0.42, CONTENT_W * 0.15], colX = [MARGIN_LEFT];
+      for (let i = 1; i < colWidths.length; i++) colX.push(colX[i - 1] + colWidths[i - 1]);
       ensureSpace(6); const headerH = 5;
       doc.setFillColor(...PDF_COLORS.accentSoft); doc.rect(MARGIN_LEFT, y, CONTENT_W, headerH, 'F');
       doc.setDrawColor(...PDF_COLORS.border); doc.setLineWidth(0.2); doc.rect(MARGIN_LEFT, y, CONTENT_W, headerH, 'S');
-      ['Year', 'Degree / Exam', 'Institute', 'CGPA / Marks'].forEach((h, i) => {
-        cell(colX[i], y, colWidths[i], headerH, h, { fontSize: 8, style: 'bold', color: PDF_COLORS.accent, align: i === 3 ? 'right' : 'left' });
-      });
+      ['Year', 'Degree / Exam', 'Institute', 'CGPA / Marks'].forEach((h, i) => { cell(colX[i], y, colWidths[i], headerH, h, { fontSize: 8, style: 'bold', color: PDF_COLORS.accent, align: i === 3 ? 'right' : 'left' }); });
       y += headerH;
 
       const rowH = 5;
       state.edu.forEach((r, idx) => {
         ensureSpace(6);
-        if (idx < state.edu.length - 1) {
-          doc.setDrawColor(...PDF_COLORS.border); doc.setLineWidth(0.15);
-          doc.line(MARGIN_LEFT, y + rowH, PAGE_W - MARGIN_RIGHT, y + rowH);
-        }
-        [r.year, r.exam, r.inst, r.score].forEach((v, i) => {
-          cell(colX[i], y, colWidths[i], rowH, v || '', { fontSize: 8.5, color: i === 3 ? PDF_COLORS.accent : PDF_COLORS.text, style: i === 3 ? 'bold' : 'normal', align: i === 3 ? 'right' : 'left' });
-        });
+        if (idx < state.edu.length - 1) { doc.setDrawColor(...PDF_COLORS.border); doc.setLineWidth(0.15); doc.line(MARGIN_LEFT, y + rowH, PAGE_W - MARGIN_RIGHT, y + rowH); }
+        [r.year, r.exam, r.inst, r.score].forEach((v, i) => { cell(colX[i], y, colWidths[i], rowH, v || '', { fontSize: 8.5, color: i === 3 ? PDF_COLORS.accent : PDF_COLORS.text, style: i === 3 ? 'bold' : 'normal', align: i === 3 ? 'right' : 'left' }); });
         y += rowH;
       });
       y += 1;
-      doc.setDrawColor(...PDF_COLORS.border); doc.setLineWidth(0.2);
-      doc.rect(MARGIN_LEFT, y - 1 - rowH * state.edu.length - headerH, CONTENT_W, rowH * state.edu.length + headerH, 'S');
+      doc.setDrawColor(...PDF_COLORS.border); doc.setLineWidth(0.2); doc.rect(MARGIN_LEFT, y - 1 - rowH * state.edu.length - headerH, CONTENT_W, rowH * state.edu.length + headerH, 'S');
     }
 
+    // Sections
     state.sections.forEach(sec => {
       if (sec.type === 'entries') renderEntriesSectionPDF(sec);
       else if (sec.type === 'bullets') renderBulletsSectionPDF(sec);
@@ -1508,61 +1434,48 @@ function downloadPDF() {
 
     const filename = (state.roll || 'resume') + '.pdf';
     let pdfBlob;
-    try { pdfBlob = new Blob([doc.output('arraybuffer')], { type: 'application/pdf' }); } 
-    catch (e1) { pdfBlob = doc.output('blob'); }
+    try { pdfBlob = new Blob([doc.output('arraybuffer')], { type: 'application/pdf' }); } catch (e1) {
+      try { pdfBlob = doc.output('blob'); } catch (e2) {
+        const a = document.createElement('a'); a.href = doc.output('datauristring'); a.download = filename;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a); showToast('PDF downloaded'); return;
+      }
+    }
 
     if (pdfBlob) {
-      const url = URL.createObjectURL(pdfBlob);
-      const a = document.createElement('a'); a.href = url; a.download = filename; a.style.display = 'none';
-      document.body.appendChild(a); a.click();
-      setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
+      const url = URL.createObjectURL(pdfBlob), a = document.createElement('a'); a.href = url; a.download = filename; a.style.display = 'none';
+      document.body.appendChild(a); a.click(); setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
     }
     showToast('PDF downloaded');
-  } catch (err) { showToast('PDF failed: ' + String(err).slice(0, 100)); } 
+  } catch (err) { console.error('[downloadPDF]', err); showToast('PDF failed: ' + (err && err.message ? err.message : String(err)).slice(0, 100)); }
   finally { btns.forEach(b => { b.disabled = false; b.textContent = b.dataset.origText || 'Download PDF'; }); }
 
   function renderEntriesSectionPDF(sec) {
     if (!sec.entries || !sec.entries.length) return;
     sectionHeader(sec.title);
-    sec.entries.forEach((en) => {
-      let neededH = 4;
-      if ((en.supervisor || '').trim() || (en.tools || '').trim()) neededH += 3;
-      if (en.bullets) neededH += (en.bullets.split('\n').filter(l => l.trim())).length * 3.5;
+    sec.entries.forEach((en, idx) => {
+      let neededH = 4; if ((en.supervisor || '').trim() || (en.tools || '').trim()) neededH += 3;
+      if (en.bullets) neededH += en.bullets.split('\n').filter(l => l.trim()).length * 3.5;
       ensureSpace(neededH + 2);
 
       doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(...PDF_COLORS.text);
       const titleLines = doc.splitTextToSize(en.org ? `${en.title}  |  ${en.org}` : en.title, CONTENT_W * 0.70);
       doc.text(titleLines, MARGIN_LEFT, y + 3);
-
-      if (en.date) {
-        doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(...PDF_COLORS.accent);
-        doc.text(en.date, PAGE_W - MARGIN_RIGHT, y + 3, { align: 'right' });
-      }
+      if (en.date) { doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(...PDF_COLORS.accent); doc.text(en.date, PAGE_W - MARGIN_RIGHT, y + 3, { align: 'right' }); }
       y += 4 * titleLines.length;
 
       const subParts = [];
       if ((en.supervisor || '').trim()) subParts.push('Supervisor: ' + en.supervisor.trim());
       if ((en.tools || '').trim()) subParts.push('Tools & Technologies: ' + en.tools.trim());
-      if (subParts.length) {
-        ensureSpace(4); doc.setFont('helvetica', 'italic'); doc.setFontSize(7.5); doc.setTextColor(...PDF_COLORS.textMute);
-        const subLines = doc.splitTextToSize(subParts.join('   ·   '), CONTENT_W);
-        doc.text(subLines, MARGIN_LEFT, y + 2); y += Math.max(3, subLines.length * 3);
-      }
+      if (subParts.length) { ensureSpace(4); doc.setFont('helvetica', 'italic'); doc.setFontSize(7.5); doc.setTextColor(...PDF_COLORS.textMute); const subLines = doc.splitTextToSize(subParts.join('   ·   '), CONTENT_W); doc.text(subLines, MARGIN_LEFT, y + 2); y += Math.max(3, subLines.length * 3); }
 
       if (en.bullets) {
-        (en.bullets.split('\n').filter(l => l.trim())).forEach(line => {
-          ensureSpace(4);
-          doc.setFillColor(...PDF_COLORS.text); doc.rect(MARGIN_LEFT + 1, y + 1.3, 0.8, 0.8, 'F');
-          const sp = line.trim().indexOf(' ');
-          let firstWord = '', rest = '';
+        en.bullets.split('\n').filter(l => l.trim()).forEach(line => {
+          ensureSpace(4); doc.setFillColor(...PDF_COLORS.text); doc.rect(MARGIN_LEFT + 1, y + 1.3, 0.8, 0.8, 'F');
+          const sp = line.trim().indexOf(' '); let firstWord = '', rest = '';
           if (sp > 0) { firstWord = line.trim().slice(0, sp); rest = line.trim().slice(sp); } else { firstWord = line.trim(); }
-
-          doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(...PDF_COLORS.accent);
-          doc.text(firstWord, MARGIN_LEFT + 3, y + 2); const firstW = doc.getTextWidth(firstWord);
-
-          doc.setFont('helvetica', 'normal'); doc.setTextColor(...PDF_COLORS.text);
-          const restLines = doc.splitTextToSize(rest, CONTENT_W - 5 - firstW);
-          doc.text(restLines, MARGIN_LEFT + 3 + firstW, y + 2); y += Math.max(3.5, restLines.length * 3.5);
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(...PDF_COLORS.accent); doc.text(firstWord, MARGIN_LEFT + 3, y + 2);
+          const firstW = doc.getTextWidth(firstWord); doc.setFont('helvetica', 'normal'); doc.setTextColor(...PDF_COLORS.text);
+          const restLines = doc.splitTextToSize(rest, CONTENT_W - 5 - firstW); doc.text(restLines, MARGIN_LEFT + 3 + firstW, y + 2); y += Math.max(3.5, restLines.length * 3.5);
         });
       }
       y += 2;
@@ -1572,18 +1485,13 @@ function downloadPDF() {
   function renderBulletsSectionPDF(sec) {
     if (!sec.content || !sec.content.trim()) return;
     sectionHeader(sec.title);
-    (sec.content.split('\n').filter(l => l.trim())).forEach(line => {
-      ensureSpace(4);
-      doc.setFillColor(...PDF_COLORS.text); doc.rect(MARGIN_LEFT + 1, y + 1.3, 0.8, 0.8, 'F');
+    sec.content.split('\n').filter(l => l.trim()).forEach(line => {
+      ensureSpace(4); doc.setFillColor(...PDF_COLORS.text); doc.rect(MARGIN_LEFT + 1, y + 1.3, 0.8, 0.8, 'F');
       const sp = line.trim().indexOf(' '); let firstWord = '', rest = '';
       if (sp > 0) { firstWord = line.trim().slice(0, sp); rest = line.trim().slice(sp); } else { firstWord = line.trim(); }
-
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(...PDF_COLORS.accent);
-      doc.text(firstWord, MARGIN_LEFT + 3, y + 2); const firstW = doc.getTextWidth(firstWord);
-
-      doc.setFont('helvetica', 'normal'); doc.setTextColor(...PDF_COLORS.text);
-      const restLines = doc.splitTextToSize(rest, CONTENT_W - 5 - firstW);
-      doc.text(restLines, MARGIN_LEFT + 3 + firstW, y + 2); y += Math.max(3.5, restLines.length * 3.5);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(...PDF_COLORS.accent); doc.text(firstWord, MARGIN_LEFT + 3, y + 2);
+      const firstW = doc.getTextWidth(firstWord); doc.setFont('helvetica', 'normal'); doc.setTextColor(...PDF_COLORS.text);
+      const restLines = doc.splitTextToSize(rest, CONTENT_W - 5 - firstW); doc.text(restLines, MARGIN_LEFT + 3 + firstW, y + 2); y += Math.max(3.5, restLines.length * 3.5);
     });
     y += 2;
   }
@@ -1591,36 +1499,29 @@ function downloadPDF() {
   function renderInlineSectionPDF(sec) {
     if (!sec.content || !sec.content.trim()) return;
     sectionHeader(sec.title);
-    text((sec.content.split('|').map(s => s.trim()).filter(Boolean)).join('   |   '), MARGIN_LEFT, 8.5, { color: PDF_COLORS.text, lineHeight: 4 }); y += 1;
+    text(sec.content.split('|').map(s => s.trim()).filter(Boolean).join('   |   '), MARGIN_LEFT, 8.5, { color: PDF_COLORS.text, lineHeight: 4 }); y += 1;
   }
 
   function renderSkillsSectionPDF(sec) {
     if (!sec.skills || !sec.skills.length) return;
     sectionHeader(sec.title);
-    const catW = CONTENT_W * 0.30; const itemsW = CONTENT_W * 0.70;
-
+    const catW = CONTENT_W * 0.30, itemsW = CONTENT_W * 0.70;
     sec.skills.forEach((sk, idx) => {
-      ensureSpace(5);
-      doc.setFillColor(...PDF_COLORS.accentSoft); doc.rect(MARGIN_LEFT, y, catW, 5, 'F');
-      cell(MARGIN_LEFT, y, catW, 5, sk.cat, { fontSize: 8.5, style: 'bold', color: PDF_COLORS.accent });
-      cell(MARGIN_LEFT + catW, y, itemsW, 5, sk.items, { fontSize: 8.5, color: PDF_COLORS.text });
-      doc.setDrawColor(...PDF_COLORS.border); doc.setLineWidth(0.15); doc.line(MARGIN_LEFT + catW, y, MARGIN_LEFT + catW, y + 5);
-      if (idx < sec.skills.length - 1) doc.line(MARGIN_LEFT, y + 5, PAGE_W - MARGIN_RIGHT, y + 5);
-      y += 5;
+      ensureSpace(5); const rowH = 5;
+      doc.setFillColor(...PDF_COLORS.accentSoft); doc.rect(MARGIN_LEFT, y, catW, rowH, 'F');
+      cell(MARGIN_LEFT, y, catW, rowH, sk.cat, { fontSize: 8.5, style: 'bold', color: PDF_COLORS.accent });
+      cell(MARGIN_LEFT + catW, y, itemsW, rowH, sk.items, { fontSize: 8.5, color: PDF_COLORS.text });
+      doc.setDrawColor(...PDF_COLORS.border); doc.setLineWidth(0.15); doc.line(MARGIN_LEFT + catW, y, MARGIN_LEFT + catW, y + rowH);
+      if (idx < sec.skills.length - 1) doc.line(MARGIN_LEFT, y + rowH, PAGE_W - MARGIN_RIGHT, y + rowH);
+      y += rowH;
     });
-    doc.setDrawColor(...PDF_COLORS.border); doc.setLineWidth(0.2);
-    doc.rect(MARGIN_LEFT, y - sec.skills.length * 5, CONTENT_W, sec.skills.length * 5, 'S'); y += 2;
+    doc.setDrawColor(...PDF_COLORS.border); doc.setLineWidth(0.2); doc.rect(MARGIN_LEFT, y - sec.skills.length * 5, CONTENT_W, sec.skills.length * 5, 'S'); y += 2;
   }
 }
 
 function copyJSON() {
-  const json = JSON.stringify(state, null, 2);
-  const blob = new Blob([json], { type: 'application/json' }); const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = (state.roll || 'resume') + '-data.json';
-  a.click(); URL.revokeObjectURL(url);
-  
-  isDirty = false; // Successfully exported -> remove the refresh lock
-  showToast('Data exported as JSON');
+  const json = JSON.stringify(state, null, 2), blob = new Blob([json], { type: 'application/json' }), url = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = url; a.download = (state.roll || 'resume') + '-data.json'; a.click(); URL.revokeObjectURL(url); showToast('Data exported as JSON');
 }
 
 function importJSON(event) {
@@ -1628,24 +1529,31 @@ function importJSON(event) {
   const reader = new FileReader();
   reader.onload = e => {
     try {
-      state = JSON.parse(e.target.result);
-      ['name','roll','degree','gradYear','branch','institute','email','phone','linkedinUrl','linkedinLabel','githubUrl','githubLabel','scholarUrl','scholarLabel','footer'].forEach(k => {
-        const el = document.getElementById('f-' + k.replace(/([A-Z])/g, c => '-' + c.toLowerCase())); if (el) el.value = state[k] || '';
-      });
-      isDirty = false; // Freshly imported file is not "dirty" yet
-      renderEduEditor(); renderSectionsEditor(); render(false);
+      const parsed = JSON.parse(e.target.result);
+      pushHistory(deepClone(state));
+      state = parsed;
+      applyStateSnapshot(state);
+      scheduleSave();
       showToast('Data imported successfully');
     } catch { showToast('Error: could not read file'); }
   };
   reader.readAsText(file); event.target.value = '';
 }
 
-// INIT
-restoreGhostDraft();
+// ═══════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════
+history.push(deepClone(state));
+historyIndex = 0;
+updateUndoRedoBtns();
+
 renderEduEditor();
 renderSectionsEditor();
-render(false);
-isBooting = false; // The boot sequence has finished. Future edits will now lock the browser.
+render();
+
+checkForSavedState();
+_lastSaveTime = Date.now();
+setSaveIndicator('saved');
 </script>
 </body>
 </html>
