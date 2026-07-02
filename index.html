@@ -123,8 +123,8 @@ body.sidebar-hidden #sidebar-divider:hover { background: var(--accent); }
 #sidebar-top h1 { font-size: 14px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.01em; }
 #sidebar-top p { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
 
-#tab-bar { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--surface); }
-.tab-btn { flex: 1; padding: 9px 6px; font-size: 11.5px; font-weight: 500; font-family: var(--font); color: var(--text-secondary); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: color 0.12s, border-color 0.12s; letter-spacing: 0.01em; }
+#tab-bar { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--surface); flex-wrap: wrap; }
+.tab-btn { flex: 1; padding: 9px 6px; font-size: 11.5px; font-weight: 500; font-family: var(--font); color: var(--text-secondary); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: color 0.12s, border-color 0.12s; letter-spacing: 0.01em; white-space: nowrap; }
 .tab-btn:hover { color: var(--text-primary); }
 .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
 
@@ -342,6 +342,11 @@ body.sidebar-hidden #sidebar-divider:hover { background: var(--accent); }
 .guideline-block ul li { font-size: 11px; color: var(--text-secondary); padding: 2px 0 2px 12px; position: relative; line-height: 1.45; }
 .guideline-block ul li::before { content: '·'; position: absolute; left: 2px; color: var(--text-tertiary); }
 .guideline-warn { background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 3px; padding: 6px 9px; font-size: 11px; color: #92400E; margin-top: 6px; line-height: 1.4; }
+.ts-item { padding: 10px 18px; border-bottom: 1px solid var(--border); }
+.ts-item:last-child { border-bottom: none; }
+.ts-item-title { font-size: 11.5px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+.ts-item-body { font-size: 11px; color: var(--text-secondary); line-height: 1.55; }
+.ts-item-body code { background: var(--bg); border: 1px solid var(--border); border-radius: 3px; padding: 1px 4px; font-size: 10.5px; font-family: monospace; }
 
 /* ══════════════════════════════════════════
    PRINT CSS
@@ -390,6 +395,7 @@ body.sidebar-hidden #sidebar-divider:hover { background: var(--accent); }
     <button class="tab-btn" data-tab="identity">Identity</button>
     <button class="tab-btn" data-tab="education">Education</button>
     <button class="tab-btn" data-tab="sections">Sections</button>
+    <button class="tab-btn" data-tab="troubleshoot">Troubleshoot</button>
   </div>
 
   <div id="sidebar-body">
@@ -534,6 +540,15 @@ body.sidebar-hidden #sidebar-divider:hover { background: var(--accent); }
         </ul>
       </div>
     </div>
+
+    <div class="tab-panel" id="tab-troubleshoot">
+      <div class="ts-item">
+        <div class="ts-item-title">1. Blank white screen while editing</div>
+        <div class="ts-item-body">
+          If the preview turns into a blank white screen while you're typing, press <code>Backspace</code> or type any letter in the field you were editing. The preview will re-render normally right away. This is a temporary rendering glitch, not data loss — nothing you've typed is lost.
+        </div>
+      </div>
+    </div>
   </div>
 
   <div id="sidebar-footer">
@@ -631,7 +646,7 @@ const DEFAULT_STATE = {
         { cat: 'Hardware and General Skills', items: 'Arduino | Raspberry Pi | Jetson Nano | Pixhawk | Soldering | Wiring | Robotics | Sensor Integration' }
       ]
     },
-    { id: 's3', title: 'KEY COURSES TAKEN', open: false, type: 'inline', content: 'Machine Learning | Pattern Recognition and Machine Learning | Signal and Systems | Digital Systems | Electrical Circuits and Networks | Electronic Instrumentation and Measurement' },
+    { id: 's3', title: 'KEY COURSES TAKEN', open: false, type: 'inline', content: 'Machine Learning | Pattern Recognition and Machine Learning | Signal and Systems | Digital Systems | Electronic Instrumentation and Measurement' },
     {
       id: 's4', title: 'POSITIONS OF RESPONSIBILITY', open: false, type: 'bullets',
       entries: [
