@@ -308,6 +308,8 @@ body.sidebar-hidden #sidebar-divider:hover { background: var(--accent); }
 .r-et-sep { color: var(--resume-border); margin: 0 3px; font-weight: 400; }
 .r-et-org { font-weight: 500; color: var(--resume-text-mute); font-size: 8.5pt; }
 .r-et-date { font-size: 8pt; font-weight: 600; color: var(--resume-accent); text-align: right; white-space: nowrap; width: 28%; vertical-align: bottom; }
+.r-et-link { font-size: 8.5pt; font-weight: 500; color: var(--resume-link); text-decoration: none; }
+.r-et-link:hover { text-decoration: underline; }
 .r-et-sup-row td { font-style: italic; font-size: 7.5pt; color: var(--resume-text-mute); padding: 0 0 1px; }
 .r-et-bullets-row td { padding: 0 0 1px; }
 .r-et-gap td { height: 3px; }
@@ -1033,6 +1035,16 @@ function renderSectionsEditor() {
               <label class="field-label">Tools &amp; Technologies <span style="font-weight:400;color:var(--text-tertiary)">(optional)</span></label>
               <input class="field-input" placeholder="e.g. Python, PyTorch, ROS2, Docker" value="${esc(en.tools || '')}" data-si="${si}" data-ei="${ei}" data-f="tools" />
             </div>
+            <div class="field-row">
+              <div class="field-group">
+                <label class="field-label">Link Text <span style="font-weight:400;color:var(--text-tertiary)">(optional)</span></label>
+                <input class="field-input" placeholder="e.g. GitHub, Demo, Paper" value="${esc(en.linkLabel || '')}" data-si="${si}" data-ei="${ei}" data-f="linkLabel" />
+              </div>
+              <div class="field-group">
+                <label class="field-label">Link URL <span style="font-weight:400;color:var(--text-tertiary)">(optional)</span></label>
+                <input class="field-input" placeholder="https://github.com/..." value="${esc(en.linkUrl || '')}" data-si="${si}" data-ei="${ei}" data-f="linkUrl" />
+              </div>
+            </div>
             <div class="field-group">
               <label class="field-label">Bullet points</label>
               <textarea class="field-textarea" placeholder="One bullet per line. Start with an action verb." data-si="${si}" data-ei="${ei}" data-f="bullets">${esc(en.bullets)}</textarea>
@@ -1153,7 +1165,7 @@ function moveSection(si, dir) {
 function addEntry(si) {
   mutateState(() => {
     if (!state.sections[si].entries) state.sections[si].entries = [];
-    state.sections[si].entries.push({ id: uid(), title: '', org: '', date: '', supervisor: '', tools: '', bullets: '' });
+    state.sections[si].entries.push({ id: uid(), title: '', org: '', date: '', supervisor: '', tools: '', bullets: '', linkLabel: '', linkUrl: '' });
   });
   renderSectionsEditor();
 }
@@ -1202,6 +1214,9 @@ function renderEntriesTable(entries) {
     const titlePart = en.org && en.org.trim()
       ? `<span class="r-et-title">${esc(en.title)}</span><span class="r-et-sep">|</span><span class="r-et-org">${esc(en.org)}</span>`
       : `<span class="r-et-title">${esc(en.title)}</span>`;
+    const linkPart = (en.linkUrl || '').trim() && (en.linkLabel || '').trim()
+      ? `<span class="r-et-sep">|</span><a class="r-et-link" href="${esc(en.linkUrl.trim())}">${esc(en.linkLabel.trim())}</a>`
+      : '';
     const dateCell = (en.date || '').trim() ? `<td class="r-et-date">${esc(en.date)}</td>` : `<td></td>`;
     const subParts = [];
     if ((en.supervisor || '').trim()) subParts.push('Supervisor: ' + esc(en.supervisor.trim()));
@@ -1210,7 +1225,7 @@ function renderEntriesTable(entries) {
     const bullets = renderBullets(en.bullets);
     const bulletsRow = bullets ? `<tr class="r-et-bullets-row"><td colspan="2">${bullets}</td></tr>` : '';
     const gap = idx < entries.length - 1 ? `<tr class="r-et-gap"><td colspan="2"></td></tr>` : '';
-    return `<tr class="r-et-title-row"><td>${titlePart}</td>${dateCell}</tr>${subRow}${bulletsRow}${gap}`;
+    return `<tr class="r-et-title-row"><td>${titlePart}${linkPart}</td>${dateCell}</tr>${subRow}${bulletsRow}${gap}`;
   }).join('');
   return `<table class="r-entries-table"><tbody>${rows}</tbody></table>`;
 }
@@ -1460,6 +1475,14 @@ function downloadPDF() {
       doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(...PDF_COLORS.text);
       const titleLines = doc.splitTextToSize(en.org ? `${en.title}  |  ${en.org}` : en.title, CONTENT_W * 0.70);
       doc.text(titleLines, MARGIN_LEFT, y + 3);
+      const hasLink = (en.linkUrl || '').trim() && (en.linkLabel || '').trim();
+      if (hasLink) {
+        const lastLine = titleLines[titleLines.length - 1] || '';
+        const lastLineW = doc.getTextWidth(lastLine);
+        const linkY = y + 3 + (titleLines.length - 1) * 4;
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(...PDF_COLORS.accent);
+        doc.textWithLink('  |  ' + en.linkLabel.trim(), MARGIN_LEFT + lastLineW, linkY, { url: en.linkUrl.trim() });
+      }
       if (en.date) { doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(...PDF_COLORS.accent); doc.text(en.date, PAGE_W - MARGIN_RIGHT, y + 3, { align: 'right' }); }
       y += 4 * titleLines.length;
 
