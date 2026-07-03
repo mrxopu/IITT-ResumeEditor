@@ -8,7 +8,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
+
+<!-- Required Dependencies -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
   if (typeof pdfjsLib !== 'undefined') {
@@ -1313,7 +1316,7 @@ function createResumePage() {
 
 function render() {
   const s = state;
-  const logoHtml = LOGO_URL ? `<img src="${LOGO_URL}" alt="IIT Logo" />` : `<div class="r-logo-placeholder">LOGO</div>`;
+  const logoHtml = LOGO_URL ? `<img src="${LOGO_URL}" alt="IIT Logo" crossorigin="anonymous" />` : `<div class="r-logo-placeholder">LOGO</div>`;
   const links = [];
   if (s.email) links.push(`Email: <a href="mailto:${esc(s.email)}">${esc(s.email)}</a>`);
   if (s.phone) links.push(`Phone: ${esc(s.phone)}`);
@@ -1355,92 +1358,101 @@ function render() {
 
 function printResume() { document.body.classList.add('sidebar-hidden'); window.print(); setTimeout(() => document.body.classList.remove('sidebar-hidden'), 1000); }
 
-// ═══════════════════════════════════════
-//  CUSTOM PDF GENERATOR (jsPDF)
-// ═══════════════════════════════════════
-const PDF_COLORS = { accent: [0, 51, 102], accentSoft: [206, 223, 239], text: [26, 26, 26], textMute: [74, 90, 106], border: [191, 208, 224], white: [255, 255, 255] };
 
-// Loads the header logo into a data URL so jsPDF can embed it (a plain <img> tag
-// only works in the HTML preview, not in a PDF built with drawing calls).
-function loadLogoDataUrl() {
-  return new Promise((resolve) => {
-    if (!LOGO_URL) { resolve(null); return; }
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    const timeout = setTimeout(() => resolve(null), 4000);
-    img.onload = () => {
-      clearTimeout(timeout);
-      try {
-        const canvas = document.createElement('canvas');
-        canvas.width = img.naturalWidth || 200;
-        canvas.height = img.naturalHeight || 200;
-        canvas.getContext('2d').drawImage(img, 0, 0);
-        resolve(canvas.toDataURL('image/png'));
-      } catch (e) {
-        console.warn('[loadLogoDataUrl] canvas conversion failed (likely CORS-tainted)', e);
-        resolve(null);
-      }
-    };
-    img.onerror = () => { clearTimeout(timeout); resolve(null); };
-    img.src = LOGO_URL;
-  });
-}
+// ═══════════════════════════════════════
+//  CUSTOM PDF GENERATOR (html2canvas + jsPDF)
+// ═══════════════════════════════════════
 
 async function downloadPDF() {
-  if (typeof window.jspdf === 'undefined' || !window.jspdf.jsPDF) { showToast('PDF library failed to load. Check internet connection and reload.'); return; }
+  if (typeof window.jspdf === 'undefined' || !window.jspdf.jsPDF) { 
+    showToast('PDF library failed to load. Check internet connection and reload.'); 
+    return; 
+  }
+  if (typeof html2canvas === 'undefined') { 
+    showToast('html2canvas library failed to load.'); 
+    return; 
+  }
+
   const btns = document.querySelectorAll('button.btn-primary');
   btns.forEach(b => { b.disabled = true; b.dataset.origText = b.textContent; b.textContent = 'Generating…'; });
   showToast('Generating PDF…');
 
-  const logoDataUrl = await loadLogoDataUrl();
+  // 1. Temporarily reset zoom to 100% to ensure accurate pixel/mm mapping and high quality render
+  const oldZoom = currentZoom;
+  currentZoom = 1;
+  applyZoom();
 
-  let doc = null, y = 0, pageNum = 0;
-  const PAGE_W = 210, PAGE_H = 297, MARGIN_TOP = 10, MARGIN_BOTTOM = 12, MARGIN_LEFT = 12, MARGIN_RIGHT = 12, CONTENT_W = PAGE_W - MARGIN_LEFT - MARGIN_RIGHT;
-
-  function ensureSpace(neededH) {
-    if (y + neededH > PAGE_H - MARGIN_BOTTOM) { addFooterToPage(); doc.addPage(); pageNum++; y = MARGIN_TOP; return true; }
-    return false;
-  }
-
-  function addFooterToPage() {
-    if (!state.footer) return;
-    const fy = PAGE_H - MARGIN_BOTTOM + 4;
-    doc.setDrawColor(...PDF_COLORS.border); doc.setLineWidth(0.2); doc.setLineDashPattern([1, 1], 0);
-    doc.line(MARGIN_LEFT, fy - 2, PAGE_W - MARGIN_RIGHT, fy - 2); doc.setLineDashPattern([], 0);
-    doc.setFont('helvetica', 'italic'); doc.setFontSize(7); doc.setTextColor(...PDF_COLORS.textMute);
-    doc.text(doc.splitTextToSize(state.footer, CONTENT_W), PAGE_W / 2, fy + 1, { align: 'center' });
-  }
-
-  function text(textStr, x, fontSize, opts) {
-    opts = opts || {}; const font = opts.font || 'helvetica', style = opts.style || 'normal', color = opts.color || PDF_COLORS.text, maxW = opts.maxWidth || CONTENT_W, lh = opts.lineHeight || (fontSize * 0.4), align = opts.align || 'left';
-    doc.setFont(font, style); doc.setFontSize(fontSize); doc.setTextColor(...color);
-    const lines = doc.splitTextToSize(String(textStr), maxW);
-    for (const line of lines) { ensureSpace(lh + 0.5); doc.text(line, x, y + lh, { align }); y += lh + 0.5; }
-    return y;
-  }
-
-  function sectionHeader(title) {
-    ensureSpace(8); y += 2.5; ensureSpace(8); const barH = 5;
-    doc.setFillColor(...PDF_COLORS.accent); doc.rect(MARGIN_LEFT, y, CONTENT_W, barH, 'F');
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(...PDF_COLORS.white);
-    doc.text(title.toUpperCase(), MARGIN_LEFT + 2, y + 3.5); y += barH + 2;
-  }
-
-  function cell(x, cellY, w, h, textStr, opts) {
-    opts = opts || {}; const fontSize = opts.fontSize || 8.5, style = opts.style || 'normal', color = opts.color || PDF_COLORS.text, align = opts.align || 'left', valign = opts.valign || 'middle', fill = opts.fill || null;
-    if (fill) { doc.setFillColor(...fill); doc.rect(x, cellY, w, h, 'F'); }
-    doc.setFont('helvetica', style); doc.setFontSize(fontSize); doc.setTextColor(...color);
-    const padX = 2, textX = align === 'right' ? x + w - padX : (align === 'center' ? x + w / 2 : x + padX);
-    const textY = valign === 'middle' ? cellY + h / 2 + fontSize * 0.13 : cellY + fontSize * 0.35;
-    const lines = doc.splitTextToSize(String(textStr), w - 2 * padX);
-    doc.text(lines[0] || '', textX, textY, { align, maxWidth: w - 2 * padX });
-  }
+  // Wait for CSS transform transitions (0.15s) and DOM reflow
+  await new Promise(r => setTimeout(r, 250));
 
   try {
     const { jsPDF } = window.jspdf;
-    doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
-    y = MARGIN_TOP; pageNum = 1;
+    const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
 
+    // Get the paginated elements. If not paginated, just grab the main resume paper
+    const scroll = document.getElementById('preview-scroll');
+    let pages = Array.from(scroll.querySelectorAll('.resume-page'));
+    if (pages.length === 0) {
+      pages = [document.getElementById('resume-paper')];
+    }
+
+    for (let i = 0; i < pages.length; i++) {
+      const pageEl = pages[i];
+      if (i > 0) doc.addPage();
+
+      // Capture the DOM page as an image
+      const canvas = await html2canvas(pageEl, {
+        scale: 3, // High resolution for crisp text
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff'
+      });
+
+      const imgData = canvas.toDataURL('image/jpeg', 0.98);
+      const pdfWidth = 210; // A4 width in mm
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      // Paint the image onto the PDF
+      doc.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+
+      // 2. Map all hyperlinks perfectly over the image
+      const pageRect = pageEl.getBoundingClientRect();
+      const links = pageEl.querySelectorAll('a');
+
+      // Conversion factor: PDF mm per DOM pixel
+      const pxToMm = pdfWidth / pageRect.width;
+
+      links.forEach(a => {
+        const aRect = a.getBoundingClientRect();
+        
+        // Calculate relative offset within the page element to circumvent document scroll issues
+        const leftMm = (aRect.left - pageRect.left) * pxToMm;
+        const topMm = (aRect.top - pageRect.top) * pxToMm;
+        const widthMm = aRect.width * pxToMm;
+        const heightMm = aRect.height * pxToMm;
+
+        // Inject an invisible clickable rectangle
+        if (a.href) {
+            doc.link(leftMm, topMm, widthMm, heightMm, { url: a.href });
+        }
+      });
+
+      // 3. Add the print footer dynamically at the bottom of each page to mirror original pdf visual functionality
+      if (state.footer) {
+         const fy = 297 - 12 + 4; // PAGE_H - MARGIN_BOTTOM + 4
+         doc.setDrawColor(191, 208, 224); // var(--resume-border) equivalent
+         doc.setLineWidth(0.2);
+         doc.setLineDashPattern([1, 1], 0);
+         doc.line(12, fy - 2, 210 - 12, fy - 2); 
+         doc.setLineDashPattern([], 0);
+         doc.setFont('helvetica', 'italic');
+         doc.setFontSize(7);
+         doc.setTextColor(74, 90, 106); // var(--resume-text-mute) equivalent
+         doc.text(doc.splitTextToSize(state.footer, 210 - 24), 210 / 2, fy + 1, { align: 'center' });
+      }
+    }
+
+    // 4. Embed exact JSON state for future PDF re-importing
     try {
       const jsonStr = JSON.stringify(state);
       const b64 = btoa(unescape(encodeURIComponent(jsonStr)));
@@ -1449,167 +1461,23 @@ async function downloadPDF() {
         subject: 'Generated by IIT Resume Builder',
         keywords: 'RESUMEBUILDER_DATA_V1::' + b64
       });
-    } catch (embedErr) { console.warn('[downloadPDF] could not embed data for re-import', embedErr); }
-
-    // Header
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(18); doc.setTextColor(...PDF_COLORS.accent);
-    doc.text(state.name || '', MARGIN_LEFT, y + 6); const nameWidth = doc.getTextWidth(state.name || '');
-    if (state.roll) {
-      const rollX = MARGIN_LEFT + nameWidth + 4;
-      doc.setDrawColor(...PDF_COLORS.border); doc.setLineWidth(0.3); doc.line(rollX, y + 1, rollX, y + 6);
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(...PDF_COLORS.text); doc.text(state.roll, rollX + 2, y + 6);
+    } catch (embedErr) {
+      console.warn('[downloadPDF] could not embed data for re-import', embedErr);
     }
 
-    // Logo, top-right of the header (mirrors the 42px box in the HTML preview)
-    if (logoDataUrl) {
-      try {
-        const logoSize = 12; // mm
-        doc.addImage(logoDataUrl, 'PNG', PAGE_W - MARGIN_RIGHT - logoSize, MARGIN_TOP, logoSize, logoSize);
-      } catch (logoErr) { console.warn('[downloadPDF] failed to embed logo', logoErr); }
-    }
-
-    y += 8;
-
-    if (state.degree || state.branch || state.institute) {
-      doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(...PDF_COLORS.textMute);
-      const degreeParts = []; if (state.degree) degreeParts.push(state.degree); if (state.branch) degreeParts.push(state.branch);
-      let degreeText = degreeParts.join(' in '); if (state.institute) degreeText += (degreeText ? ' · ' : '') + state.institute;
-      doc.text(degreeText, MARGIN_LEFT, y + 3); y += 5;
-    }
-
-    const links = [];
-    if (state.email) links.push('Email: ' + state.email); if (state.phone) links.push('Phone: ' + state.phone);
-    if (state.linkedinUrl && state.linkedinLabel) links.push('LinkedIn: ' + state.linkedinLabel);
-    if (state.githubUrl && state.githubLabel) links.push('GitHub: ' + state.githubLabel);
-    if (state.scholarUrl && state.scholarLabel) links.push('Scholar: ' + state.scholarLabel);
-    if (links.length) { doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(...PDF_COLORS.textMute); doc.text(links.join('   |   '), MARGIN_LEFT, y + 3); y += 5; }
-
-    doc.setDrawColor(...PDF_COLORS.accent); doc.setLineWidth(0.6); doc.line(MARGIN_LEFT, y, PAGE_W - MARGIN_RIGHT, y); y += 2;
-
-    // Education
-    if (state.edu && state.edu.length) {
-      sectionHeader('EDUCATION');
-      const colWidths = [CONTENT_W * 0.10, CONTENT_W * 0.33, CONTENT_W * 0.42, CONTENT_W * 0.15], colX = [MARGIN_LEFT];
-      for (let i = 1; i < colWidths.length; i++) colX.push(colX[i - 1] + colWidths[i - 1]);
-      ensureSpace(6); const headerH = 5;
-      doc.setFillColor(...PDF_COLORS.accentSoft); doc.rect(MARGIN_LEFT, y, CONTENT_W, headerH, 'F');
-      doc.setDrawColor(...PDF_COLORS.border); doc.setLineWidth(0.2); doc.rect(MARGIN_LEFT, y, CONTENT_W, headerH, 'S');
-      ['Year', 'Degree / Exam', 'Institute', 'CGPA / Marks'].forEach((h, i) => { cell(colX[i], y, colWidths[i], headerH, h, { fontSize: 8, style: 'bold', color: PDF_COLORS.accent, align: i === 3 ? 'right' : 'left' }); });
-      y += headerH;
-
-      const rowH = 5;
-      state.edu.forEach((r, idx) => {
-        ensureSpace(6);
-        if (idx < state.edu.length - 1) { doc.setDrawColor(...PDF_COLORS.border); doc.setLineWidth(0.15); doc.line(MARGIN_LEFT, y + rowH, PAGE_W - MARGIN_RIGHT, y + rowH); }
-        [r.year, r.exam, r.inst, r.score].forEach((v, i) => { cell(colX[i], y, colWidths[i], rowH, v || '', { fontSize: 8.5, color: i === 3 ? PDF_COLORS.accent : PDF_COLORS.text, style: i === 3 ? 'bold' : 'normal', align: i === 3 ? 'right' : 'left' }); });
-        y += rowH;
-      });
-      y += 1;
-      doc.setDrawColor(...PDF_COLORS.border); doc.setLineWidth(0.2); doc.rect(MARGIN_LEFT, y - 1 - rowH * state.edu.length - headerH, CONTENT_W, rowH * state.edu.length + headerH, 'S');
-    }
-
-    // Sections
-    state.sections.forEach(sec => {
-      if (sec.type === 'entries') renderEntriesSectionPDF(sec);
-      else if (sec.type === 'bullets') renderBulletsSectionPDF(sec);
-      else if (sec.type === 'inline') renderInlineSectionPDF(sec);
-      else if (sec.type === 'skills') renderSkillsSectionPDF(sec);
-    });
-
-    addFooterToPage();
-
+    // Save
     const filename = (state.roll || 'resume') + '.pdf';
-    let pdfBlob;
-    try { pdfBlob = new Blob([doc.output('arraybuffer')], { type: 'application/pdf' }); } catch (e1) {
-      try { pdfBlob = doc.output('blob'); } catch (e2) {
-        const a = document.createElement('a'); a.href = doc.output('datauristring'); a.download = filename;
-        document.body.appendChild(a); a.click(); document.body.removeChild(a); showToast('PDF downloaded'); return;
-      }
-    }
-
-    if (pdfBlob) {
-      const url = URL.createObjectURL(pdfBlob), a = document.createElement('a'); a.href = url; a.download = filename; a.style.display = 'none';
-      document.body.appendChild(a); a.click(); setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
-    }
+    doc.save(filename);
     showToast('PDF downloaded');
-  } catch (err) { console.error('[downloadPDF]', err); showToast('PDF failed: ' + (err && err.message ? err.message : String(err)).slice(0, 100)); }
-  finally { btns.forEach(b => { b.disabled = false; b.textContent = b.dataset.origText || 'Download PDF'; }); }
 
-  function renderEntriesSectionPDF(sec) {
-    if (!sec.entries || !sec.entries.length) return;
-    sectionHeader(sec.title);
-    sec.entries.forEach((en, idx) => {
-      let neededH = 4; if ((en.supervisor || '').trim() || (en.tools || '').trim()) neededH += 3;
-      if (en.bullets) neededH += en.bullets.split('\n').filter(l => l.trim()).length * 3.5;
-      ensureSpace(neededH + 2);
-
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(...PDF_COLORS.text);
-      const titleLines = doc.splitTextToSize(en.org ? `${en.title}  |  ${en.org}` : en.title, CONTENT_W * 0.70);
-      doc.text(titleLines, MARGIN_LEFT, y + 3);
-      const hasLink = (en.linkUrl || '').trim() && (en.linkLabel || '').trim();
-      if (hasLink) {
-        const lastLine = titleLines[titleLines.length - 1] || '';
-        const lastLineW = doc.getTextWidth(lastLine);
-        const linkY = y + 3 + (titleLines.length - 1) * 4;
-        doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(...PDF_COLORS.accent);
-        doc.textWithLink('  |  ' + en.linkLabel.trim(), MARGIN_LEFT + lastLineW, linkY, { url: en.linkUrl.trim() });
-      }
-      if (en.date) { doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(...PDF_COLORS.accent); doc.text(en.date, PAGE_W - MARGIN_RIGHT, y + 3, { align: 'right' }); }
-      y += 4 * titleLines.length;
-
-      const subParts = [];
-      if ((en.supervisor || '').trim()) subParts.push('Supervisor: ' + en.supervisor.trim());
-      if ((en.tools || '').trim()) subParts.push('Tools & Technologies: ' + en.tools.trim());
-      if (subParts.length) { ensureSpace(4); doc.setFont('helvetica', 'italic'); doc.setFontSize(7.5); doc.setTextColor(...PDF_COLORS.textMute); const subLines = doc.splitTextToSize(subParts.join('   ·   '), CONTENT_W); doc.text(subLines, MARGIN_LEFT, y + 2); y += Math.max(3, subLines.length * 3); }
-
-      if (en.bullets) {
-        en.bullets.split('\n').filter(l => l.trim()).forEach(line => {
-          ensureSpace(4); doc.setFillColor(...PDF_COLORS.text); doc.rect(MARGIN_LEFT + 1, y + 1.3, 0.8, 0.8, 'F');
-          const sp = line.trim().indexOf(' '); let firstWord = '', rest = '';
-          if (sp > 0) { firstWord = line.trim().slice(0, sp); rest = line.trim().slice(sp); } else { firstWord = line.trim(); }
-          doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(...PDF_COLORS.accent); doc.text(firstWord, MARGIN_LEFT + 3, y + 2);
-          const firstW = doc.getTextWidth(firstWord); doc.setFont('helvetica', 'normal'); doc.setTextColor(...PDF_COLORS.text);
-          const restLines = doc.splitTextToSize(rest, CONTENT_W - 5 - firstW); doc.text(restLines, MARGIN_LEFT + 3 + firstW, y + 2); y += Math.max(3.5, restLines.length * 3.5);
-        });
-      }
-      y += 2;
-    });
-  }
-
-  function renderBulletsSectionPDF(sec) {
-    if (!sec.content || !sec.content.trim()) return;
-    sectionHeader(sec.title);
-    sec.content.split('\n').filter(l => l.trim()).forEach(line => {
-      ensureSpace(4); doc.setFillColor(...PDF_COLORS.text); doc.rect(MARGIN_LEFT + 1, y + 1.3, 0.8, 0.8, 'F');
-      const sp = line.trim().indexOf(' '); let firstWord = '', rest = '';
-      if (sp > 0) { firstWord = line.trim().slice(0, sp); rest = line.trim().slice(sp); } else { firstWord = line.trim(); }
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(...PDF_COLORS.accent); doc.text(firstWord, MARGIN_LEFT + 3, y + 2);
-      const firstW = doc.getTextWidth(firstWord); doc.setFont('helvetica', 'normal'); doc.setTextColor(...PDF_COLORS.text);
-      const restLines = doc.splitTextToSize(rest, CONTENT_W - 5 - firstW); doc.text(restLines, MARGIN_LEFT + 3 + firstW, y + 2); y += Math.max(3.5, restLines.length * 3.5);
-    });
-    y += 2;
-  }
-
-  function renderInlineSectionPDF(sec) {
-    if (!sec.content || !sec.content.trim()) return;
-    sectionHeader(sec.title);
-    text(sec.content.split('|').map(s => s.trim()).filter(Boolean).join('   |   '), MARGIN_LEFT, 8.5, { color: PDF_COLORS.text, lineHeight: 4 }); y += 1;
-  }
-
-  function renderSkillsSectionPDF(sec) {
-    if (!sec.skills || !sec.skills.length) return;
-    sectionHeader(sec.title);
-    const catW = CONTENT_W * 0.30, itemsW = CONTENT_W * 0.70;
-    sec.skills.forEach((sk, idx) => {
-      ensureSpace(5); const rowH = 5;
-      doc.setFillColor(...PDF_COLORS.accentSoft); doc.rect(MARGIN_LEFT, y, catW, rowH, 'F');
-      cell(MARGIN_LEFT, y, catW, rowH, sk.cat, { fontSize: 8.5, style: 'bold', color: PDF_COLORS.accent });
-      cell(MARGIN_LEFT + catW, y, itemsW, rowH, sk.items, { fontSize: 8.5, color: PDF_COLORS.text });
-      doc.setDrawColor(...PDF_COLORS.border); doc.setLineWidth(0.15); doc.line(MARGIN_LEFT + catW, y, MARGIN_LEFT + catW, y + rowH);
-      if (idx < sec.skills.length - 1) doc.line(MARGIN_LEFT, y + rowH, PAGE_W - MARGIN_RIGHT, y + rowH);
-      y += rowH;
-    });
-    doc.setDrawColor(...PDF_COLORS.border); doc.setLineWidth(0.2); doc.rect(MARGIN_LEFT, y - sec.skills.length * 5, CONTENT_W, sec.skills.length * 5, 'S'); y += 2;
+  } catch (err) {
+    console.error('[downloadPDF]', err);
+    showToast('PDF failed: ' + (err && err.message ? err.message : String(err)).slice(0, 100));
+  } finally {
+    btns.forEach(b => { b.disabled = false; b.textContent = b.dataset.origText || 'Download PDF'; });
+    // Restore user's zoom preference
+    currentZoom = oldZoom;
+    applyZoom();
   }
 }
 
