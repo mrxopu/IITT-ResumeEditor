@@ -1349,7 +1349,7 @@ function render() {
       <tbody>${eduHtml}</tbody>
     </table>
     ${sectionsHtml}
-    ${s.footer ? `<div class="r-footer-preview">${esc(s.footer)}</div>` : ''}`;
+    ${s.footer ? `<div class="r-footer-preview" data-html2canvas-ignore="true">${esc(s.footer)}</div>` : ''}`;
 
   document.getElementById('print-footer-node').innerHTML = esc(s.footer);
   document.getElementById('char-count').textContent = document.getElementById('resume-paper').innerText.length + ' chars';
