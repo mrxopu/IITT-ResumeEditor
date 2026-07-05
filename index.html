@@ -324,8 +324,10 @@ body.sidebar-hidden #sidebar-divider:hover { background: var(--accent); }
 .r-et-bullets-row td { padding: 0 0 1px; }
 .r-et-gap td { height: 3px; }
 
-.r-bullets { margin: 1px 0 0 12px; padding: 0; list-style: square; color: var(--resume-text); }
-.r-bullets li { font-size: 8.5pt; margin-bottom: 0; padding-left: 2px; page-break-inside: avoid; break-inside: avoid; line-height: 1.28; }
+/* Custom pseudo-element bullet rendering prevents bold distortion in canvas/PDF export */
+.r-bullets { margin: 1px 0 0 0; padding: 0; list-style: none; color: var(--resume-text); }
+.r-bullets li { position: relative; font-size: 8.5pt; margin-bottom: 0; padding-left: 12px; page-break-inside: avoid; break-inside: avoid; line-height: 1.28; }
+.r-bullets li::before { content: "•"; position: absolute; left: 2px; top: 0; font-size: 8pt; font-weight: normal; color: var(--resume-text); }
 .r-bullets strong { color: var(--resume-accent); font-weight: 700; }
 
 .r-skills-table { width: 100%; border-collapse: collapse; border: 1px solid var(--resume-border); margin-bottom: 1px; }
@@ -718,7 +720,6 @@ function redo() {
 
 function applyStateSnapshot(snap) {
   state = snap;
-  // Two-way map back into DOM inputs
   const fieldMap = {
     'f-name': 'name', 'f-roll': 'roll', 'f-degree': 'degree',
     'f-gradyear': 'gradYear', 'f-branch': 'branch', 'f-institute': 'institute',
@@ -1366,8 +1367,60 @@ function printResume() { document.body.classList.add('sidebar-hidden'); window.p
 
 
 // ═══════════════════════════════════════
-//  CUSTOM PDF GENERATOR (html2canvas + jsPDF)
+//  CUSTOM PDF GENERATOR (100% Visual + Word-Level Precision Mapping)
 // ═══════════════════════════════════════
+
+// Helper: Traverses DOM text nodes and extracts exact word coordinates without grouping
+function extractExactVisualWords(el) {
+  const words = [];
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+  const range = document.createRange();
+  
+  let node;
+  while (node = walker.nextNode()) {
+    const text = node.nodeValue;
+    if (!text || !text.trim()) continue;
+    
+    // Match non-whitespace tokens (words, numbers, punctuation)
+    const regex = /\S+/g;
+    let match;
+    while ((match = regex.exec(text)) !== null) {
+      try {
+        range.setStart(node, match.index);
+        range.setEnd(node, match.index + match[0].length);
+        const rect = range.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+          words.push({
+            text: match[0],
+            left: rect.left,
+            top: rect.top,
+            bottom: rect.bottom,
+            width: rect.width,
+            height: rect.height
+          });
+        }
+      } catch (e) {}
+    }
+  }
+
+  // Explicitly inject bullet dot at left padding coordinate for ATS parsers
+  if (el.tagName.toLowerCase() === 'li' && words.length > 0) {
+    const firstWord = words[0];
+    if (!/^[•\-*]/.test(firstWord.text)) {
+      const liRect = el.getBoundingClientRect();
+      words.unshift({
+        text: "•",
+        left: liRect.left + 2,
+        top: firstWord.top,
+        bottom: firstWord.bottom,
+        width: 6,
+        height: firstWord.height
+      });
+    }
+  }
+
+  return words;
+}
 
 async function downloadPDF() {
   if (typeof window.jspdf === 'undefined' || !window.jspdf.jsPDF) { 
@@ -1383,19 +1436,16 @@ async function downloadPDF() {
   btns.forEach(b => { b.disabled = true; b.dataset.origText = b.textContent; b.textContent = 'Generating…'; });
   showToast('Generating PDF…');
 
-  // 1. Temporarily reset zoom to 100% to ensure accurate pixel/mm mapping and high quality render
   const oldZoom = currentZoom;
   currentZoom = 1;
   applyZoom();
 
-  // Wait for CSS transform transitions (0.15s) and DOM reflow
   await new Promise(r => setTimeout(r, 250));
 
   try {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
 
-    // Get the paginated elements. If not paginated, just grab the main resume paper
     const scroll = document.getElementById('preview-scroll');
     let pages = Array.from(scroll.querySelectorAll('.resume-page'));
     if (pages.length === 0) {
@@ -1406,59 +1456,91 @@ async function downloadPDF() {
       const pageEl = pages[i];
       if (i > 0) doc.addPage();
 
-      // Capture the DOM page as an image
+      // 1. Paint 100% Visual Match High-Res Canvas
       const canvas = await html2canvas(pageEl, {
-        scale: 3, // High resolution for crisp text
+        scale: 3, 
         useCORS: true,
         logging: false,
         backgroundColor: '#ffffff'
       });
 
       const imgData = canvas.toDataURL('image/jpeg', 0.98);
-      const pdfWidth = 210; // A4 width in mm
+      const pdfWidth = 210; 
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-      // Paint the image onto the PDF
       doc.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
 
-      // 2. Map all hyperlinks perfectly over the image
+      // 2. Precision Word-Level ATS Layer (0% Cumulative Drift)
+      const targetSelectors = [
+        '.r-name', '.r-rollno', '.r-degree-line', '.r-links',
+        '.r-sec-head-text', '.r-edu-table th', '.r-edu-table td',
+        '.r-et-title', '.r-et-org', '.r-et-date', '.r-et-sup-row td',
+        '.r-bullets li', '.r-sk-cat', '.r-skills-table td:nth-child(2)',
+        '.r-inline', '.r-footer-preview'
+      ].join(', ');
+
       const pageRect = pageEl.getBoundingClientRect();
-      const links = pageEl.querySelectorAll('a');
-
-      // Conversion factor: PDF mm per DOM pixel
       const pxToMm = pdfWidth / pageRect.width;
+      const elements = pageEl.querySelectorAll(targetSelectors);
 
+      doc.saveGraphicsState();
+      try {
+        const gState = doc.GState ? new doc.GState({ opacity: 0 }) : (window.jspdf.GState ? new window.jspdf.GState({ opacity: 0 }) : null);
+        if (gState) doc.setGState(gState);
+        else doc.setTextColor(255, 255, 255);
+      } catch (e) {
+        doc.setTextColor(255, 255, 255);
+      }
+      doc.setFont('helvetica', 'normal');
+
+      elements.forEach(el => {
+        const words = extractExactVisualWords(el);
+        if (!words.length) return;
+
+        const computedStyle = window.getComputedStyle(el);
+        const fontSizePx = parseFloat(computedStyle.fontSize) || 11;
+        const fontSizePt = fontSizePx * 0.75;
+        doc.setFontSize(fontSizePt);
+
+        // Place EVERY single word individually at its exact DOM screen coordinate
+        words.forEach(word => {
+          const leftMm = (word.left - pageRect.left) * pxToMm;
+          const topMm = (word.top - pageRect.top) * pxToMm;
+          const baselineMm = topMm + (fontSizePt * 0.352778 * 0.82);
+          doc.text(word.text, leftMm, baselineMm);
+        });
+      });
+      doc.restoreGraphicsState();
+
+      // Map hyperlinks
+      const links = pageEl.querySelectorAll('a');
       links.forEach(a => {
         const aRect = a.getBoundingClientRect();
-        
-        // Calculate relative offset within the page element to circumvent document scroll issues
         const leftMm = (aRect.left - pageRect.left) * pxToMm;
         const topMm = (aRect.top - pageRect.top) * pxToMm;
         const widthMm = aRect.width * pxToMm;
         const heightMm = aRect.height * pxToMm;
 
-        // Inject an invisible clickable rectangle
         if (a.href) {
             doc.link(leftMm, topMm, widthMm, heightMm, { url: a.href });
         }
       });
 
-      // 3. Add the print footer dynamically at the bottom of each page to mirror original pdf visual functionality
+      // Dynamic footer
       if (state.footer) {
-         const fy = 297 - 12 + 4; // PAGE_H - MARGIN_BOTTOM + 4
-         doc.setDrawColor(191, 208, 224); // var(--resume-border) equivalent
+         const fy = 297 - 12 + 4;
+         doc.setDrawColor(191, 208, 224);
          doc.setLineWidth(0.2);
          doc.setLineDashPattern([1, 1], 0);
          doc.line(12, fy - 2, 210 - 12, fy - 2); 
          doc.setLineDashPattern([], 0);
          doc.setFont('helvetica', 'italic');
          doc.setFontSize(7);
-         doc.setTextColor(74, 90, 106); // var(--resume-text-mute) equivalent
+         doc.setTextColor(74, 90, 106);
          doc.text(doc.splitTextToSize(state.footer, 210 - 24), 210 / 2, fy + 1, { align: 'center' });
       }
     }
 
-    // 4. Embed exact JSON state for future PDF re-importing
+    // Embed exact JSON state for future PDF re-importing
     try {
       const jsonStr = JSON.stringify(state);
       const b64 = btoa(unescape(encodeURIComponent(jsonStr)));
@@ -1471,7 +1553,6 @@ async function downloadPDF() {
       console.warn('[downloadPDF] could not embed data for re-import', embedErr);
     }
 
-    // Save
     const filename = (state.roll || 'resume') + '.pdf';
     doc.save(filename);
     showToast('PDF downloaded');
@@ -1481,7 +1562,6 @@ async function downloadPDF() {
     showToast('PDF failed: ' + (err && err.message ? err.message : String(err)).slice(0, 100));
   } finally {
     btns.forEach(b => { b.disabled = false; b.textContent = b.dataset.origText || 'Download PDF'; });
-    // Restore user's zoom preference
     currentZoom = oldZoom;
     applyZoom();
   }
@@ -1552,7 +1632,6 @@ async function importFromPDF(event) {
     const buf = await file.arrayBuffer();
     const pdfDoc = await pdfjsLib.getDocument({ data: buf }).promise;
 
-    // Fast path: exact restore if this PDF was generated by this tool
     const meta = await pdfDoc.getMetadata();
     const keywords = (meta && meta.info && meta.info.Keywords) || '';
     const idx = keywords.indexOf(PDF_IMPORT_MARKER);
@@ -1570,7 +1649,6 @@ async function importFromPDF(event) {
       } catch (exactErr) { console.warn('[importFromPDF] exact restore failed, falling back to text extraction', exactErr); }
     }
 
-    // Generic path: best-effort extraction from any PDF's text
     const lines = await extractPdfLines(pdfDoc);
     if (!lines.length) { showToast('No readable text found in this PDF (it may be a scanned image).'); return; }
     const heur = extractResumeHeuristics(lines);
