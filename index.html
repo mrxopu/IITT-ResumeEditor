@@ -1,4 +1,3 @@
-<!-- editor- Meet Rana -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +8,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
 
-<!-- Required Dependencies -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -621,7 +619,7 @@ body.sidebar-hidden #sidebar-divider:hover { background: var(--accent); }
 
 <script>
 const LOGO_URL = 'iit-tirupati-eps-iit-tirupati-01.jpg';
-const CACHE_KEY = 'iit_resume_builder_v1';
+const CACHE_KEY = 'iit_resume_builder_v2';
 const MAX_HISTORY = 50;
 
 // ═══════════════════════════════════════
@@ -631,8 +629,9 @@ const DEFAULT_STATE = {
   name: 'Meet Rana', roll: 'EE23B070', degree: 'B.Tech.', gradYear: '2027',
   branch: 'ELECTRICAL ENGINEERING', institute: 'Indian Institute of Technology, Tirupati',
   email: 'ee23b070@iittp.ac.in', phone: '7060317045',
-  linkedinUrl: '', linkedinLabel: '', githubUrl: '', githubLabel: '',
-  scholarUrl: '', scholarLabel: '',
+  linkedinUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo', linkedinLabel: 'Test',
+  githubUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo', githubLabel: 'Test',
+  scholarUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo', scholarLabel: 'Test',
   footer: 'Self declared by the student. Career Development Cell, IIT Tirupati could not verify the relevant documents.',
   edu: [
     { year: '2023-2027', exam: 'B.Tech. (EE)', inst: 'Indian Institute of Technology, Tirupati', score: 'X.YZ' },
@@ -643,10 +642,9 @@ const DEFAULT_STATE = {
     {
       id: 's1', title: 'PROJECTS', open: true, type: 'entries',
       entries: [
-        { id: 'e1', title: 'On-Device Speech-to-Speech Translator (Bharat-AI SoC Challenge by arm)', org: '', date: "Jan '26 - Feb '26", supervisor: '', tools: 'Android (Kotlin), C++ (JNI), llama.cpp, whisper.cpp, sherpa-onnx, CMake, GGML, KleidiAI', bullets: "Engineered a 3-stage on-device pipeline (STT - LLM - TTS) across 7 languages with zero cloud dependency, achieving ~2.5s end-to-end latency on a Dimensity 9400 smartphone\nAccelerated LLM inference using ARM SME2 via KleidiAI micro-kernels with -march=armv9.2-a+sme2+i8mm+bf16, enabling 2-3 tok/s on-device generation of Gemma 2B-IT (Q4_K_M, ~1.5 GB)\nImplemented real-time token streaming with a word-count flush TTS pipeline (6-word chunks) to eliminate audio delay, and a 2-slot LRU model cache for zero-reload-penalty language switching" },
-        { id: 'e2', title: 'Fault Tolerant Control System for a Quadcopter (IdeaForge | InterIIT 13.0)', org: '', date: "Oct '24 - Dec '24", supervisor: '', tools: 'PX4, C++, PlotJuggler, QGroundControl, Gazebo', bullets: "Built a birotor model by detecting malfunctioning motors using a digital signal filter with 97.5% accuracy and shutting down the other motor to ensure stability\nDesigned a PID control loop to stabilize the drone and facilitate safe landing after motor failure\nDesigned a scalable solution that is compatible across multiple quadcopter models, supported with distinct weights and parameters" },
-        { id: 'e3', title: 'ISRO Robotics Challenge - URSC 2025', org: '', date: "Dec '24 - Jul '25", supervisor: '', tools: 'PX4, Python, OpenCV, ROS2, QGroundControl, OpticalFlow', bullets: "Applied OpticalFlow to calculate local frame motion on a Raspberry Pi with 90% accuracy, translating data into GPS coordinates and publishing through ROS2 to internal PX4 modules\nUsed camera data with an EKF filter to estimate drone yaw without the use of a compass" },
-        { id: 'e4', title: 'Vision-Language Modeling for Satellite Earth Observation (ISRO | Inter IIT 14.0)', org: '', date: "Nov '25 - Dec '25", supervisor: '', tools: 'Earthdial, Docker, Conda, Python, PyTorch, TensorFlow', bullets: "Fine-tuned the EarthDial framework to perform image captioning, object grounding with oriented bounding boxes, and Visual Question Answering (VQA)\nImplemented post-processing and fine-tuning techniques to improve accuracy on ISRO's optical data sensors, evaluated using BLEU-Score and Intersection-over-Union (IoU @ 0.7)" }
+        { id: 'e1', title: 'On-Device Speech-to-Speech Translator (Bharat-AI SoC Challenge by arm)', org: '', date: "Jan '26 - Feb '26", supervisor: '', tools: 'Android (Kotlin), C++ (JNI), llama.cpp, whisper.cpp, sherpa-onnx, CMake, GGML, KleidiAI', bullets: "Engineered a 3-stage on-device pipeline (STT - LLM - TTS) across 7 languages with zero cloud dependency, achieving ~2.5s end-to-end latency on a Dimensity 9400 smartphone\nAccelerated LLM inference using ARM SME2 via KleidiAI micro-kernels with -march=armv9.2-a+sme2+i8mm+bf16, enabling 2-3 tok/s on-device generation of Gemma 2B-IT (Q4_K_M, ~1.5 GB)\nImplemented real-time token streaming with a word-count flush TTS pipeline (6-word chunks) to eliminate audio delay, and a 2-slot LRU model cache for zero-reload-penalty language switching", linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' },
+        { id: 'e2', title: 'Fault Tolerant Control System for a Quadcopter (IdeaForge | InterIIT 13.0)', org: '', date: "Oct '24 - Dec '24", supervisor: '', tools: 'PX4, C++, PlotJuggler, QGroundControl, Gazebo', bullets: "Built a birotor model by detecting malfunctioning motors using a digital signal filter with 97.5% accuracy and shutting down the other motor to ensure stability\nDesigned a PID control loop to stabilize the drone and facilitate safe landing after motor failure\nDesigned a scalable solution that is compatible across multiple quadcopter models, supported with distinct weights and parameters", linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' },
+        { id: 'e3', title: 'ISRO Robotics Challenge - URSC 2025', org: '', date: "Dec '24 - Jul '25", supervisor: '', tools: 'PX4, Python, OpenCV, ROS2, QGroundControl, OpticalFlow', bullets: "Applied OpticalFlow to calculate local frame motion on a Raspberry Pi with 90% accuracy, translating data into GPS coordinates and publishing through ROS2 to internal PX4 modules\nUsed camera data with an EKF filter to estimate drone yaw without the use of a compass", linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' }
       ]
     },
     {
@@ -660,17 +658,31 @@ const DEFAULT_STATE = {
     },
     { id: 's3', title: 'KEY COURSES TAKEN', open: false, type: 'inline', content: 'Machine Learning | Pattern Recognition and Machine Learning | Signal and Systems | Digital Systems | Electronic Instrumentation and Measurement' },
     {
-      id: 's4', title: 'POSITIONS OF RESPONSIBILITY', open: false, type: 'bullets',
+      id: 's4', title: 'POSITIONS OF RESPONSIBILITY', open: false, type: 'entries',
       entries: [
-        { id: 'e5', title: 'Club Head', org: 'TechManiacs, IIT Tirupati', date: "Present", supervisor: '', bullets: '' },
-        { id: 'e6', title: 'Coordinator', org: 'TechManiacs, IIT Tirupati', date: "Jul '24 - Jul '25", supervisor: '', bullets: '' },
-        { id: 'e7', title: 'Core Member', org: 'Photography and Films Club, IIT Tirupati', date: "Jul '24 - Present", supervisor: '', bullets: '' },
-        { id: 'e8', title: 'Coordinator and Project Member', org: 'Automobile Club, IIT Tirupati', date: "Jul '24 - Jul '25", supervisor: '', bullets: '' },
-        { id: 'e9', title: 'Co-Coordinator', org: 'NSS Unit, IIT Tirupati', date: "Jul '24 - Jul '25", supervisor: '', bullets: '' }
+        { id: 'e5', title: 'Club Head', org: 'TechManiacs, IIT Tirupati', date: "Present", supervisor: '', tools: '', bullets: '', linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' },
+        { id: 'e6', title: 'Coordinator', org: 'TechManiacs, IIT Tirupati', date: "Jul '24 - Jul '25", supervisor: '', tools: '', bullets: '', linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' },
+        { id: 'e7', title: 'Core Member', org: 'Photography and Films Club, IIT Tirupati', date: "Jul '24 - Present", supervisor: '', tools: '', bullets: '', linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' },
+        { id: 'e8', title: 'Coordinator and Project Member', org: 'Automobile Club, IIT Tirupati', date: "Jul '24 - Jul '25", supervisor: '', tools: '', bullets: '', linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' },
+        { id: 'e9', title: 'Co-Coordinator', org: 'NSS Unit, IIT Tirupati', date: "Jul '24 - Jul '25", supervisor: '', tools: '', bullets: '', linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' }
       ]
     },
-    { id: 's5', title: 'ACHIEVEMENTS', open: false, type: 'bullets', content: "Achieved 3rd place in the ideaForge Problem Statement at InterIIT 13.0, IIT Bombay 2024\nRanked in the top 24 out of over 1000+ institutes in the ISRO Robotics Challenge-URSC 2025\nAchieved 9th place in the ISRO VLM Problem Statement at Inter IIT 14.0, IIT Patna\nParticipated in Drone Aviation Challenge in Inter IIT 14.0 and ranked top 10 without penalty\nAchieved 6th place in the Bharat-AI SoC Challenge by arm 2024" },
-    { id: 's6', title: 'CERTIFICATIONS', open: false, type: 'bullets', content: "NPTEL Certification on Introduction to Aerodynamics" }
+    { 
+      id: 's5', title: 'ACHIEVEMENTS', open: false, type: 'bullets', 
+      items: [
+        { text: "Achieved 3rd place in the ideaForge Problem Statement at InterIIT 13.0, IIT Bombay 2024", linkLabel: "Test", linkUrl: "https://www.youtube.com/watch?v=Aq5WXmQQooo" },
+        { text: "Ranked in the top 24 out of over 1000+ institutes in the ISRO Robotics Challenge-URSC 2025", linkLabel: "Test", linkUrl: "https://www.youtube.com/watch?v=Aq5WXmQQooo" },
+        { text: "Achieved 9th place in the ISRO VLM Problem Statement at Inter IIT 14.0, IIT Patna", linkLabel: "Test", linkUrl: "https://www.youtube.com/watch?v=Aq5WXmQQooo" },
+        { text: "Participated in Drone Aviation Challenge in Inter IIT 14.0 and ranked top 10 without penalty", linkLabel: "Test", linkUrl: "https://www.youtube.com/watch?v=Aq5WXmQQooo" },
+        { text: "Achieved 6th place in the Bharat-AI SoC Challenge by arm 2024", linkLabel: "Test", linkUrl: "https://www.youtube.com/watch?v=Aq5WXmQQooo" }
+      ]
+    },
+    { 
+      id: 's6', title: 'CERTIFICATIONS', open: false, type: 'bullets', 
+      items: [
+        { text: "NPTEL Certification on Introduction to Aerodynamics", linkLabel: "Test", linkUrl: "https://www.youtube.com/watch?v=Aq5WXmQQooo" }
+      ]
+    }
   ]
 };
 
@@ -1027,6 +1039,21 @@ function moveEdu(i, dir) {
   renderEduEditor();
 }
 
+// Backward-compatibility helper for older saved state / JSON exports
+function ensureBulletItems(sec) {
+  if (!sec.items) {
+    if (sec.content && typeof sec.content === 'string') {
+      sec.items = sec.content.split('\n').filter(l => l.trim()).map(l => ({
+        text: l.trim(),
+        linkLabel: '',
+        linkUrl: ''
+      }));
+    } else {
+      sec.items = [];
+    }
+  }
+}
+
 function renderSectionsEditor() {
   const el = document.getElementById('sections-list');
   el.innerHTML = '';
@@ -1088,12 +1115,35 @@ function renderSectionsEditor() {
         </div>`).join('');
       bodyHtml = `${entriesHtml}<button class="btn-add-entry" onclick="addEntry(${si})">+ Add entry</button>`;
     } else if (sec.type === 'bullets') {
-      bodyHtml = `
-        <div class="field-group">
-          <label class="field-label">Bullet points</label>
-          <textarea class="field-textarea" style="min-height:100px;" placeholder="One bullet per line." data-si="${si}" data-f="content">${esc(sec.content || '')}</textarea>
-          <p class="field-hint">One line = one bullet point.</p>
-        </div>`;
+      ensureBulletItems(sec);
+      const itemsHtml = (sec.items || []).map((it, bi) => `
+        <div class="entry-card" id="bc-${sec.id}-${bi}">
+          <div class="entry-card-head">
+            <span>Bullet ${bi + 1}</span>
+            <div style="display:flex;gap:4px;align-items:center;">
+              <button class="btn-reorder" onclick="moveBulletItem(${si}, ${bi}, -1)" ${bi === 0 ? 'disabled' : ''} title="Move up">↑</button>
+              <button class="btn-reorder" onclick="moveBulletItem(${si}, ${bi}, 1)" ${bi === (sec.items || []).length - 1 ? 'disabled' : ''} title="Move down">↓</button>
+              <button class="btn-danger-text" onclick="removeBulletItem(${si}, ${bi})">Remove</button>
+            </div>
+          </div>
+          <div class="entry-card-body">
+            <div class="field-group">
+              <label class="field-label">Bullet point text</label>
+              <textarea class="field-textarea" style="min-height:48px;" placeholder="One bullet point. Start with an action verb. First word is bolded automatically." data-si="${si}" data-bi="${bi}" data-f="text">${esc(it.text || '')}</textarea>
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <label class="field-label">Link Text <span style="font-weight:400;color:var(--text-tertiary)">(optional)</span></label>
+                <input class="field-input" placeholder="e.g. GitHub, Demo, Certificate" value="${esc(it.linkLabel || '')}" data-si="${si}" data-bi="${bi}" data-f="linkLabel" />
+              </div>
+              <div class="field-group">
+                <label class="field-label">Link URL <span style="font-weight:400;color:var(--text-tertiary)">(optional)</span></label>
+                <input class="field-input" placeholder="https://..." value="${esc(it.linkUrl || '')}" data-si="${si}" data-bi="${bi}" data-f="linkUrl" />
+              </div>
+            </div>
+          </div>
+        </div>`).join('');
+      bodyHtml = `${itemsHtml}<button class="btn-add-entry" onclick="addBulletItem(${si})">+ Add bullet point</button>`;
     } else if (sec.type === 'inline') {
       bodyHtml = `
         <div class="field-group">
@@ -1144,6 +1194,7 @@ function renderSectionsEditor() {
       mutateState(() => {
         state.sections[si].type = t;
         if (t === 'entries' && !state.sections[si].entries) state.sections[si].entries = [];
+        if (t === 'bullets') ensureBulletItems(state.sections[si]);
         if (t === 'skills'  && !state.sections[si].skills)  state.sections[si].skills = [];
       });
       renderSectionsEditor();
@@ -1153,6 +1204,13 @@ function renderSectionsEditor() {
       inp.addEventListener('input', e => {
         const s = +e.target.dataset.si, en = +e.target.dataset.ei, f = e.target.dataset.f;
         mutateState(() => { state.sections[s].entries[en][f] = e.target.value; });
+      });
+    });
+
+    wrap.querySelectorAll('[data-si][data-bi]').forEach(inp => {
+      inp.addEventListener('input', e => {
+        const s = +e.target.dataset.si, b = +e.target.dataset.bi, f = e.target.dataset.f;
+        mutateState(() => { state.sections[s].items[b][f] = e.target.value; });
       });
     });
 
@@ -1199,7 +1257,7 @@ function moveSection(si, dir) {
 function addEntry(si) {
   mutateState(() => {
     if (!state.sections[si].entries) state.sections[si].entries = [];
-    state.sections[si].entries.push({ id: uid(), title: '', org: '', date: '', supervisor: '', tools: '', bullets: '', linkLabel: '', linkUrl: '' });
+    state.sections[si].entries.push({ id: uid(), title: '', org: '', date: '', supervisor: '', tools: '', bullets: '', linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' });
   });
   renderSectionsEditor();
 }
@@ -1210,6 +1268,27 @@ function moveEntry(si, ei, dir) {
   const j = ei + dir;
   if (j < 0 || j >= entries.length) return;
   mutateState(() => { [entries[ei], entries[j]] = [entries[j], entries[ei]]; });
+  renderSectionsEditor();
+}
+
+function addBulletItem(si) {
+  mutateState(() => {
+    ensureBulletItems(state.sections[si]);
+    state.sections[si].items.push({ text: '', linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' });
+  });
+  renderSectionsEditor();
+}
+
+function removeBulletItem(si, bi) {
+  mutateState(() => { state.sections[si].items.splice(bi, 1); });
+  renderSectionsEditor();
+}
+
+function moveBulletItem(si, bi, dir) {
+  const items = state.sections[si].items;
+  const j = bi + dir;
+  if (j < 0 || j >= items.length) return;
+  mutateState(() => { [items[bi], items[j]] = [items[j], items[bi]]; });
   renderSectionsEditor();
 }
 
@@ -1242,6 +1321,29 @@ function renderBullets(text) {
   return `<ul class="r-bullets">${items}</ul>`;
 }
 
+function renderBulletItems(items, fallbackContent) {
+  if (!items && fallbackContent) {
+    return renderBullets(fallbackContent);
+  }
+  if (!items || !items.length) return '';
+  const listHtml = items.map(item => {
+    const t = (item.text || '').trim();
+    if (!t) return '';
+    const sp = t.indexOf(' ');
+    let textPart = '';
+    if (sp > 0) {
+      textPart = `<strong>${esc(t.slice(0,sp))}</strong>${esc(t.slice(sp))}`;
+    } else {
+      textPart = esc(t);
+    }
+    const linkPart = (item.linkUrl || '').trim() && (item.linkLabel || '').trim()
+      ? ` <span class="r-et-sep">|</span> <a class="r-et-link" href="${esc(item.linkUrl.trim())}">${esc(item.linkLabel.trim())}</a>`
+      : '';
+    return `<li>${textPart}${linkPart}</li>`;
+  }).join('');
+  return `<ul class="r-bullets">${listHtml}</ul>`;
+}
+
 function renderEntriesTable(entries) {
   if (!entries || !entries.length) return '';
   const rows = entries.map((en, idx) => {
@@ -1267,7 +1369,9 @@ function renderEntriesTable(entries) {
 function renderSection(sec) {
   let content = '';
   if (sec.type === 'entries') content = renderEntriesTable(sec.entries);
-  else if (sec.type === 'bullets') content = renderBullets(sec.content);
+  else if (sec.type === 'bullets') {
+    content = renderBulletItems(sec.items, sec.content);
+  }
   else if (sec.type === 'inline') content = `<div class="r-inline">${esc(sec.content || '')}</div>`;
   else if (sec.type === 'skills') {
     const rows = (sec.skills || []).filter(sk => sk.cat || sk.items).map(sk =>
@@ -1475,7 +1579,7 @@ async function downloadPDF() {
         '.r-sec-head-text', '.r-edu-table th', '.r-edu-table td',
         '.r-et-title', '.r-et-org', '.r-et-date', '.r-et-sup-row td',
         '.r-bullets li', '.r-sk-cat', '.r-skills-table td:nth-child(2)',
-        '.r-inline', '.r-footer-preview'
+        '.r-inline', '.r-footer-preview', '.r-et-title-row .r-et-link', '.r-bullets .r-et-link'
       ].join(', ');
 
       const pageRect = pageEl.getBoundingClientRect();
@@ -1662,7 +1766,7 @@ async function importFromPDF(event) {
       if (heur.scholarUrl && !state.scholarUrl) { state.scholarUrl = heur.scholarUrl; if (!state.scholarLabel) state.scholarLabel = 'Scholar'; }
       state.sections.push({
         id: uid(), title: 'IMPORTED FROM PDF', open: true, type: 'bullets',
-        content: lines.join('\n')
+        items: lines.map(l => ({ text: l, linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' }))
       });
     });
     renderEduEditor();
