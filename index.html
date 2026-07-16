@@ -956,7 +956,10 @@ function toggleSidebar() { document.body.classList.toggle('sidebar-hidden'); }
   });
 })();
 
-function esc(s) { return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function esc(s) { 
+  let safeStr = (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); 
+  return safeStr.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+}
 function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200); }
 function uid() { return 's' + Math.random().toString(36).slice(2,8); }
 
