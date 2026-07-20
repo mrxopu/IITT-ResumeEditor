@@ -1474,7 +1474,7 @@ function printResume() { document.body.classList.add('sidebar-hidden'); window.p
 
 
 // ═══════════════════════════════════════
-//  CUSTOM PDF GENERATOR (100% Visual + Word-Level Precision Mapping)
+//  CUSTOM PDF GENERATOR (Dual-Layer: Aggressive Size Reduction + Selective High-Res Logo)
 // ═══════════════════════════════════════
 
 // Helper: Traverses DOM text nodes and extracts exact word coordinates without grouping
@@ -1563,20 +1563,45 @@ async function downloadPDF() {
       const pageEl = pages[i];
       if (i > 0) doc.addPage();
 
-      // 1. Paint 100% Visual Match High-Res Canvas
+      // 1. Paint Aggressively Compressed Page Canvas (~150-220 KB target)
       const canvas = await html2canvas(pageEl, {
-        scale: 3, 
+        scale: 1.7, // Aggressive reduction for text/background bytes
         useCORS: true,
         logging: false,
         backgroundColor: '#ffffff'
       });
 
-      const imgData = canvas.toDataURL('image/jpeg', 0.98);
+      const imgData = canvas.toDataURL('image/jpeg', 0.76);
       const pdfWidth = 210; 
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      doc.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+      doc.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
 
-      // 2. Precision Word-Level ATS Layer (0% Cumulative Drift)
+      // 2. Crystal-Clear Selective Logo Overlay
+      // We extract the logo separately and draw it at full natural resolution (0.98 quality)
+      const logoImg = pageEl.querySelector('.r-logo-box img');
+      if (logoImg && logoImg.complete && (logoImg.naturalWidth || logoImg.width)) {
+        const pageRect = pageEl.getBoundingClientRect();
+        const pxToMm = pdfWidth / pageRect.width;
+        const logoRect = logoImg.getBoundingClientRect();
+        const lLeft = (logoRect.left - pageRect.left) * pxToMm;
+        const lTop = (logoRect.top - pageRect.top) * pxToMm;
+        const lWidth = logoRect.width * pxToMm;
+        const lHeight = logoRect.height * pxToMm;
+
+        if (lWidth > 0 && lHeight > 0) {
+          const isPng = (logoImg.src || '').toLowerCase().endsWith('.png') || (logoImg.src || '').startsWith('data:image/png');
+          const logoCanvas = document.createElement('canvas');
+          logoCanvas.width = logoImg.naturalWidth || (logoImg.width * 4);
+          logoCanvas.height = logoImg.naturalHeight || (logoImg.height * 4);
+          const lCtx = logoCanvas.getContext('2d');
+          lCtx.drawImage(logoImg, 0, 0, logoCanvas.width, logoCanvas.height);
+          
+          const logoDataUrl = isPng ? logoCanvas.toDataURL('image/png') : logoCanvas.toDataURL('image/jpeg', 0.98);
+          doc.addImage(logoDataUrl, isPng ? 'PNG' : 'JPEG', lLeft, lTop, lWidth, lHeight, undefined, 'SLOW');
+        }
+      }
+
+      // 3. Precision Word-Level ATS Layer (0% Cumulative Drift)
       const targetSelectors = [
         '.r-name', '.r-rollno', '.r-degree-line', '.r-links',
         '.r-sec-head-text', '.r-edu-table th', '.r-edu-table td',
