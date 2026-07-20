@@ -1474,7 +1474,7 @@ function printResume() { document.body.classList.add('sidebar-hidden'); window.p
 
 
 // ═══════════════════════════════════════
-//  CUSTOM PDF GENERATOR (Dual-Layer: Aggressive Size Reduction + Selective High-Res Logo)
+//  CUSTOM PDF GENERATOR (Clamped Logo Overlay + Ultra-Lean Background)
 // ═══════════════════════════════════════
 
 // Helper: Traverses DOM text nodes and extracts exact word coordinates without grouping
@@ -1563,22 +1563,27 @@ async function downloadPDF() {
       const pageEl = pages[i];
       if (i > 0) doc.addPage();
 
-      // 1. Paint Aggressively Compressed Page Canvas (~150-220 KB target)
+      // Temporarily hide logo from main canvas to prevent embedding massive source pixels
+      const logoImg = pageEl.querySelector('.r-logo-box img');
+      const origLogoVisibility = logoImg ? logoImg.style.visibility : '';
+      if (logoImg) logoImg.style.visibility = 'hidden';
+
+      // 1. Render lightweight background canvas (Scale 1.5 + Quality 0.70 keeps text crisp and bytes ultra-lean)
       const canvas = await html2canvas(pageEl, {
-        scale: 1.7, // Aggressive reduction for text/background bytes
+        scale: 1.5, 
         useCORS: true,
         logging: false,
         backgroundColor: '#ffffff'
       });
 
-      const imgData = canvas.toDataURL('image/jpeg', 0.76);
+      if (logoImg) logoImg.style.visibility = origLogoVisibility;
+
+      const imgData = canvas.toDataURL('image/jpeg', 0.70);
       const pdfWidth = 210; 
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
       doc.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
 
-      // 2. Crystal-Clear Selective Logo Overlay
-      // We extract the logo separately and draw it at full natural resolution (0.98 quality)
-      const logoImg = pageEl.querySelector('.r-logo-box img');
+      // 2. Add Clamped Logo Overlay (Max 180x180 px keeps text readable while stopping MB bloat)
       if (logoImg && logoImg.complete && (logoImg.naturalWidth || logoImg.width)) {
         const pageRect = pageEl.getBoundingClientRect();
         const pxToMm = pdfWidth / pageRect.width;
@@ -1589,19 +1594,29 @@ async function downloadPDF() {
         const lHeight = logoRect.height * pxToMm;
 
         if (lWidth > 0 && lHeight > 0) {
-          const isPng = (logoImg.src || '').toLowerCase().endsWith('.png') || (logoImg.src || '').startsWith('data:image/png');
-          const logoCanvas = document.createElement('canvas');
-          logoCanvas.width = logoImg.naturalWidth || (logoImg.width * 4);
-          logoCanvas.height = logoImg.naturalHeight || (logoImg.height * 4);
-          const lCtx = logoCanvas.getContext('2d');
-          lCtx.drawImage(logoImg, 0, 0, logoCanvas.width, logoCanvas.height);
+          const maxDim = 180; // Clamp resolution to 180px max (~300 DPI for a 42px box)
+          let targetW = logoImg.naturalWidth || (logoImg.width * 3);
+          let targetH = logoImg.naturalHeight || (logoImg.height * 3);
           
-          const logoDataUrl = isPng ? logoCanvas.toDataURL('image/png') : logoCanvas.toDataURL('image/jpeg', 0.98);
-          doc.addImage(logoDataUrl, isPng ? 'PNG' : 'JPEG', lLeft, lTop, lWidth, lHeight, undefined, 'SLOW');
+          if (targetW > maxDim || targetH > maxDim) {
+            const ratio = Math.min(maxDim / targetW, maxDim / targetH);
+            targetW = Math.round(targetW * ratio);
+            targetH = Math.round(targetH * ratio);
+          }
+
+          const logoCanvas = document.createElement('canvas');
+          logoCanvas.width = targetW;
+          logoCanvas.height = targetH;
+          const lCtx = logoCanvas.getContext('2d');
+          lCtx.drawImage(logoImg, 0, 0, targetW, targetH);
+          
+          // Use JPEG 0.85 for the logo to guarantee tiny byte size while keeping text sharp
+          const logoDataUrl = logoCanvas.toDataURL('image/jpeg', 0.85);
+          doc.addImage(logoDataUrl, 'JPEG', lLeft, lTop, lWidth, lHeight, undefined, 'FAST');
         }
       }
 
-      // 3. Precision Word-Level ATS Layer (0% Cumulative Drift)
+      // 3. Precision Word-Level ATS Layer (0% Cumulative Drift) - UNCHANGED
       const targetSelectors = [
         '.r-name', '.r-rollno', '.r-degree-line', '.r-links',
         '.r-sec-head-text', '.r-edu-table th', '.r-edu-table td',
