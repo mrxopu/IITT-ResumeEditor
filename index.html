@@ -640,7 +640,7 @@ const DEFAULT_STATE = {
   ],
   sections: [
     {
-      id: 's1', title: 'PROJECTS', open: true, type: 'entries',
+      id: 's1', title: 'PROJECTS', spacing: 6, open: true, type: 'entries',
       entries: [
         { id: 'e1', title: 'On-Device Speech-to-Speech Translator (Bharat-AI SoC Challenge by arm)', org: '', date: "Jan '26 - Feb '26", supervisor: '', supervisorLabel: 'Supervisor', tools: 'Android (Kotlin), C++ (JNI), llama.cpp, whisper.cpp, sherpa-onnx, CMake, GGML, KleidiAI', toolsLabel: 'Tools & Technologies', toolsNewLine: false, bullets: "Engineered a 3-stage on-device pipeline (STT - LLM - TTS) across 7 languages with zero cloud dependency, achieving ~2.5s end-to-end latency on a Dimensity 9400 smartphone\nAccelerated LLM inference using ARM SME2 via KleidiAI micro-kernels with -march=armv9.2-a+sme2+i8mm+bf16, enabling 2-3 tok/s on-device generation of Gemma 2B-IT (Q4_K_M, ~1.5 GB)\nImplemented real-time token streaming with a word-count flush TTS pipeline (6-word chunks) to eliminate audio delay, and a 2-slot LRU model cache for zero-reload-penalty language switching", linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' },
         { id: 'e2', title: 'Fault Tolerant Control System for a Quadcopter (IdeaForge | InterIIT 13.0)', org: '', date: "Oct '24 - Dec '24", supervisor: '', supervisorLabel: 'Supervisor', tools: 'PX4, C++, PlotJuggler, QGroundControl, Gazebo', toolsLabel: 'Tools & Technologies', toolsNewLine: false, bullets: "Built a birotor model by detecting malfunctioning motors using a digital signal filter with 97.5% accuracy and shutting down the other motor to ensure stability\nDesigned a PID control loop to stabilize the drone and facilitate safe landing after motor failure\nDesigned a scalable solution that is compatible across multiple quadcopter models, supported with distinct weights and parameters", linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' },
@@ -648,7 +648,7 @@ const DEFAULT_STATE = {
       ]
     },
     {
-      id: 's2', title: 'TECHNICAL SKILLS', open: false, type: 'skills',
+      id: 's2', title: 'TECHNICAL SKILLS', spacing: 6, open: false, type: 'skills',
       skills: [
         { cat: 'Programming', items: 'C | Python | Embedded C' },
         { cat: 'Tools & OS', items: 'Git | Linux | Docker | Conda | Gazebo | ROS2 | PX4 | Google Colab' },
@@ -656,9 +656,9 @@ const DEFAULT_STATE = {
         { cat: 'Hardware and General Skills', items: 'Arduino | Raspberry Pi | Jetson Nano | Pixhawk | Soldering | Wiring | Robotics | Sensor Integration' }
       ]
     },
-    { id: 's3', title: 'KEY COURSES TAKEN', open: false, type: 'inline', content: 'Machine Learning | Pattern Recognition and Machine Learning | Signal and Systems | Digital Systems | Electronic Instrumentation and Measurement' },
+    { id: 's3', title: 'KEY COURSES TAKEN', spacing: 6, open: false, type: 'inline', content: 'Machine Learning | Pattern Recognition and Machine Learning | Signal and Systems | Digital Systems | Electronic Instrumentation and Measurement' },
     {
-      id: 's4', title: 'POSITIONS OF RESPONSIBILITY', open: false, type: 'entries',
+      id: 's4', title: 'POSITIONS OF RESPONSIBILITY', spacing: 6, open: false, type: 'entries',
       entries: [
         { id: 'e5', title: 'Club Head', org: 'TechManiacs, IIT Tirupati', date: "Present", supervisor: '', supervisorLabel: 'Supervisor', tools: '', toolsLabel: 'Tools & Technologies', toolsNewLine: false, bullets: '', linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' },
         { id: 'e6', title: 'Coordinator', org: 'TechManiacs, IIT Tirupati', date: "Jul '24 - Jul '25", supervisor: '', supervisorLabel: 'Supervisor', tools: '', toolsLabel: 'Tools & Technologies', toolsNewLine: false, bullets: '', linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' },
@@ -668,7 +668,7 @@ const DEFAULT_STATE = {
       ]
     },
     { 
-      id: 's5', title: 'ACHIEVEMENTS', open: false, type: 'bullets', 
+      id: 's5', title: 'ACHIEVEMENTS', spacing: 6, open: false, type: 'bullets', 
       items: [
         { text: "Achieved 3rd place in the ideaForge Problem Statement at InterIIT 13.0, IIT Bombay 2024", linkLabel: "Test", linkUrl: "https://www.youtube.com/watch?v=Aq5WXmQQooo" },
         { text: "Ranked in the top 24 out of over 1000+ institutes in the ISRO Robotics Challenge-URSC 2025", linkLabel: "Test", linkUrl: "https://www.youtube.com/watch?v=Aq5WXmQQooo" },
@@ -678,7 +678,7 @@ const DEFAULT_STATE = {
       ]
     },
     { 
-      id: 's6', title: 'CERTIFICATIONS', open: false, type: 'bullets', 
+      id: 's6', title: 'CERTIFICATIONS', spacing: 6, open: false, type: 'bullets', 
       items: [
         { text: "NPTEL Certification on Introduction to Aerodynamics", linkLabel: "Test", linkUrl: "https://www.youtube.com/watch?v=Aq5WXmQQooo" }
       ]
@@ -1202,9 +1202,15 @@ function renderSectionsEditor() {
         <span class="sec-acc-chevron ${sec.open?'open':''}">▾</span>
       </div>
       <div class="sec-acc-body ${sec.open?'open':''}">
-        <div class="field-group" style="padding-top:10px;">
-          <label class="field-label">Section title</label>
-          <input class="field-input sec-title-input" value="${esc(sec.title)}" data-si="${si}" placeholder="Section heading" />
+        <div class="field-row" style="padding-top:10px;">
+          <div class="field-group" style="flex: 3;">
+            <label class="field-label">Section title</label>
+            <input class="field-input sec-title-input" value="${esc(sec.title)}" data-si="${si}" placeholder="Section heading" />
+          </div>
+          <div class="field-group" style="flex: 1;">
+            <label class="field-label">Top Spacing (px)</label>
+            <input type="number" class="field-input sec-spacing-input" value="${sec.spacing !== undefined ? sec.spacing : 6}" data-si="${si}" placeholder="6" title="Top margin in pixels" />
+          </div>
         </div>
         <div class="sec-body-content">${bodyHtml}</div>
       </div>`;
@@ -1212,6 +1218,10 @@ function renderSectionsEditor() {
     wrap.querySelector('.sec-title-input').addEventListener('input', e => {
       mutateState(() => { state.sections[si].title = e.target.value; });
       wrap.querySelector('.sec-acc-title').textContent = e.target.value;
+    });
+
+    wrap.querySelector('.sec-spacing-input').addEventListener('input', e => {
+      mutateState(() => { state.sections[si].spacing = parseInt(e.target.value) || 0; });
     });
 
     wrap.querySelector('.type-select').addEventListener('change', e => {
@@ -1267,7 +1277,7 @@ function toggleSection(id) {
 }
 
 function addSection() {
-  mutateState(() => { state.sections.push({ id: uid(), title: 'NEW SECTION', open: true, type: 'entries', entries: [] }); });
+  mutateState(() => { state.sections.push({ id: uid(), title: 'NEW SECTION', spacing: 6, open: true, type: 'entries', entries: [] }); });
   renderSectionsEditor();
   document.querySelector('[data-tab="sections"]').click();
   setTimeout(() => { const sb = document.getElementById('sidebar-body'); sb.scrollTop = sb.scrollHeight; }, 50);
@@ -1429,7 +1439,10 @@ function renderSection(sec) {
     content = rows ? `<table class="r-skills-table"><tbody>${rows}</tbody></table>` : '';
   }
   if (!content.trim()) return '';
-  return `<div class="r-sec-head"><div class="r-sec-head-text">${esc(sec.title)}</div></div>${content}`;
+  
+  const topSpacing = sec.spacing !== undefined ? sec.spacing : 6;
+  
+  return `<div class="r-sec-head" style="margin-top: ${topSpacing}px;"><div class="r-sec-head-text">${esc(sec.title)}</div></div>${content}`;
 }
 
 function applyVisualPageBreaks() {
@@ -1854,7 +1867,7 @@ async function importFromPDF(event) {
       if (heur.linkedinUrl && !state.linkedinUrl) { state.linkedinUrl = heur.linkedinUrl; if (!state.linkedinLabel) state.linkedinLabel = 'LinkedIn'; }
       if (heur.scholarUrl && !state.scholarUrl) { state.scholarUrl = heur.scholarUrl; if (!state.scholarLabel) state.scholarLabel = 'Scholar'; }
       state.sections.push({
-        id: uid(), title: 'IMPORTED FROM PDF', open: true, type: 'bullets',
+        id: uid(), title: 'IMPORTED FROM PDF', spacing: 6, open: true, type: 'bullets',
         items: lines.map(l => ({ text: l, linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' }))
       });
     });
