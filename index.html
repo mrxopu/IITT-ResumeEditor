@@ -481,8 +481,29 @@ body.sidebar-hidden #sidebar-divider:hover { background: var(--accent); }
     </div>
 
     <div class="tab-panel" id="tab-sections">
+      
+      <!-- NEW: GLOBAL SPACING SETTINGS -->
+      <div style="padding: 12px 18px 0;">
+        <label class="field-label" style="margin-bottom: 8px;">Global Layout Spacing</label>
+        <div class="field-row">
+          <div class="field-group" style="padding:0; flex:1;">
+            <label class="field-hint" style="margin-top:0; margin-bottom:4px;" title="Space above sections">Section gap</label>
+            <input class="field-input" type="number" id="g-sec-gap" placeholder="6" />
+          </div>
+          <div class="field-group" style="padding:0; flex:1;">
+            <label class="field-hint" style="margin-top:0; margin-bottom:4px;" title="Space between distinct projects/roles">Entry gap</label>
+            <input class="field-input" type="number" id="g-ent-gap" placeholder="3" />
+          </div>
+          <div class="field-group" style="padding:0; flex:1;">
+            <label class="field-hint" style="margin-top:0; margin-bottom:4px;" title="Space between individual bullets">Bullet gap</label>
+            <input class="field-input" type="number" id="g-bul-gap" placeholder="0" />
+          </div>
+        </div>
+      </div>
+      <hr class="section-divider" style="margin-top: 14px;" />
+      
       <div style="padding: 10px 18px 8px;">
-        <p class="field-hint" style="color: var(--text-secondary);">Add, rename, reorder, or remove sections. Each section can hold entries with bullets, plain bullet lists, skill rows, or inline text.</p>
+        <p class="field-hint" style="color: var(--text-secondary);">Add, rename, reorder, or remove sections. Leave individual section spacing empty to use the global setting.</p>
       </div>
       <div id="sections-list"></div>
       <button class="btn-add-section" onclick="addSection()">+ Add section</button>
@@ -633,6 +654,9 @@ const DEFAULT_STATE = {
   githubUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo', githubLabel: 'Test',
   scholarUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo', scholarLabel: 'Test',
   footer: 'Self declared by the student. Career Development Cell, IIT Tirupati could not verify the relevant documents.',
+  globalSecGap: 6,
+  globalEntGap: 3,
+  globalBulGap: 0,
   edu: [
     { year: '2023-2027', exam: 'B.Tech. (EE)', inst: 'Indian Institute of Technology, Tirupati', score: 'X.YZ' },
     { year: '2023', exam: 'Senior Secondary', inst: 'CBSE Board', score: '94.4%' },
@@ -640,7 +664,7 @@ const DEFAULT_STATE = {
   ],
   sections: [
     {
-      id: 's1', title: 'PROJECTS', spacing: 6, open: true, type: 'entries',
+      id: 's1', title: 'PROJECTS', open: true, type: 'entries',
       entries: [
         { id: 'e1', title: 'On-Device Speech-to-Speech Translator (Bharat-AI SoC Challenge by arm)', org: '', date: "Jan '26 - Feb '26", supervisor: '', supervisorLabel: 'Supervisor', tools: 'Android (Kotlin), C++ (JNI), llama.cpp, whisper.cpp, sherpa-onnx, CMake, GGML, KleidiAI', toolsLabel: 'Tools & Technologies', toolsNewLine: false, bullets: "Engineered a 3-stage on-device pipeline (STT - LLM - TTS) across 7 languages with zero cloud dependency, achieving ~2.5s end-to-end latency on a Dimensity 9400 smartphone\nAccelerated LLM inference using ARM SME2 via KleidiAI micro-kernels with -march=armv9.2-a+sme2+i8mm+bf16, enabling 2-3 tok/s on-device generation of Gemma 2B-IT (Q4_K_M, ~1.5 GB)\nImplemented real-time token streaming with a word-count flush TTS pipeline (6-word chunks) to eliminate audio delay, and a 2-slot LRU model cache for zero-reload-penalty language switching", linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' },
         { id: 'e2', title: 'Fault Tolerant Control System for a Quadcopter (IdeaForge | InterIIT 13.0)', org: '', date: "Oct '24 - Dec '24", supervisor: '', supervisorLabel: 'Supervisor', tools: 'PX4, C++, PlotJuggler, QGroundControl, Gazebo', toolsLabel: 'Tools & Technologies', toolsNewLine: false, bullets: "Built a birotor model by detecting malfunctioning motors using a digital signal filter with 97.5% accuracy and shutting down the other motor to ensure stability\nDesigned a PID control loop to stabilize the drone and facilitate safe landing after motor failure\nDesigned a scalable solution that is compatible across multiple quadcopter models, supported with distinct weights and parameters", linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' },
@@ -648,7 +672,7 @@ const DEFAULT_STATE = {
       ]
     },
     {
-      id: 's2', title: 'TECHNICAL SKILLS', spacing: 6, open: false, type: 'skills',
+      id: 's2', title: 'TECHNICAL SKILLS', open: false, type: 'skills',
       skills: [
         { cat: 'Programming', items: 'C | Python | Embedded C' },
         { cat: 'Tools & OS', items: 'Git | Linux | Docker | Conda | Gazebo | ROS2 | PX4 | Google Colab' },
@@ -656,9 +680,9 @@ const DEFAULT_STATE = {
         { cat: 'Hardware and General Skills', items: 'Arduino | Raspberry Pi | Jetson Nano | Pixhawk | Soldering | Wiring | Robotics | Sensor Integration' }
       ]
     },
-    { id: 's3', title: 'KEY COURSES TAKEN', spacing: 6, open: false, type: 'inline', content: 'Machine Learning | Pattern Recognition and Machine Learning | Signal and Systems | Digital Systems | Electronic Instrumentation and Measurement' },
+    { id: 's3', title: 'KEY COURSES TAKEN', open: false, type: 'inline', content: 'Machine Learning | Pattern Recognition and Machine Learning | Signal and Systems | Digital Systems | Electronic Instrumentation and Measurement' },
     {
-      id: 's4', title: 'POSITIONS OF RESPONSIBILITY', spacing: 6, open: false, type: 'entries',
+      id: 's4', title: 'POSITIONS OF RESPONSIBILITY', open: false, type: 'entries',
       entries: [
         { id: 'e5', title: 'Club Head', org: 'TechManiacs, IIT Tirupati', date: "Present", supervisor: '', supervisorLabel: 'Supervisor', tools: '', toolsLabel: 'Tools & Technologies', toolsNewLine: false, bullets: '', linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' },
         { id: 'e6', title: 'Coordinator', org: 'TechManiacs, IIT Tirupati', date: "Jul '24 - Jul '25", supervisor: '', supervisorLabel: 'Supervisor', tools: '', toolsLabel: 'Tools & Technologies', toolsNewLine: false, bullets: '', linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' },
@@ -668,7 +692,7 @@ const DEFAULT_STATE = {
       ]
     },
     { 
-      id: 's5', title: 'ACHIEVEMENTS', spacing: 6, open: false, type: 'bullets', 
+      id: 's5', title: 'ACHIEVEMENTS', open: false, type: 'bullets', 
       items: [
         { text: "Achieved 3rd place in the ideaForge Problem Statement at InterIIT 13.0, IIT Bombay 2024", linkLabel: "Test", linkUrl: "https://www.youtube.com/watch?v=Aq5WXmQQooo" },
         { text: "Ranked in the top 24 out of over 1000+ institutes in the ISRO Robotics Challenge-URSC 2025", linkLabel: "Test", linkUrl: "https://www.youtube.com/watch?v=Aq5WXmQQooo" },
@@ -678,7 +702,7 @@ const DEFAULT_STATE = {
       ]
     },
     { 
-      id: 's6', title: 'CERTIFICATIONS', spacing: 6, open: false, type: 'bullets', 
+      id: 's6', title: 'CERTIFICATIONS', open: false, type: 'bullets', 
       items: [
         { text: "NPTEL Certification on Introduction to Aerodynamics", linkLabel: "Test", linkUrl: "https://www.youtube.com/watch?v=Aq5WXmQQooo" }
       ]
@@ -739,10 +763,13 @@ function applyStateSnapshot(snap) {
     'f-linkedin-url': 'linkedinUrl', 'f-linkedin-label': 'linkedinLabel',
     'f-github-url': 'githubUrl', 'f-github-label': 'githubLabel',
     'f-scholar-url': 'scholarUrl', 'f-scholar-label': 'scholarLabel',
+    'g-sec-gap': 'globalSecGap',
+    'g-ent-gap': 'globalEntGap',
+    'g-bul-gap': 'globalBulGap'
   };
   Object.entries(fieldMap).forEach(([id, key]) => {
     const el = document.getElementById(id);
-    if (el) el.value = state[key] || '';
+    if (el) el.value = state[key] !== undefined ? state[key] : '';
   });
   renderEduEditor();
   renderSectionsEditor();
@@ -979,7 +1006,15 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 function bindField(id, key) {
   const el = document.getElementById(id);
   if (!el) return;
-  el.addEventListener('input', () => { mutateState(() => { state[key] = el.value; }); });
+  el.addEventListener('input', () => { 
+      mutateState(() => { 
+          if(el.type === 'number') {
+              state[key] = el.value === '' ? undefined : parseFloat(el.value);
+          } else {
+              state[key] = el.value; 
+          }
+      }); 
+  });
 }
 bindField('f-name','name'); bindField('f-roll','roll'); bindField('f-degree','degree');
 bindField('f-gradyear','gradYear'); bindField('f-branch','branch'); bindField('f-institute','institute');
@@ -988,6 +1023,9 @@ bindField('f-linkedin-url','linkedinUrl'); bindField('f-linkedin-label','linkedi
 bindField('f-github-url','githubUrl'); bindField('f-github-label','githubLabel');
 bindField('f-scholar-url','scholarUrl'); bindField('f-scholar-label','scholarLabel');
 bindField('f-footer','footer');
+bindField('g-sec-gap', 'globalSecGap');
+bindField('g-ent-gap', 'globalEntGap');
+bindField('g-bul-gap', 'globalBulGap');
 
 function renderEduEditor() {
   const el = document.getElementById('edu-list');
@@ -1060,6 +1098,9 @@ function ensureBulletItems(sec) {
 function renderSectionsEditor() {
   const el = document.getElementById('sections-list');
   el.innerHTML = '';
+  
+  const sg = state.globalSecGap !== undefined && state.globalSecGap !== '' ? state.globalSecGap : 6;
+  
   state.sections.forEach((sec, si) => {
     const wrap = document.createElement('div');
     wrap.className = 'sec-accordion';
@@ -1207,9 +1248,9 @@ function renderSectionsEditor() {
             <label class="field-label">Section title</label>
             <input class="field-input sec-title-input" value="${esc(sec.title)}" data-si="${si}" placeholder="Section heading" />
           </div>
-          <div class="field-group" style="flex: 1;">
-            <label class="field-label">Top Spacing (px)</label>
-            <input type="number" class="field-input sec-spacing-input" value="${sec.spacing !== undefined ? sec.spacing : 6}" data-si="${si}" placeholder="6" title="Top margin in pixels" />
+          <div class="field-group" style="flex: 1.5;">
+            <label class="field-label">Top Spacing</label>
+            <input type="number" class="field-input sec-spacing-input" value="${sec.spacing !== undefined ? sec.spacing : ''}" data-si="${si}" placeholder="Global: ${sg}px" title="Leave empty to use global spacing" />
           </div>
         </div>
         <div class="sec-body-content">${bodyHtml}</div>
@@ -1221,7 +1262,8 @@ function renderSectionsEditor() {
     });
 
     wrap.querySelector('.sec-spacing-input').addEventListener('input', e => {
-      mutateState(() => { state.sections[si].spacing = parseInt(e.target.value) || 0; });
+      const val = e.target.value;
+      mutateState(() => { state.sections[si].spacing = val === '' ? undefined : parseInt(val); });
     });
 
     wrap.querySelector('.type-select').addEventListener('change', e => {
@@ -1277,7 +1319,7 @@ function toggleSection(id) {
 }
 
 function addSection() {
-  mutateState(() => { state.sections.push({ id: uid(), title: 'NEW SECTION', spacing: 6, open: true, type: 'entries', entries: [] }); });
+  mutateState(() => { state.sections.push({ id: uid(), title: 'NEW SECTION', spacing: undefined, open: true, type: 'entries', entries: [] }); });
   renderSectionsEditor();
   document.querySelector('[data-tab="sections"]').click();
   setTimeout(() => { const sb = document.getElementById('sidebar-body'); sb.scrollTop = sb.scrollHeight; }, 50);
@@ -1353,23 +1395,32 @@ function moveSkillRow(si, ki, dir) {
 }
 
 function renderBullets(text) {
+  const bg = state.globalBulGap !== undefined && state.globalBulGap !== '' ? state.globalBulGap : 0;
   const lines = (text || '').split('\n').filter(l => l.trim());
   if (!lines.length) return '';
-  const items = lines.map(line => {
+  const items = lines.map((line, idx) => {
     const t = line.trim();
     const sp = t.indexOf(' ');
-    if (sp > 0) return `<li><strong>${esc(t.slice(0,sp))}</strong>${esc(t.slice(sp))}</li>`;
-    return `<li>${esc(t)}</li>`;
+    const mb = idx < lines.length - 1 ? bg : 0;
+    
+    let inner = '';
+    if (sp > 0) inner = `<strong>${esc(t.slice(0,sp))}</strong>${esc(t.slice(sp))}`;
+    else inner = esc(t);
+    
+    return `<li style="margin-bottom: ${mb}px;">${inner}</li>`;
   }).join('');
   return `<ul class="r-bullets">${items}</ul>`;
 }
 
 function renderBulletItems(items, fallbackContent) {
+  const bg = state.globalBulGap !== undefined && state.globalBulGap !== '' ? state.globalBulGap : 0;
+  
   if (!items && fallbackContent) {
     return renderBullets(fallbackContent);
   }
   if (!items || !items.length) return '';
-  const listHtml = items.map(item => {
+  
+  const listHtml = items.map((item, idx) => {
     const t = (item.text || '').trim();
     if (!t) return '';
     const sp = t.indexOf(' ');
@@ -1382,13 +1433,18 @@ function renderBulletItems(items, fallbackContent) {
     const linkPart = (item.linkUrl || '').trim() && (item.linkLabel || '').trim()
       ? ` <span class="r-et-sep">|</span> <a class="r-et-link" href="${esc(item.linkUrl.trim())}">${esc(item.linkLabel.trim())}</a>`
       : '';
-    return `<li>${textPart}${linkPart}</li>`;
+      
+    const mb = idx < items.length - 1 ? bg : 0;
+    return `<li style="margin-bottom: ${mb}px;">${textPart}${linkPart}</li>`;
   }).join('');
   return `<ul class="r-bullets">${listHtml}</ul>`;
 }
 
 function renderEntriesTable(entries) {
   if (!entries || !entries.length) return '';
+  
+  const eg = state.globalEntGap !== undefined && state.globalEntGap !== '' ? state.globalEntGap : 3;
+  
   const rows = entries.map((en, idx) => {
     const titlePart = en.org && en.org.trim()
       ? `<span class="r-et-title">${esc(en.title)}</span><span class="r-et-sep">|</span><span class="r-et-org">${esc(en.org)}</span>`
@@ -1419,7 +1475,7 @@ function renderEntriesTable(entries) {
 
     const bullets = renderBullets(en.bullets);
     const bulletsRow = bullets ? `<tr class="r-et-bullets-row"><td colspan="2">${bullets}</td></tr>` : '';
-    const gap = idx < entries.length - 1 ? `<tr class="r-et-gap"><td colspan="2"></td></tr>` : '';
+    const gap = idx < entries.length - 1 ? `<tr class="r-et-gap"><td colspan="2" style="height: ${eg}px;"></td></tr>` : '';
     return `<tr class="r-et-title-row"><td>${titlePart}${linkPart}</td>${dateCell}</tr>${subRowHtml}${bulletsRow}${gap}`;
   }).join('');
   return `<table class="r-entries-table"><tbody>${rows}</tbody></table>`;
@@ -1440,7 +1496,8 @@ function renderSection(sec) {
   }
   if (!content.trim()) return '';
   
-  const topSpacing = sec.spacing !== undefined ? sec.spacing : 6;
+  const sg = state.globalSecGap !== undefined && state.globalSecGap !== '' ? state.globalSecGap : 6;
+  const topSpacing = (sec.spacing !== undefined && sec.spacing !== '') ? sec.spacing : sg;
   
   return `<div class="r-sec-head" style="margin-top: ${topSpacing}px;"><div class="r-sec-head-text">${esc(sec.title)}</div></div>${content}`;
 }
@@ -1504,6 +1561,8 @@ function render() {
   if (s.branch) degreeParts.push(s.branch);
   let degreeLine = degreeParts.join(' in ');
   if (s.institute) degreeLine += (degreeLine ? ' · ' : '') + s.institute;
+  
+  const sg = state.globalSecGap !== undefined && state.globalSecGap !== '' ? state.globalSecGap : 6;
 
   document.getElementById('resume-paper').innerHTML = `
     <div class="r-header">
@@ -1516,7 +1575,7 @@ function render() {
         <div class="r-logo-box">${logoHtml}</div>
       </div>
     </div>
-    <div class="r-sec-head"><div class="r-sec-head-text">EDUCATION</div></div>
+    <div class="r-sec-head" style="margin-top: ${sg}px;"><div class="r-sec-head-text">EDUCATION</div></div>
     <table class="r-edu-table">
       <thead><tr><th style="width:10%">Year</th><th style="width:33%">Degree / Exam</th><th style="width:42%">Institute</th><th style="width:15%;text-align:right">CGPA / Marks</th></tr></thead>
       <tbody>${eduHtml}</tbody>
@@ -1867,7 +1926,7 @@ async function importFromPDF(event) {
       if (heur.linkedinUrl && !state.linkedinUrl) { state.linkedinUrl = heur.linkedinUrl; if (!state.linkedinLabel) state.linkedinLabel = 'LinkedIn'; }
       if (heur.scholarUrl && !state.scholarUrl) { state.scholarUrl = heur.scholarUrl; if (!state.scholarLabel) state.scholarLabel = 'Scholar'; }
       state.sections.push({
-        id: uid(), title: 'IMPORTED FROM PDF', spacing: 6, open: true, type: 'bullets',
+        id: uid(), title: 'IMPORTED FROM PDF', spacing: undefined, open: true, type: 'bullets',
         items: lines.map(l => ({ text: l, linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' }))
       });
     });
