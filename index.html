@@ -482,7 +482,7 @@ body.sidebar-hidden #sidebar-divider:hover { background: var(--accent); }
 
     <div class="tab-panel" id="tab-sections">
       
-      <!-- NEW: GLOBAL SPACING SETTINGS -->
+      <!-- GLOBAL SPACING SETTINGS -->
       <div style="padding: 12px 18px 0;">
         <label class="field-label" style="margin-bottom: 8px;">Global Layout Spacing</label>
         <div class="field-row">
@@ -503,7 +503,7 @@ body.sidebar-hidden #sidebar-divider:hover { background: var(--accent); }
       <hr class="section-divider" style="margin-top: 14px;" />
       
       <div style="padding: 10px 18px 8px;">
-        <p class="field-hint" style="color: var(--text-secondary);">Add, rename, reorder, or remove sections. Leave individual section spacing empty to use the global setting.</p>
+        <p class="field-hint" style="color: var(--text-secondary);">Add, rename, reorder, or remove sections. Spacing applies universally to all elements.</p>
       </div>
       <div id="sections-list"></div>
       <button class="btn-add-section" onclick="addSection()">+ Add section</button>
@@ -1099,8 +1099,6 @@ function renderSectionsEditor() {
   const el = document.getElementById('sections-list');
   el.innerHTML = '';
   
-  const sg = state.globalSecGap !== undefined && state.globalSecGap !== '' ? state.globalSecGap : 6;
-  
   state.sections.forEach((sec, si) => {
     const wrap = document.createElement('div');
     wrap.className = 'sec-accordion';
@@ -1243,15 +1241,9 @@ function renderSectionsEditor() {
         <span class="sec-acc-chevron ${sec.open?'open':''}">▾</span>
       </div>
       <div class="sec-acc-body ${sec.open?'open':''}">
-        <div class="field-row" style="padding-top:10px;">
-          <div class="field-group" style="flex: 3;">
-            <label class="field-label">Section title</label>
-            <input class="field-input sec-title-input" value="${esc(sec.title)}" data-si="${si}" placeholder="Section heading" />
-          </div>
-          <div class="field-group" style="flex: 1.5;">
-            <label class="field-label">Top Spacing</label>
-            <input type="number" class="field-input sec-spacing-input" value="${sec.spacing !== undefined ? sec.spacing : ''}" data-si="${si}" placeholder="Global: ${sg}px" title="Leave empty to use global spacing" />
-          </div>
+        <div class="field-group" style="padding-top:10px;">
+          <label class="field-label">Section title</label>
+          <input class="field-input sec-title-input" value="${esc(sec.title)}" data-si="${si}" placeholder="Section heading" />
         </div>
         <div class="sec-body-content">${bodyHtml}</div>
       </div>`;
@@ -1259,11 +1251,6 @@ function renderSectionsEditor() {
     wrap.querySelector('.sec-title-input').addEventListener('input', e => {
       mutateState(() => { state.sections[si].title = e.target.value; });
       wrap.querySelector('.sec-acc-title').textContent = e.target.value;
-    });
-
-    wrap.querySelector('.sec-spacing-input').addEventListener('input', e => {
-      const val = e.target.value;
-      mutateState(() => { state.sections[si].spacing = val === '' ? undefined : parseInt(val); });
     });
 
     wrap.querySelector('.type-select').addEventListener('change', e => {
@@ -1319,7 +1306,7 @@ function toggleSection(id) {
 }
 
 function addSection() {
-  mutateState(() => { state.sections.push({ id: uid(), title: 'NEW SECTION', spacing: undefined, open: true, type: 'entries', entries: [] }); });
+  mutateState(() => { state.sections.push({ id: uid(), title: 'NEW SECTION', open: true, type: 'entries', entries: [] }); });
   renderSectionsEditor();
   document.querySelector('[data-tab="sections"]').click();
   setTimeout(() => { const sb = document.getElementById('sidebar-body'); sb.scrollTop = sb.scrollHeight; }, 50);
@@ -1496,10 +1483,10 @@ function renderSection(sec) {
   }
   if (!content.trim()) return '';
   
+  // Enforce universal layout spacing
   const sg = state.globalSecGap !== undefined && state.globalSecGap !== '' ? state.globalSecGap : 6;
-  const topSpacing = (sec.spacing !== undefined && sec.spacing !== '') ? sec.spacing : sg;
   
-  return `<div class="r-sec-head" style="margin-top: ${topSpacing}px;"><div class="r-sec-head-text">${esc(sec.title)}</div></div>${content}`;
+  return `<div class="r-sec-head" style="margin-top: ${sg}px;"><div class="r-sec-head-text">${esc(sec.title)}</div></div>${content}`;
 }
 
 function applyVisualPageBreaks() {
@@ -1926,7 +1913,7 @@ async function importFromPDF(event) {
       if (heur.linkedinUrl && !state.linkedinUrl) { state.linkedinUrl = heur.linkedinUrl; if (!state.linkedinLabel) state.linkedinLabel = 'LinkedIn'; }
       if (heur.scholarUrl && !state.scholarUrl) { state.scholarUrl = heur.scholarUrl; if (!state.scholarLabel) state.scholarLabel = 'Scholar'; }
       state.sections.push({
-        id: uid(), title: 'IMPORTED FROM PDF', spacing: undefined, open: true, type: 'bullets',
+        id: uid(), title: 'IMPORTED FROM PDF', open: true, type: 'bullets',
         items: lines.map(l => ({ text: l, linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' }))
       });
     });
