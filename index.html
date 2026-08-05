@@ -642,9 +642,9 @@ const DEFAULT_STATE = {
     {
       id: 's1', title: 'PROJECTS', open: true, type: 'entries',
       entries: [
-        { id: 'e1', title: 'On-Device Speech-to-Speech Translator (Bharat-AI SoC Challenge by arm)', org: '', date: "Jan '26 - Feb '26", supervisor: '', tools: 'Android (Kotlin), C++ (JNI), llama.cpp, whisper.cpp, sherpa-onnx, CMake, GGML, KleidiAI', bullets: "Engineered a 3-stage on-device pipeline (STT - LLM - TTS) across 7 languages with zero cloud dependency, achieving ~2.5s end-to-end latency on a Dimensity 9400 smartphone\nAccelerated LLM inference using ARM SME2 via KleidiAI micro-kernels with -march=armv9.2-a+sme2+i8mm+bf16, enabling 2-3 tok/s on-device generation of Gemma 2B-IT (Q4_K_M, ~1.5 GB)\nImplemented real-time token streaming with a word-count flush TTS pipeline (6-word chunks) to eliminate audio delay, and a 2-slot LRU model cache for zero-reload-penalty language switching", linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' },
-        { id: 'e2', title: 'Fault Tolerant Control System for a Quadcopter (IdeaForge | InterIIT 13.0)', org: '', date: "Oct '24 - Dec '24", supervisor: '', tools: 'PX4, C++, PlotJuggler, QGroundControl, Gazebo', bullets: "Built a birotor model by detecting malfunctioning motors using a digital signal filter with 97.5% accuracy and shutting down the other motor to ensure stability\nDesigned a PID control loop to stabilize the drone and facilitate safe landing after motor failure\nDesigned a scalable solution that is compatible across multiple quadcopter models, supported with distinct weights and parameters", linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' },
-        { id: 'e3', title: 'ISRO Robotics Challenge - URSC 2025', org: '', date: "Dec '24 - Jul '25", supervisor: '', tools: 'PX4, Python, OpenCV, ROS2, QGroundControl, OpticalFlow', bullets: "Applied OpticalFlow to calculate local frame motion on a Raspberry Pi with 90% accuracy, translating data into GPS coordinates and publishing through ROS2 to internal PX4 modules\nUsed camera data with an EKF filter to estimate drone yaw without the use of a compass", linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' }
+        { id: 'e1', title: 'On-Device Speech-to-Speech Translator (Bharat-AI SoC Challenge by arm)', org: '', date: "Jan '26 - Feb '26", supervisor: '', supervisorLabel: 'Supervisor', tools: 'Android (Kotlin), C++ (JNI), llama.cpp, whisper.cpp, sherpa-onnx, CMake, GGML, KleidiAI', toolsLabel: 'Tools & Technologies', toolsNewLine: false, bullets: "Engineered a 3-stage on-device pipeline (STT - LLM - TTS) across 7 languages with zero cloud dependency, achieving ~2.5s end-to-end latency on a Dimensity 9400 smartphone\nAccelerated LLM inference using ARM SME2 via KleidiAI micro-kernels with -march=armv9.2-a+sme2+i8mm+bf16, enabling 2-3 tok/s on-device generation of Gemma 2B-IT (Q4_K_M, ~1.5 GB)\nImplemented real-time token streaming with a word-count flush TTS pipeline (6-word chunks) to eliminate audio delay, and a 2-slot LRU model cache for zero-reload-penalty language switching", linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' },
+        { id: 'e2', title: 'Fault Tolerant Control System for a Quadcopter (IdeaForge | InterIIT 13.0)', org: '', date: "Oct '24 - Dec '24", supervisor: '', supervisorLabel: 'Supervisor', tools: 'PX4, C++, PlotJuggler, QGroundControl, Gazebo', toolsLabel: 'Tools & Technologies', toolsNewLine: false, bullets: "Built a birotor model by detecting malfunctioning motors using a digital signal filter with 97.5% accuracy and shutting down the other motor to ensure stability\nDesigned a PID control loop to stabilize the drone and facilitate safe landing after motor failure\nDesigned a scalable solution that is compatible across multiple quadcopter models, supported with distinct weights and parameters", linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' },
+        { id: 'e3', title: 'ISRO Robotics Challenge - URSC 2025', org: '', date: "Dec '24 - Jul '25", supervisor: '', supervisorLabel: 'Supervisor', tools: 'PX4, Python, OpenCV, ROS2, QGroundControl, OpticalFlow', toolsLabel: 'Tools & Technologies', toolsNewLine: false, bullets: "Applied OpticalFlow to calculate local frame motion on a Raspberry Pi with 90% accuracy, translating data into GPS coordinates and publishing through ROS2 to internal PX4 modules\nUsed camera data with an EKF filter to estimate drone yaw without the use of a compass", linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' }
       ]
     },
     {
@@ -660,11 +660,11 @@ const DEFAULT_STATE = {
     {
       id: 's4', title: 'POSITIONS OF RESPONSIBILITY', open: false, type: 'entries',
       entries: [
-        { id: 'e5', title: 'Club Head', org: 'TechManiacs, IIT Tirupati', date: "Present", supervisor: '', tools: '', bullets: '', linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' },
-        { id: 'e6', title: 'Coordinator', org: 'TechManiacs, IIT Tirupati', date: "Jul '24 - Jul '25", supervisor: '', tools: '', bullets: '', linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' },
-        { id: 'e7', title: 'Core Member', org: 'Photography and Films Club, IIT Tirupati', date: "Jul '24 - Present", supervisor: '', tools: '', bullets: '', linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' },
-        { id: 'e8', title: 'Coordinator and Project Member', org: 'Automobile Club, IIT Tirupati', date: "Jul '24 - Jul '25", supervisor: '', tools: '', bullets: '', linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' },
-        { id: 'e9', title: 'Co-Coordinator', org: 'NSS Unit, IIT Tirupati', date: "Jul '24 - Jul '25", supervisor: '', tools: '', bullets: '', linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' }
+        { id: 'e5', title: 'Club Head', org: 'TechManiacs, IIT Tirupati', date: "Present", supervisor: '', supervisorLabel: 'Supervisor', tools: '', toolsLabel: 'Tools & Technologies', toolsNewLine: false, bullets: '', linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' },
+        { id: 'e6', title: 'Coordinator', org: 'TechManiacs, IIT Tirupati', date: "Jul '24 - Jul '25", supervisor: '', supervisorLabel: 'Supervisor', tools: '', toolsLabel: 'Tools & Technologies', toolsNewLine: false, bullets: '', linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' },
+        { id: 'e7', title: 'Core Member', org: 'Photography and Films Club, IIT Tirupati', date: "Jul '24 - Present", supervisor: '', supervisorLabel: 'Supervisor', tools: '', toolsLabel: 'Tools & Technologies', toolsNewLine: false, bullets: '', linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' },
+        { id: 'e8', title: 'Coordinator and Project Member', org: 'Automobile Club, IIT Tirupati', date: "Jul '24 - Jul '25", supervisor: '', supervisorLabel: 'Supervisor', tools: '', toolsLabel: 'Tools & Technologies', toolsNewLine: false, bullets: '', linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' },
+        { id: 'e9', title: 'Co-Coordinator', org: 'NSS Unit, IIT Tirupati', date: "Jul '24 - Jul '25", supervisor: '', supervisorLabel: 'Supervisor', tools: '', toolsLabel: 'Tools & Technologies', toolsNewLine: false, bullets: '', linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' }
       ]
     },
     { 
@@ -1091,14 +1091,36 @@ function renderSectionsEditor() {
                 <input class="field-input" placeholder="Mon 'YY" value="${esc(en.date)}" data-si="${si}" data-ei="${ei}" data-f="date" />
               </div>
             </div>
-            <div class="field-group">
-              <label class="field-label">Supervisor <span style="font-weight:400;color:var(--text-tertiary)">(optional)</span></label>
-              <input class="field-input" placeholder="Name, Designation, Institute" value="${esc(en.supervisor || '')}" data-si="${si}" data-ei="${ei}" data-f="supervisor" />
+            
+            <div class="field-row">
+              <div class="field-group" style="flex: 1;">
+                <label class="field-label">Sup. Heading</label>
+                <input class="field-input" placeholder="Supervisor" value="${esc(en.supervisorLabel || 'Supervisor')}" data-si="${si}" data-ei="${ei}" data-f="supervisorLabel" />
+              </div>
+              <div class="field-group" style="flex: 2;">
+                <label class="field-label">Supervisor Data <span style="font-weight:400;color:var(--text-tertiary)">(optional)</span></label>
+                <input class="field-input" placeholder="Name, Designation, Institute" value="${esc(en.supervisor || '')}" data-si="${si}" data-ei="${ei}" data-f="supervisor" />
+              </div>
             </div>
-            <div class="field-group">
-              <label class="field-label">Tools &amp; Technologies <span style="font-weight:400;color:var(--text-tertiary)">(optional)</span></label>
-              <input class="field-input" placeholder="e.g. Python, PyTorch, ROS2, Docker" value="${esc(en.tools || '')}" data-si="${si}" data-ei="${ei}" data-f="tools" />
+            
+            <div class="field-row">
+              <div class="field-group" style="flex: 1;">
+                <label class="field-label">Tools Heading</label>
+                <input class="field-input" placeholder="Tools & Technologies" value="${esc(en.toolsLabel || 'Tools & Technologies')}" data-si="${si}" data-ei="${ei}" data-f="toolsLabel" />
+              </div>
+              <div class="field-group" style="flex: 2;">
+                <label class="field-label">Tools Data <span style="font-weight:400;color:var(--text-tertiary)">(optional)</span></label>
+                <input class="field-input" placeholder="e.g. Python, PyTorch..." value="${esc(en.tools || '')}" data-si="${si}" data-ei="${ei}" data-f="tools" />
+              </div>
             </div>
+            
+            <div class="field-group" style="padding-top: 6px;">
+               <label style="display:inline-flex; align-items:center; gap:6px; cursor:pointer;">
+                   <input type="checkbox" data-si="${si}" data-ei="${ei}" data-f="toolsNewLine" ${en.toolsNewLine ? 'checked' : ''} />
+                   <span class="field-label" style="margin:0; text-transform:none; letter-spacing:0; font-weight:500;">Start tools on a new line</span>
+               </label>
+            </div>
+            
             <div class="field-row">
               <div class="field-group">
                 <label class="field-label">Link Text <span style="font-weight:400;color:var(--text-tertiary)">(optional)</span></label>
@@ -1204,9 +1226,11 @@ function renderSectionsEditor() {
     });
 
     wrap.querySelectorAll('[data-si][data-ei]').forEach(inp => {
-      inp.addEventListener('input', e => {
+      const eventType = inp.type === 'checkbox' ? 'change' : 'input';
+      inp.addEventListener(eventType, e => {
         const s = +e.target.dataset.si, en = +e.target.dataset.ei, f = e.target.dataset.f;
-        mutateState(() => { state.sections[s].entries[en][f] = e.target.value; });
+        const val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+        mutateState(() => { state.sections[s].entries[en][f] = val; });
       });
     });
 
@@ -1260,7 +1284,13 @@ function moveSection(si, dir) {
 function addEntry(si) {
   mutateState(() => {
     if (!state.sections[si].entries) state.sections[si].entries = [];
-    state.sections[si].entries.push({ id: uid(), title: '', org: '', date: '', supervisor: '', tools: '', bullets: '', linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' });
+    state.sections[si].entries.push({ 
+        id: uid(), title: '', org: '', date: '', 
+        supervisor: '', supervisorLabel: 'Supervisor', 
+        tools: '', toolsLabel: 'Tools & Technologies', 
+        toolsNewLine: false, 
+        bullets: '', linkLabel: 'Test', linkUrl: 'https://www.youtube.com/watch?v=Aq5WXmQQooo' 
+    });
   });
   renderSectionsEditor();
 }
@@ -1357,14 +1387,30 @@ function renderEntriesTable(entries) {
       ? `<span class="r-et-sep">|</span><a class="r-et-link" href="${esc(en.linkUrl.trim())}">${esc(en.linkLabel.trim())}</a>`
       : '';
     const dateCell = (en.date || '').trim() ? `<td class="r-et-date">${esc(en.date)}</td>` : `<td></td>`;
-    const subParts = [];
-    if ((en.supervisor || '').trim()) subParts.push('Supervisor: ' + esc(en.supervisor.trim()));
-    if ((en.tools || '').trim()) subParts.push('Tools &amp; Technologies: ' + esc(en.tools.trim()));
-    const subRow = subParts.length ? `<tr class="r-et-sup-row"><td colspan="2">${subParts.join(' &nbsp;·&nbsp; ')}</td></tr>` : '';
+    
+    const hasSup = (en.supervisor || '').trim();
+    const hasTools = (en.tools || '').trim();
+    const sLabel = en.supervisorLabel || 'Supervisor';
+    const tLabel = en.toolsLabel || 'Tools & Technologies';
+    
+    let subRowHtml = '';
+    
+    if (hasSup && hasTools && en.toolsNewLine) {
+         subRowHtml = `<tr class="r-et-sup-row"><td colspan="2">${esc(sLabel)}: ${esc(hasSup)}</td></tr>
+                       <tr class="r-et-sup-row"><td colspan="2">${esc(tLabel)}: ${esc(hasTools)}</td></tr>`;
+    } else {
+         const subParts = [];
+         if (hasSup) subParts.push(`${esc(sLabel)}: ${esc(hasSup)}`);
+         if (hasTools) subParts.push(`${esc(tLabel)}: ${esc(hasTools)}`);
+         if (subParts.length) {
+             subRowHtml = `<tr class="r-et-sup-row"><td colspan="2">${subParts.join(' &nbsp;·&nbsp; ')}</td></tr>`;
+         }
+    }
+
     const bullets = renderBullets(en.bullets);
     const bulletsRow = bullets ? `<tr class="r-et-bullets-row"><td colspan="2">${bullets}</td></tr>` : '';
     const gap = idx < entries.length - 1 ? `<tr class="r-et-gap"><td colspan="2"></td></tr>` : '';
-    return `<tr class="r-et-title-row"><td>${titlePart}${linkPart}</td>${dateCell}</tr>${subRow}${bulletsRow}${gap}`;
+    return `<tr class="r-et-title-row"><td>${titlePart}${linkPart}</td>${dateCell}</tr>${subRowHtml}${bulletsRow}${gap}`;
   }).join('');
   return `<table class="r-entries-table"><tbody>${rows}</tbody></table>`;
 }
