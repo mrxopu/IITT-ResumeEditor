@@ -309,7 +309,7 @@ body.sidebar-hidden #sidebar-divider:hover { background: var(--accent); }
 .r-edu-table td:last-child { text-align: right; font-weight: 600; color: var(--resume-accent); }
 .r-edu-table tr { page-break-inside: avoid; break-inside: avoid; }
 
-.r-entries-table { width: 100%; border-collapse: collapse; margin-bottom: 1px; }
+.r-entries-table { width: 100%; border-collapse: collapse; margin-bottom: 0; }
 .r-entries-table tr { page-break-inside: avoid; break-inside: avoid; }
 .r-et-title-row td { padding: 2px 0 0; vertical-align: baseline; }
 .r-et-title { font-size: 9pt; font-weight: 700; color: var(--resume-text); line-height: 1.25; }
@@ -319,8 +319,6 @@ body.sidebar-hidden #sidebar-divider:hover { background: var(--accent); }
 .r-et-link { font-size: 8.5pt; font-weight: 500; color: var(--resume-link); text-decoration: none; }
 .r-et-link:hover { text-decoration: underline; }
 .r-et-sup-row td { font-style: italic; font-size: 7.5pt; color: var(--resume-text-mute); padding: 0 0 1px; }
-.r-et-bullets-row td { padding: 0 0 1px; }
-.r-et-gap td { height: 3px; }
 
 /* Custom pseudo-element bullet rendering prevents bold distortion in canvas/PDF export */
 .r-bullets { margin: 1px 0 0 0; padding: 0; list-style: none; color: var(--resume-text); }
@@ -1381,33 +1379,25 @@ function moveSkillRow(si, ki, dir) {
   renderSectionsEditor();
 }
 
-function renderBullets(text) {
-  const bg = state.globalBulGap !== undefined && state.globalBulGap !== '' ? state.globalBulGap : 0;
-  const lines = (text || '').split('\n').filter(l => l.trim());
-  if (!lines.length) return '';
-  const items = lines.map((line, idx) => {
-    const t = line.trim();
-    const sp = t.indexOf(' ');
-    const mb = idx < lines.length - 1 ? bg : 0;
-    
-    let inner = '';
-    if (sp > 0) inner = `<strong>${esc(t.slice(0,sp))}</strong>${esc(t.slice(sp))}`;
-    else inner = esc(t);
-    
-    return `<li style="margin-bottom: ${mb}px;">${inner}</li>`;
-  }).join('');
-  return `<ul class="r-bullets">${items}</ul>`;
-}
-
 function renderBulletItems(items, fallbackContent) {
   const bg = state.globalBulGap !== undefined && state.globalBulGap !== '' ? state.globalBulGap : 0;
   
   if (!items && fallbackContent) {
-    return renderBullets(fallbackContent);
+    const lines = (fallbackContent || '').split('\n').filter(l => l.trim());
+    if (!lines.length) return '';
+    return lines.map((line, idx) => {
+      const t = line.trim();
+      const sp = t.indexOf(' ');
+      let inner = '';
+      if (sp > 0) inner = `<strong>${esc(t.slice(0,sp))}</strong>${esc(t.slice(sp))}`;
+      else inner = esc(t);
+      const mb = idx < lines.length - 1 ? bg : 0;
+      return `<ul class="r-bullets" style="margin-bottom: ${mb}px;"><li>${inner}</li></ul>`;
+    }).join('');
   }
   if (!items || !items.length) return '';
   
-  const listHtml = items.map((item, idx) => {
+  return items.map((item, idx) => {
     const t = (item.text || '').trim();
     if (!t) return '';
     const sp = t.indexOf(' ');
@@ -1422,17 +1412,17 @@ function renderBulletItems(items, fallbackContent) {
       : '';
       
     const mb = idx < items.length - 1 ? bg : 0;
-    return `<li style="margin-bottom: ${mb}px;">${textPart}${linkPart}</li>`;
+    return `<ul class="r-bullets" style="margin-bottom: ${mb}px;"><li>${textPart}${linkPart}</li></ul>`;
   }).join('');
-  return `<ul class="r-bullets">${listHtml}</ul>`;
 }
 
 function renderEntriesTable(entries) {
   if (!entries || !entries.length) return '';
   
   const eg = state.globalEntGap !== undefined && state.globalEntGap !== '' ? state.globalEntGap : 3;
+  const bg = state.globalBulGap !== undefined && state.globalBulGap !== '' ? state.globalBulGap : 0;
   
-  const rows = entries.map((en, idx) => {
+  return entries.map((en, idx) => {
     const titlePart = en.org && en.org.trim()
       ? `<span class="r-et-title">${esc(en.title)}</span><span class="r-et-sep">|</span><span class="r-et-org">${esc(en.org)}</span>`
       : `<span class="r-et-title">${esc(en.title)}</span>`;
@@ -1460,12 +1450,24 @@ function renderEntriesTable(entries) {
          }
     }
 
-    const bullets = renderBullets(en.bullets);
-    const bulletsRow = bullets ? `<tr class="r-et-bullets-row"><td colspan="2">${bullets}</td></tr>` : '';
-    const gap = idx < entries.length - 1 ? `<tr class="r-et-gap"><td colspan="2" style="height: ${eg}px;"></td></tr>` : '';
-    return `<tr class="r-et-title-row"><td>${titlePart}${linkPart}</td>${dateCell}</tr>${subRowHtml}${bulletsRow}${gap}`;
+    const headTable = `<table class="r-entries-table" style="margin-bottom: 0;"><tbody><tr class="r-et-title-row"><td>${titlePart}${linkPart}</td>${dateCell}</tr>${subRowHtml}</tbody></table>`;
+
+    const lines = (en.bullets || '').split('\n').filter(l => l.trim());
+    const bulletsHtml = lines.map((line, bIdx) => {
+      const t = line.trim();
+      const sp = t.indexOf(' ');
+      let inner = '';
+      if (sp > 0) inner = `<strong>${esc(t.slice(0,sp))}</strong>${esc(t.slice(sp))}`;
+      else inner = esc(t);
+      
+      const marginStyle = bIdx < lines.length - 1 ? `margin-bottom: ${bg}px;` : '';
+      return `<ul class="r-bullets" style="${marginStyle}"><li>${inner}</li></ul>`;
+    }).join('');
+
+    const gapDiv = idx < entries.length - 1 ? `<div style="height: ${eg}px;"></div>` : '';
+
+    return headTable + bulletsHtml + gapDiv;
   }).join('');
-  return `<table class="r-entries-table"><tbody>${rows}</tbody></table>`;
 }
 
 function renderSection(sec) {
@@ -1721,7 +1723,7 @@ async function downloadPDF() {
         }
       }
 
-      // 3. Precision Word-Level ATS Layer (0% Cumulative Drift) - UNCHANGED
+      // 3. Precision Word-Level ATS Layer (0% Cumulative Drift)
       const targetSelectors = [
         '.r-name', '.r-rollno', '.r-degree-line', '.r-links',
         '.r-sec-head-text', '.r-edu-table th', '.r-edu-table td',
