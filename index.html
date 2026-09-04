@@ -985,6 +985,17 @@ function esc(s) {
   let safeStr = (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); 
   return safeStr.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 }
+
+// Add the URL formatting function here
+function formatUrl(url) {
+  if (!url) return '';
+  url = url.trim();
+  if (!/^https?:\/\//i.test(url)) {
+    return 'https://' + url;
+  }
+  return url;
+}
+
 function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200); }
 function uid() { return 's' + Math.random().toString(36).slice(2,8); }
 
@@ -1407,8 +1418,9 @@ function renderBulletItems(items, fallbackContent) {
     } else {
       textPart = esc(t);
     }
+    // Update the link to use formatUrl
     const linkPart = (item.linkUrl || '').trim() && (item.linkLabel || '').trim()
-      ? ` <span class="r-et-sep">|</span> <a class="r-et-link" href="${esc(item.linkUrl.trim())}">${esc(item.linkLabel.trim())}</a>`
+      ? ` <span class="r-et-sep">|</span> <a class="r-et-link" href="${esc(formatUrl(item.linkUrl.trim()))}">${esc(item.linkLabel.trim())}</a>`
       : '';
       
     const mb = idx < items.length - 1 ? bg : 0;
@@ -1426,8 +1438,10 @@ function renderEntriesTable(entries) {
     const titlePart = en.org && en.org.trim()
       ? `<span class="r-et-title">${esc(en.title)}</span><span class="r-et-sep">|</span><span class="r-et-org">${esc(en.org)}</span>`
       : `<span class="r-et-title">${esc(en.title)}</span>`;
+    
+    // Update the link to use formatUrl
     const linkPart = (en.linkUrl || '').trim() && (en.linkLabel || '').trim()
-      ? `<span class="r-et-sep">|</span><a class="r-et-link" href="${esc(en.linkUrl.trim())}">${esc(en.linkLabel.trim())}</a>`
+      ? `<span class="r-et-sep">|</span><a class="r-et-link" href="${esc(formatUrl(en.linkUrl.trim()))}">${esc(en.linkLabel.trim())}</a>`
       : '';
     const dateCell = (en.date || '').trim() ? `<td class="r-et-date">${esc(en.date)}</td>` : `<td></td>`;
     
@@ -1539,9 +1553,12 @@ function render() {
   const links = [];
   if (s.email) links.push(`Email: <a href="mailto:${esc(s.email)}">${esc(s.email)}</a>`);
   if (s.phone) links.push(`Phone: ${esc(s.phone)}`);
-  if (s.linkedinUrl && s.linkedinLabel) links.push(`LinkedIn: <a href="${esc(s.linkedinUrl)}">${esc(s.linkedinLabel)}</a>`);
-  if (s.githubUrl && s.githubLabel) links.push(`GitHub: <a href="${esc(s.githubUrl)}">${esc(s.githubLabel)}</a>`);
-  if (s.scholarUrl && s.scholarLabel) links.push(`Scholar: <a href="${esc(s.scholarUrl)}">${esc(s.scholarLabel)}</a>`);
+  
+  // Update header links to use formatUrl
+  if (s.linkedinUrl && s.linkedinLabel) links.push(`LinkedIn: <a href="${esc(formatUrl(s.linkedinUrl))}">${esc(s.linkedinLabel)}</a>`);
+  if (s.githubUrl && s.githubLabel) links.push(`GitHub: <a href="${esc(formatUrl(s.githubUrl))}">${esc(s.githubLabel)}</a>`);
+  if (s.scholarUrl && s.scholarLabel) links.push(`Scholar: <a href="${esc(formatUrl(s.scholarUrl))}">${esc(s.scholarLabel)}</a>`);
+  
   const linksHtml = links.length ? `<div class="r-links">${links.join('<span class="sep">|</span>')}</div>` : '';
   const eduHtml = s.edu.map(r => `<tr><td>${esc(r.year)}</td><td>${esc(r.exam)}</td><td>${esc(r.inst)}</td><td>${esc(r.score)}</td></tr>`).join('');
   const sectionsHtml = s.sections.map(renderSection).join('');
