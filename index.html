@@ -1650,17 +1650,20 @@ async function downloadPDF() {
   btns.forEach(b => { b.disabled = true; b.dataset.origText = b.textContent; b.textContent = 'Generating…'; });
   showToast('Generating PDF…');
 
+  const scroll = document.getElementById('preview-scroll');
+  if (scroll) scroll.style.overflow = 'visible'; // Fix container clipping issue for canvas
+
   const oldZoom = currentZoom;
   currentZoom = 1;
   applyZoom();
 
-  await new Promise(r => setTimeout(r, 250));
+  // Allow zoom transition to fully apply
+  await new Promise(r => setTimeout(r, 450));
 
   try {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
 
-    const scroll = document.getElementById('preview-scroll');
     let pages = Array.from(scroll.querySelectorAll('.resume-page'));
     if (pages.length === 0) {
       pages = [document.getElementById('resume-paper')];
@@ -1729,7 +1732,7 @@ async function downloadPDF() {
         '.r-sec-head-text', '.r-edu-table th', '.r-edu-table td',
         '.r-et-title', '.r-et-org', '.r-et-date', '.r-et-sup-row td',
         '.r-bullets li', '.r-sk-cat', '.r-skills-table td:nth-child(2)',
-        '.r-inline', '.r-footer-preview', '.r-et-title-row .r-et-link', '.r-bullets .r-et-link'
+        '.r-inline', '.r-footer-preview', '.r-et-title-row .r-et-link'
       ].join(', ');
 
       const pageRect = pageEl.getBoundingClientRect();
@@ -1765,7 +1768,7 @@ async function downloadPDF() {
       });
       doc.restoreGraphicsState();
 
-      // Map hyperlinks
+      // Map hyperlinks with bound page number
       const links = pageEl.querySelectorAll('a');
       links.forEach(a => {
         const aRect = a.getBoundingClientRect();
@@ -1775,7 +1778,7 @@ async function downloadPDF() {
         const heightMm = aRect.height * pxToMm;
 
         if (a.href) {
-            doc.link(leftMm, topMm, widthMm, heightMm, { url: a.href });
+            doc.link(leftMm, topMm, widthMm, heightMm, { url: a.href, pageNumber: i + 1 });
         }
       });
 
@@ -1818,6 +1821,7 @@ async function downloadPDF() {
     btns.forEach(b => { b.disabled = false; b.textContent = b.dataset.origText || 'Download PDF'; });
     currentZoom = oldZoom;
     applyZoom();
+    if (scroll) scroll.style.overflow = ''; // Restore original overflow styling
   }
 }
 
